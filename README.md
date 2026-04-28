@@ -44,12 +44,12 @@ flowchart LR
   RS --> US
   RS --> PS
 
-  US --> DBU[(rentify_users)]
-  PS --> DBP[(rentify_properties)]
-  DS --> DBD[(rentify_documents)]
-  AS --> DBA[(rentify_applications)]
-  CS --> DBC[(rentify_contact)]
-  RS --> DBR[(rentify_reviews)]
+  US --> DBU[(leaseflow_users)]
+  PS --> DBP[(leaseflow_properties)]
+  DS --> DBD[(leaseflow_documents)]
+  AS --> DBA[(leaseflow_applications)]
+  CS --> DBC[(leaseflow_contact)]
+  RS --> DBR[(leaseflow_reviews)]
 ```
 
 ## Modelo de datos (resumen)
