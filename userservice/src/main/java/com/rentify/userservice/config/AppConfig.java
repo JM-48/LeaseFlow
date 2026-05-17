@@ -7,43 +7,32 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
 
-/**
- * Configuración de beans de la aplicación User Service
- * Incluye ModelMapper para DTOs, WebClient para comunicación entre microservicios
- * y OpenAPI para documentación Swagger
- */
 @Configuration
 public class AppConfig {
 
-    /**
-     * Bean de ModelMapper para convertir entre DTOs y Entidades
-     */
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
-
-        // Usar LOOSE para permitir mapeo flexible
         mapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.LOOSE)
                 .setSkipNullEnabled(true)
                 .setAmbiguityIgnored(true);
-
         return mapper;
     }
 
-    /**
-     * Bean de WebClient.Builder para comunicación con otros microservicios
-     */
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
+
     @Bean
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
     }
 
-    /**
-     * Configuración de OpenAPI/Swagger para documentación de la API
-     */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
