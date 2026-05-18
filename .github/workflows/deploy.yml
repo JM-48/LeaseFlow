@@ -1,0 +1,84 @@
+name: Build and Deploy LeaseFlow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build and deploy ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false   # si un servicio falla, los otros siguen desplegando
+      matrix:
+        include:
+          - name: userservice
+            folder: userservice
+            image: leaseflow-userservice
+          - name: propertyservice
+            folder: propertyservice
+            image: leaseflow-propertyservice
+          - name: documentservice
+            folder: documentService
+            image: leaseflow-documentservice
+          - name: applicationservice
+            folder: applicationService
+            image: leaseflow-applicationservice
+          - name: contactservice
+            folder: contactService
+            image: leaseflow-contactservice
+          - name: reviewservice
+            folder: reviewService
+            image: leaseflow-reviewservice
+
+    steps:
+      # 1. Descarga el codigo del repositorio
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      # 2. Configura Docker con soporte de cache para builds mas rapidos
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Login en Docker Hub con los secrets del repo
+      - name: Login en Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. Construye la imagen desde la carpeta del servicio y la sube a Docker Hub
+      #    cache-from/cache-to: reutiliza layers de builds anteriores (mucho mas rapido)
+      - name: Build y push imagen Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.folder }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+
+      # 5. Login en Azure con las credenciales del service principal
+      - name: Login en Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 6. Actualiza el Container App con la nueva imagen
+      - name: Desplegar en Azure Container Apps
+        run: |
+          az containerapp update \
+            --name ${{ matrix.name }} \
+            --resource-group leaseflow-rg \
+            --image ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest
+
+      # 7. Muestra la URL publica del servicio en el log de GitHub Actions
+      - name: Mostrar URL del servicio
+        run: |
+          URL=$(az containerapp show \
+            --name ${{ matrix.name }} \
+            --resource-group leaseflow-rg \
+            --query "properties.configuration.ingress.fqdn" \
+            -o tsv)
+          echo "${{ matrix.name }} desplegado en: https://$URL"
