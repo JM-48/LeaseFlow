@@ -24,10 +24,12 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         // Orígenes permitidos - Frontend React con Vite
+        // Orígenes permitidos (frontend local + producción en Azure)
         config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",  // Vite dev server
-                "http://localhost:3000",  // Create React App (alternativo)
-                "http://localhost:4173"   // Vite preview
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://127.0.0.1:5173",
+                "https://leaseflow-web-a3chbkhjcug5bcgc.brazilsouth-01.azurewebsites.net" // <-- AGREGA ESTA LÍNEA
         ));
 
         // Headers permitidos

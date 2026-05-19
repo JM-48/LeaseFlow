@@ -1,4 +1,4 @@
-package com.rentify.documentService.config;
+package com.rentify.reviewService.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,29 +9,25 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 
 /**
- * Configuraci√≥n de CORS (Cross-Origin Resource Sharing) para Document Service.
- * Permite que el frontend React (puerto 5173) pueda comunicarse con el backend (puerto 8083).
- *
- * IMPORTANTE: Esta configuraci√≥n es CR√çTICA para que el frontend pueda hacer peticiones
- * al backend sin errores de CORS.
+ * ConfiguraciÛn CORS para ReviewService que permite peticiones locales y de producciÛn.
  */
 @Configuration
 public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Permitir credenciales (cookies, headers de autenticaci√≥n)
+        // Permitir credenciales (crucial para JWT/Cookies si los usas)
         config.setAllowCredentials(true);
 
-        // Or√≠genes permitidos (frontend React en diferentes configuraciones)
-        // Or√≠genes permitidos (frontend local + producci√≥n en Azure)
+        // OrÌgenes permitidos
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://127.0.0.1:5173",
-                "https://leaseflow-web-a3chbkhjcug5bcgc.brazilsouth-01.azurewebsites.net" // <-- AGREGA ESTA L√çNEA
+                "https://leaseflow-web-a3chbkhjcug5bcgc.brazilsouth-01.azurewebsites.net"
         ));
 
         // Headers permitidos
@@ -41,11 +37,10 @@ public class CorsConfig {
                 "Accept",
                 "Authorization",
                 "Access-Control-Request-Method",
-                "Access-Control-Request-Headers",
-                "X-Requested-With"
+                "Access-Control-Request-Headers"
         ));
 
-        // M√©todos HTTP permitidos
+        // MÈtodos HTTP permitidos
         config.setAllowedMethods(Arrays.asList(
                 "GET",
                 "POST",
@@ -55,12 +50,11 @@ public class CorsConfig {
                 "OPTIONS"
         ));
 
-        // Tiempo de cach√© para peticiones preflight (OPTIONS)
+        // Tiempo m·ximo de cachÈ para las respuestas preflight
         config.setMaxAge(3600L);
 
-        // Aplicar configuraci√≥n a todas las rutas
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        // Aplicar esta configuraciÛn a todas las rutas de la API
+        source.registerCorsConfiguration("/api/**", config);
 
         return new CorsFilter(source);
     }

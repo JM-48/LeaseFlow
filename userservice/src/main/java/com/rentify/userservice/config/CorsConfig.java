@@ -24,10 +24,12 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         // Orígenes permitidos (frontend)
+        // Orígenes permitidos (frontend local + producción en Azure)
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "http://127.0.0.1:5173"
+                "http://127.0.0.1:5173",
+                "https://leaseflow-web-a3chbkhjcug5bcgc.brazilsouth-01.azurewebsites.net" // <-- AGREGA ESTA LÍNEA
         ));
 
         // Headers permitidos
