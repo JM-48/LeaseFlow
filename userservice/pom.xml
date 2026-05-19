@@ -16,9 +16,11 @@
 	<name>userservice</name>
 	<description>Microservicio para la gestión de usuarios y roles en Rentify</description>
 
-	<properties>
-		<java.version>17</java.version>
+    <properties>
+        <java.version>17</java.version>
         <kotlin.version>2.2.0</kotlin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
 	<dependencies>
