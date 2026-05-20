@@ -16,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface PropertyRepository extends JpaRepository<Property, Long> {
 
+    List<Property> findByPropietarioId(Long propietarioId);
     /**
      * Busca una propiedad por su código único.
      */

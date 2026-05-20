@@ -62,6 +62,10 @@ public class Property {
     @Column(name = "fcreacion")
     private LocalDate fcreacion;
 
+    @NotNull(message = "El ID del propietario es obligatorio")
+    @Column(name = "propietario_id", nullable = false)
+    private Long propietarioId;
+
     @NotNull(message = "El tipo es obligatorio")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_id", nullable = false)

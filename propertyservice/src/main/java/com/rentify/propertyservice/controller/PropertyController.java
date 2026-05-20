@@ -97,7 +97,30 @@ public class PropertyController {
 
         return ResponseEntity.ok(propiedad);
     }
+    /**
+     * Obtiene todas las propiedades publicadas por un usuario/propietario específico.
+     *
+     * @param usuarioId ID del usuario propietario
+     * @param includeDetails Incluir detalles de relaciones
+     * @return Lista de propiedades del propietario
+     */
+    @GetMapping("/usuario/{usuarioId}")
+    @Operation(
+            summary = "Listar propiedades por ID de usuario",
+            description = "Retorna todas las propiedades que pertenecen a un propietario específico"
+    )
+    public ResponseEntity<List<PropertyDTO>> listarPorUsuario(
+            @Parameter(description = "ID del usuario propietario", example = "2")
+            @PathVariable Long usuarioId,
+            @Parameter(description = "Incluir detalles de relaciones")
+            @RequestParam(defaultValue = "true") boolean includeDetails) {
 
+        log.info("Endpoint GET /api/propiedades/usuario/{} - Listar por usuario (includeDetails: {})", usuarioId, includeDetails);
+
+        List<PropertyDTO> propiedades = propertyService.listarPorUsuario(usuarioId, includeDetails);
+
+        return ResponseEntity.ok(propiedades);
+    }
     /**
      * Obtiene una propiedad por su código único.
      *

@@ -99,6 +99,7 @@ public class PropertyService {
                 .fcreacion(propertyDTO.getFcreacion() != null ? propertyDTO.getFcreacion() : LocalDate.now())
                 .tipo(tipo)
                 .comuna(comuna)
+                .propietarioId(propertyDTO.getPropietarioId())
                 .build();
 
         Property saved = propertyRepository.save(property);
@@ -217,13 +218,27 @@ public class PropertyService {
                     ));
             property.setComuna(comuna);
         }
-
+        if (propertyDTO.getPropietarioId() != null) { // 🚨 AGREGA ESTE BLOQUE
+            property.setPropietarioId(propertyDTO.getPropietarioId());
+        }
         Property updated = propertyRepository.save(property);
         log.info("Propiedad actualizada exitosamente con ID: {}", updated.getId());
 
         return convertToDTO(updated, true);
     }
+    @Transactional(readOnly = true)
+    public List<PropertyDTO> listarPorUsuario(Long usuarioId, boolean includeDetails) {
+        log.debug("Listando propiedades del usuario ID: {} (includeDetails: {})", usuarioId, Boolean.valueOf(includeDetails));
 
+        // Buscamos en el repositorio usando el método de filtrado
+        // (Revisa la nota de abajo sobre el nombre exacto de este método)
+        List<Property> propiedades = propertyRepository.findByPropietarioId(usuarioId);
+
+        // Usamos tu método convertToDTO para mantener el estándar y evitar errores de carga perezosa (LAZY)
+        return propiedades.stream()
+                .map(p -> convertToDTO(p, includeDetails))
+                .collect(Collectors.toList());
+    }
     @Transactional
     public void eliminar(Long id) {
         log.info("Eliminando propiedad con ID: {}", id);
@@ -319,7 +334,7 @@ public class PropertyService {
         dto.setPetFriendly(property.getPetFriendly());
         dto.setDireccion(property.getDireccion());
         dto.setFcreacion(property.getFcreacion());
-
+        dto.setPropietarioId(property.getPropietarioId());
 
         dto.setTipoId(property.getTipo().getId());
         dto.setComunaId(property.getComuna().getId());

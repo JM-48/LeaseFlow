@@ -101,6 +101,11 @@ public class PropertyDTO {
     @Schema(description = "ID de la comuna", example = "2")
     private Long comunaId;
 
+    @NotNull(message = "El ID del propietario es obligatorio")
+    @Positive(message = "El ID del propietario debe ser un número positivo")
+    @Schema(description = "ID del propietario dueño de la propiedad", example = "10")
+    private Long propietarioId;
+
     // Campos de solo lectura (relaciones)
     @Schema(description = "Información del tipo de propiedad",
             accessMode = Schema.AccessMode.READ_ONLY)
