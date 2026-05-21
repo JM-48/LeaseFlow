@@ -413,4 +413,23 @@ public class UsuarioService {
         }
         return date.format(DATE_FORMATTER);
     }
+    /**
+     * Elimina físicamente a un usuario del sistema.
+     * @param id ID del usuario a eliminar
+     */
+    @Transactional
+    public void eliminarUsuario(Long id) {
+        log.info("Solicitud para eliminar físicamente al usuario con ID: {}", id);
+
+        // 1. Verificar si el usuario existe
+        if (!usuarioRepository.existsById(id)) {
+            log.error("Error al eliminar: No se encontró el usuario con ID {}", id);
+            throw new ResourceNotFoundException("Usuario no encontrado con ID: " + id);
+        }
+
+        // 2. Ejecutar el borrado físico
+        usuarioRepository.deleteById(id);
+
+        log.info("Usuario con ID: {} eliminado exitosamente de la base de datos", id);
+    }
 }

@@ -191,4 +191,20 @@ public class UsuarioController {
     public ResponseEntity<Boolean> existeUsuario(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.existeUsuario(id));
     }
+    /**
+     * Elimina un usuario físicamente del sistema
+     * DELETE /api/usuarios/{id}
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar usuario físicamente",
+            description = "Elimina de forma permanente a un usuario del sistema utilizando su ID.")
+    public ResponseEntity<Void> eliminarUsuario(
+            @Parameter(description = "ID del usuario a eliminar", example = "1")
+            @PathVariable Long id) {
+
+        usuarioService.eliminarUsuario(id);
+
+        // Retorna un código HTTP 204 (No Content), que es el estándar para un DELETE exitoso
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -109,17 +112,30 @@ public class PropertyService {
     }
 
     @Transactional(readOnly = true)
-    public List<PropertyDTO> listarTodas() {
-        return listarTodas(false);
-    }
+    public Page<PropertyDTO> listarTodas(Pageable pageable, boolean includeDetails) {
+        log.debug("Listando todas las propiedades paginadas (includeDetails: {})", includeDetails);
 
-    @Transactional(readOnly = true)
-    public List<PropertyDTO> listarTodas(boolean includeDetails) {
-        log.debug("Listando todas las propiedades (includeDetails: {})", Boolean.valueOf(includeDetails));
+        // 1. Usar el nuevo método del repositorio que trae todo de golpe (Solución al N+1 y Timeout)
+        List<Property> todasLasPropiedades = propertyRepository.findAllWithDetails();
 
-        return propertyRepository.findAll().stream()
+        // 2. Convertir la lista de base de datos a DTOs
+        List<PropertyDTO> dtos = todasLasPropiedades.stream()
                 .map(p -> convertToDTO(p, includeDetails))
                 .collect(Collectors.toList());
+
+        // 3. Crear la paginación "en memoria" para mandarla al Frontend
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), dtos.size());
+
+        List<PropertyDTO> paginaDeDtos;
+        if (start <= dtos.size()) {
+            paginaDeDtos = dtos.subList(start, end);
+        } else {
+            paginaDeDtos = java.util.Collections.emptyList();
+        }
+
+        // Retornamos la Página en lugar de la Lista gigante
+        return new PageImpl<>(paginaDeDtos, pageable, dtos.size());
     }
 
     @Transactional(readOnly = true)

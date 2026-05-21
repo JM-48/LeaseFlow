@@ -95,4 +95,13 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
      * Cuenta propiedades por tipo.
      */
     long countByTipoId(Long tipoId);
+
+    /**
+     * SOLUCIÓN AL PROBLEMA N+1 (Timeout 504)
+     * Obtiene todas las propiedades con sus detalles en una sola consulta SQL.
+     */
+    @Query("SELECT DISTINCT p FROM Property p " +
+            "LEFT JOIN FETCH p.comuna " +
+            "LEFT JOIN FETCH p.tipo")
+    List<Property> findAllWithDetails();
 }

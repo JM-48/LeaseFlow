@@ -52,23 +52,33 @@ public class PropertyController {
     }
 
     /**
-     * Obtiene todas las propiedades.
+     * Obtiene todas las propiedades (CON PAGINACIÓN para no asfixiar a Azure).
      *
-     * @param includeDetails Incluir detalles de tipo, comuna, fotos y categorías
-     * @return Lista de propiedades
+     * @param page Número de la página (comienza en 0)
+     * @param size Cantidad de propiedades por página
+     * @param includeDetails Incluir detalles de relaciones
+     * @return Página de propiedades
      */
     @GetMapping
     @Operation(
             summary = "Listar todas las propiedades",
-            description = "Retorna todas las propiedades registradas en el sistema"
+            description = "Retorna las propiedades registradas en el sistema divididas en páginas"
     )
-    public ResponseEntity<List<PropertyDTO>> listar(
+    public ResponseEntity<org.springframework.data.domain.Page<PropertyDTO>> listar(
+            @Parameter(description = "Número de página (empieza en 0)")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Cantidad de elementos por página")
+            @RequestParam(defaultValue = "10") int size,
+
             @Parameter(description = "Incluir detalles de relaciones (tipo, comuna, fotos, categorías)")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        log.debug("Endpoint GET /api/propiedades - Listar todas (includeDetails: {})", includeDetails);
+        log.debug("Endpoint GET /api/propiedades - Listar todas paginadas (includeDetails: {})", includeDetails);
 
-        List<PropertyDTO> propiedades = propertyService.listarTodas(includeDetails);
+        org.springframework.data.domain.Pageable paginacion = org.springframework.data.domain.PageRequest.of(page, size);
+
+        org.springframework.data.domain.Page<PropertyDTO> propiedades = propertyService.listarTodas(paginacion, includeDetails);
 
         return ResponseEntity.ok(propiedades);
     }
