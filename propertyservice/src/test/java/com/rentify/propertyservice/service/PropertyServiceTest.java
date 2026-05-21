@@ -20,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -234,33 +236,33 @@ class PropertyServiceTest {
     @DisplayName("listarTodas - Debe retornar lista de propiedades sin detalles")
     void listarTodas_SinDetalles_ReturnsDto() {
         // Arrange
-        when(propertyRepository.findAll()).thenReturn(List.of(propertyEntity));
-        // ✅ NO mockear nada más - convertToDTO lo maneja manualmente sin modelMapper
+        // Actualizamos el mock para que use el método nuevo anti N+1
+        when(propertyRepository.findAllWithDetails()).thenReturn(List.of(propertyEntity));
 
         // Act
-        List<PropertyDTO> resultado = propertyService.listarTodas(false);
+        // Le pasamos una página de prueba (Página 0, Tamaño 10)
+        Page<PropertyDTO> resultado = propertyService.listarTodas(PageRequest.of(0, 10), false);
 
         // Assert
-        assertThat(resultado).hasSize(1);
-        assertThat(resultado.get(0).getCodigo()).isEqualTo("DP001");
+        // Extraemos el 'content' de la página para hacer las validaciones
+        assertThat(resultado.getContent()).hasSize(1);
+        assertThat(resultado.getContent().get(0).getCodigo()).isEqualTo("DP001");
     }
 
     @Test
     @DisplayName("listarTodas - Debe retornar lista de propiedades con detalles")
     void listarTodas_ConDetalles_ReturnsDto() {
         // Arrange
-        when(propertyRepository.findAll()).thenReturn(List.of(propertyEntity));
-        // ✅ Solo mockear tipos relacionados, convertToDTO lo maneja manualmente
+        when(propertyRepository.findAllWithDetails()).thenReturn(List.of(propertyEntity));
         when(modelMapper.map(tipo, TipoDTO.class)).thenReturn(tipoDTO);
         when(modelMapper.map(region, RegionDTO.class)).thenReturn(regionDTO);
 
         // Act
-        List<PropertyDTO> resultado = propertyService.listarTodas(true);
+        Page<PropertyDTO> resultado = propertyService.listarTodas(PageRequest.of(0, 10), true);
 
         // Assert
-        assertThat(resultado).hasSize(1);
+        assertThat(resultado.getContent()).hasSize(1);
     }
-
     // ==================== Tests de Obtención ====================
 
     @Test

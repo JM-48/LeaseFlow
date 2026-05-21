@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -99,52 +102,55 @@ class PropertyControllerTest {
         verify(propertyService, never()).crearProperty(any());
     }
 
-    // ==================== Tests GET - Listar ====================
+
+// ==================== Tests GET - Listar ====================
 
     @Test
     @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades")
     void listar_SinDetalles_Returns200() throws Exception {
         // Arrange
-        when(propertyService.listarTodas(false))
-                .thenReturn(List.of(propertyDTO));
+        // Mapeamos el nuevo mock con Pageable
+        when(propertyService.listarTodas(any(Pageable.class), eq(false)))
+                .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades")
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].codigo").value("DP001"));
+                // Al ser una página, los datos vienen dentro de "content"
+                .andExpect(jsonPath("$.content[0].codigo").value("DP001"));
 
-        verify(propertyService, times(1)).listarTodas(false);
+        verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(false));
     }
 
     @Test
     @DisplayName("GET /api/propiedades - Debe incluir detalles cuando se solicita")
     void listar_ConDetalles_Returns200() throws Exception {
         // Arrange
-        when(propertyService.listarTodas(true))
-                .thenReturn(List.of(propertyDTO));
+        when(propertyService.listarTodas(any(Pageable.class), eq(true)))
+                .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades")
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.content").isArray());
 
-        verify(propertyService, times(1)).listarTodas(true);
+        verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(true));
     }
 
     @Test
     @DisplayName("GET /api/propiedades - Por defecto no incluye detalles")
     void listar_ParametroDefecto_Returns200() throws Exception {
         // Arrange
-        when(propertyService.listarTodas(false))
-                .thenReturn(List.of(propertyDTO));
+        when(propertyService.listarTodas(any(Pageable.class), eq(false)))
+                .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades"))
                 .andExpect(status().isOk());
 
-        verify(propertyService, times(1)).listarTodas(false);
+        verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(false));
     }
 
     // ==================== Tests GET/{id} ====================
