@@ -1,7 +1,6 @@
 package com.rentify.contactService.client;
 
 import com.rentify.contactService.dto.external.UsuarioDTO;
-import com.rentify.contactService.exception.MicroserviceException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
@@ -52,7 +51,7 @@ class UserServiceClientTest {
     @Test
     @DisplayName("getUserById - Debe retornar usuario cuando existe")
     void getUserById_UsuarioExiste_ReturnsUsuario() {
-        // Arrange
+        // Arrange - JSON actualizado a la estructura de objetos
         String jsonResponse = """
                 {
                     "id": 1,
@@ -60,8 +59,14 @@ class UserServiceClientTest {
                     "snombre": "Carlos",
                     "papellido": "Pérez",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO",
-                    "estado": "ACTIVO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    },
+                    "estado": {
+                        "id": 1,
+                        "nombre": "ACTIVO"
+                    }
                 }
                 """;
 
@@ -77,7 +82,9 @@ class UserServiceClientTest {
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getPnombre()).isEqualTo("Juan");
         assertThat(result.getEmail()).isEqualTo("juan@email.com");
-        assertThat(result.getRol()).isEqualTo("ARRIENDATARIO");
+        // Usamos el helper getRolNombre() en lugar de getRol()
+        assertThat(result.getRolNombre()).isEqualTo("ARRIENDATARIO");
+        assertThat(result.getEstadoNombre()).isEqualTo("ACTIVO");
     }
 
     @Test
@@ -126,13 +133,16 @@ class UserServiceClientTest {
     @Test
     @DisplayName("existsUser - Debe retornar true cuando usuario existe")
     void existsUser_UsuarioExiste_ReturnsTrue() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    }
                 }
                 """;
 
@@ -164,13 +174,16 @@ class UserServiceClientTest {
     @Test
     @DisplayName("isAdmin - Debe retornar true cuando usuario es ADMIN")
     void isAdmin_UsuarioEsAdmin_ReturnsTrue() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 5,
                     "pnombre": "Admin",
                     "email": "admin@rentify.com",
-                    "rol": "ADMIN"
+                    "rol": {
+                        "id": 1,
+                        "nombre": "ADMIN"
+                    }
                 }
                 """;
 
@@ -188,13 +201,16 @@ class UserServiceClientTest {
     @Test
     @DisplayName("isAdmin - Debe retornar false cuando usuario no es ADMIN")
     void isAdmin_UsuarioNoEsAdmin_ReturnsFalse() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    }
                 }
                 """;
 
@@ -226,13 +242,16 @@ class UserServiceClientTest {
     @Test
     @DisplayName("getUserRole - Debe retornar rol del usuario")
     void getUserRole_UsuarioExiste_ReturnsRole() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "email": "juan@email.com",
-                    "rol": "PROPIETARIO"
+                    "rol": {
+                        "id": 2,
+                        "nombre": "PROPIETARIO"
+                    }
                 }
                 """;
 
@@ -264,14 +283,20 @@ class UserServiceClientTest {
     @Test
     @DisplayName("isUserActive - Debe retornar true cuando usuario está activo")
     void isUserActive_UsuarioActivo_ReturnsTrue() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO",
-                    "estado": "ACTIVO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    },
+                    "estado": {
+                        "id": 1,
+                        "nombre": "ACTIVO"
+                    }
                 }
                 """;
 
@@ -289,14 +314,20 @@ class UserServiceClientTest {
     @Test
     @DisplayName("isUserActive - Debe retornar false cuando usuario está inactivo")
     void isUserActive_UsuarioInactivo_ReturnsFalse() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO",
-                    "estado": "INACTIVO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    },
+                    "estado": {
+                        "id": 2,
+                        "nombre": "INACTIVO"
+                    }
                 }
                 """;
 

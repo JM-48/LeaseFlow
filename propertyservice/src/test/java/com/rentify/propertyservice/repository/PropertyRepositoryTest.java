@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.*;
  */
 @DataJpaTest
 @ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // <-- Clave para respetar application-test.properties
 @DisplayName("Tests de PropertyRepository")
 class PropertyRepositoryTest {
 
@@ -50,28 +52,28 @@ class PropertyRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Crear Región
+        // Crear Región con nombre único
         regionMetropolitana = Region.builder()
-                .nombre("Región Metropolitana")
+                .nombre("Región Metropolitana_TEST")
                 .build();
         entityManager.persist(regionMetropolitana);
 
-        // Crear Comuna
+        // Crear Comuna con nombre único
         comunaProvidencia = Comuna.builder()
-                .nombre("Providencia")
+                .nombre("Providencia_TEST")
                 .region(regionMetropolitana)
                 .build();
         entityManager.persist(comunaProvidencia);
 
-        // Crear Tipo
+        // Crear Tipo con nombre único
         tipoDepartamento = Tipo.builder()
-                .nombre("Departamento")
+                .nombre("Departamento_TEST")
                 .build();
         entityManager.persist(tipoDepartamento);
 
-        // Crear Propiedades
+        // Crear Propiedades con códigos únicos y agregando propietarioId
         property1 = Property.builder()
-                .codigo("DP001")
+                .codigo("DP001_TEST")
                 .titulo("Dpto 2D/2B Providencia")
                 .precioMensual(BigDecimal.valueOf(650000))
                 .divisa("CLP")
@@ -83,10 +85,11 @@ class PropertyRepositoryTest {
                 .fcreacion(LocalDate.now())
                 .tipo(tipoDepartamento)
                 .comuna(comunaProvidencia)
+                .propietarioId(1L) // <-- AGREGADO
                 .build();
 
         property2 = Property.builder()
-                .codigo("DP002")
+                .codigo("DP002_TEST")
                 .titulo("Dpto 1D/1B Providencia")
                 .precioMensual(BigDecimal.valueOf(450000))
                 .divisa("CLP")
@@ -98,6 +101,7 @@ class PropertyRepositoryTest {
                 .fcreacion(LocalDate.now())
                 .tipo(tipoDepartamento)
                 .comuna(comunaProvidencia)
+                .propietarioId(2L) // <-- AGREGADO
                 .build();
 
         entityManager.persist(property1);
@@ -115,7 +119,7 @@ class PropertyRepositoryTest {
 
         // Then
         assertThat(resultado).isPresent();
-        assertThat(resultado.get().getCodigo()).isEqualTo("DP001");
+        assertThat(resultado.get().getCodigo()).isEqualTo("DP001_TEST");
         assertThat(resultado.get().getTitulo()).contains("2D/2B");
     }
 
@@ -123,7 +127,7 @@ class PropertyRepositoryTest {
     @DisplayName("findByCodigo - Debería encontrar propiedad por código")
     void findByCodigo_DeberiaRetornarPropiedad() {
         // When
-        var resultado = propertyRepository.findByCodigo("DP001");
+        var resultado = propertyRepository.findByCodigo("DP001_TEST");
 
         // Then
         assertThat(resultado).isPresent();
@@ -135,7 +139,7 @@ class PropertyRepositoryTest {
     void save_DeberiaPersistirPropiedad() {
         // Given
         Property nueva = Property.builder()
-                .codigo("DP999")
+                .codigo("DP999_TEST")
                 .titulo("Nueva Propiedad")
                 .precioMensual(BigDecimal.valueOf(550000))
                 .divisa("CLP")
@@ -147,6 +151,7 @@ class PropertyRepositoryTest {
                 .fcreacion(LocalDate.now())
                 .tipo(tipoDepartamento)
                 .comuna(comunaProvidencia)
+                .propietarioId(3L) // <-- AGREGADO
                 .build();
 
         // When
@@ -161,11 +166,11 @@ class PropertyRepositoryTest {
     @DisplayName("existsByCodigo - Debería verificar existencia por código")
     void existsByCodigo_DeberiaRetornarTrue() {
         // When
-        boolean existe = propertyRepository.existsByCodigo("DP001");
+        boolean existe = propertyRepository.existsByCodigo("DP001_TEST");
 
         // Then
         assertThat(existe).isTrue();
-        assertThat(propertyRepository.existsByCodigo("NOEXISTE")).isFalse();
+        assertThat(propertyRepository.existsByCodigo("NOEXISTE_TEST")).isFalse();
     }
 
     // ==================== Pruebas de Filtrado ====================
@@ -178,7 +183,7 @@ class PropertyRepositoryTest {
 
         // Then
         assertThat(propiedades).hasSize(2);
-        assertThat(propiedades).extracting(Property::getCodigo).contains("DP001", "DP002");
+        assertThat(propiedades).extracting(Property::getCodigo).contains("DP001_TEST", "DP002_TEST");
     }
 
     @Test
@@ -200,7 +205,7 @@ class PropertyRepositoryTest {
 
         // Then
         assertThat(propiedades).hasSize(1);
-        assertThat(propiedades.get(0).getCodigo()).isEqualTo("DP001");
+        assertThat(propiedades.get(0).getCodigo()).isEqualTo("DP001_TEST");
     }
 
     @Test
@@ -211,16 +216,13 @@ class PropertyRepositoryTest {
 
         // Then
         assertThat(propiedades).hasSize(1);
-        assertThat(propiedades.get(0).getCodigo()).isEqualTo("DP001");
+        assertThat(propiedades.get(0).getCodigo()).isEqualTo("DP001_TEST");
     }
 
     @Test
     @DisplayName("findByPrecioRange - Debería encontrar propiedades en rango de precio")
     void findByPrecioRange_DeberiaRetornarPropiedades() {
         // When
-        // ✅ CORREGIDO: Ajustar el rango de precio para incluir ambas propiedades
-        // property1: 650000, property2: 450000
-        // Rango: 400000 - 700000 incluye ambas
         List<Property> propiedades = propertyRepository.findByPrecioRange(
                 BigDecimal.valueOf(400000),
                 BigDecimal.valueOf(700000)
@@ -246,7 +248,7 @@ class PropertyRepositoryTest {
 
         // Then
         assertThat(propiedades).hasSize(1);
-        assertThat(propiedades.get(0).getCodigo()).isEqualTo("DP001");
+        assertThat(propiedades.get(0).getCodigo()).isEqualTo("DP001_TEST");
     }
 
     @Test

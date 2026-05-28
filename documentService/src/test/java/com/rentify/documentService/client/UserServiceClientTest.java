@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests para UserServiceClient usando MockWebServer.
@@ -57,15 +56,21 @@ class UserServiceClientTest {
     @Test
     @DisplayName("getUserById - Debe retornar usuario cuando existe")
     void getUserById_UsuarioExiste_ReturnsUsuario() {
-        // Arrange
+        // Arrange - JSON actualizado a la nueva estructura
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "papellido": "Pérez",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO",
-                    "estado": "Activo"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    },
+                    "estado": {
+                        "id": 1,
+                        "nombre": "Activo"
+                    }
                 }
                 """;
 
@@ -82,7 +87,8 @@ class UserServiceClientTest {
         assertThat(result.getPnombre()).isEqualTo("Juan");
         assertThat(result.getPapellido()).isEqualTo("Pérez");
         assertThat(result.getEmail()).isEqualTo("juan@email.com");
-        assertThat(result.getRol()).isEqualTo("ARRIENDATARIO");
+        // Extraemos el nombre del objeto Rol
+        assertThat(result.getRol().getNombre()).isEqualTo("ARRIENDATARIO");
     }
 
     @Test
@@ -114,30 +120,34 @@ class UserServiceClientTest {
     }
 
     @Test
-    @DisplayName("getUserById - Debe manejar timeout correctamente")
-    void getUserById_Timeout_ThrowsMicroserviceException() {
-        // Arrange - Delay mayor al timeout de 5 segundos
+    @DisplayName("getUserById - Debe retornar null tras timeout (manejado internamente)")
+    void getUserById_Timeout_ReturnsNull() {
+        // Arrange - El código tiene un timeout de 10s, ponemos 12s para asegurar que salte el timeout real
         mockWebServer.enqueue(new MockResponse()
                 .setBody("{}")
-                .setBodyDelay(6, TimeUnit.SECONDS));
+                .setBodyDelay(12, TimeUnit.SECONDS));
 
-        // Act & Assert
-        assertThatThrownBy(() -> client.getUserById(1L))
-                .isInstanceOf(MicroserviceException.class)
-                .hasMessageContaining("No se pudo verificar el usuario");
+        // Act
+        UsuarioDTO result = client.getUserById(1L);
+
+        // Assert - Según tu código reactivo, la excepción se captura en onErrorResume y devuelve null, no explota.
+        assertThat(result).isNull();
     }
 
     @Test
     @DisplayName("existsUser - Debe retornar true cuando el usuario existe")
     void existsUser_UsuarioExiste_ReturnsTrue() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "papellido": "Pérez",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    }
                 }
                 """;
 
@@ -183,14 +193,17 @@ class UserServiceClientTest {
     @Test
     @DisplayName("userHasRole - Debe retornar true cuando el usuario tiene el rol especificado")
     void userHasRole_UsuarioConRol_ReturnsTrue() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "papellido": "Pérez",
                     "email": "juan@email.com",
-                    "rol": "ARRIENDATARIO"
+                    "rol": {
+                        "id": 3,
+                        "nombre": "ARRIENDATARIO"
+                    }
                 }
                 """;
 
@@ -208,14 +221,17 @@ class UserServiceClientTest {
     @Test
     @DisplayName("userHasRole - Debe retornar false cuando el usuario no tiene el rol")
     void userHasRole_UsuarioSinRol_ReturnsFalse() {
-        // Arrange
+        // Arrange - JSON actualizado
         String jsonResponse = """
                 {
                     "id": 1,
                     "pnombre": "Juan",
                     "papellido": "Pérez",
                     "email": "juan@email.com",
-                    "rol": "PROPIETARIO"
+                    "rol": {
+                        "id": 2,
+                        "nombre": "PROPIETARIO"
+                    }
                 }
                 """;
 

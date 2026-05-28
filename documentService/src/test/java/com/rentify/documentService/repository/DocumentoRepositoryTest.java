@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase; // <-- IMPORTANTE
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,12 +17,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests de integración para DocumentoRepository.
- * Usa H2 en memoria y TestEntityManager para preparar datos de prueba.
- */
 @DataJpaTest
-@ActiveProfiles("test")
+@ActiveProfiles("test") // Esto le dice que use application-test.properties
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // <-- ESTO EVITA QUE IGNORE TU ARCHIVO
 @DisplayName("Tests de DocumentoRepository")
 class DocumentoRepositoryTest {
 
@@ -46,29 +44,15 @@ class DocumentoRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Crear estados
-        estadoPendiente = Estado.builder()
-                .nombre("PENDIENTE")
-                .build();
-        estadoPendiente = entityManager.persist(estadoPendiente);
+        // 1. Usamos nuestro método seguro para obtener o crear los estados
+        estadoPendiente = obtenerOCrearEstado("PENDIENTE");
+        estadoAceptado = obtenerOCrearEstado("ACEPTADO");
 
-        estadoAceptado = Estado.builder()
-                .nombre("ACEPTADO")
-                .build();
-        estadoAceptado = entityManager.persist(estadoAceptado);
+        // 2. Usamos nuestro método seguro para tipos de documento
+        tipoDNI = obtenerOCrearTipo("DNI");
+        tipoLiquidacion = obtenerOCrearTipo("LIQUIDACION_SUELDO");
 
-        // Crear tipos de documento
-        tipoDNI = TipoDocumento.builder()
-                .nombre("DNI")
-                .build();
-        tipoDNI = entityManager.persist(tipoDNI);
-
-        tipoLiquidacion = TipoDocumento.builder()
-                .nombre("LIQUIDACION_SUELDO")
-                .build();
-        tipoLiquidacion = entityManager.persist(tipoLiquidacion);
-
-        // Crear documentos de prueba
+        // 3. Crear documentos de prueba (esto se mantiene igual)
         documento1 = Documento.builder()
                 .nombre("DNI_Juan_Perez.pdf")
                 .fechaSubido(new Date())
@@ -88,6 +72,35 @@ class DocumentoRepositoryTest {
         documento2 = entityManager.persist(documento2);
 
         entityManager.flush();
+    }
+
+    // --- MÉTODOS AUXILIARES PARA EVITAR DUPLICADOS ---
+
+    private Estado obtenerOCrearEstado(String nombre) {
+        List<Estado> estados = entityManager.getEntityManager()
+                .createQuery("SELECT e FROM Estado e WHERE e.nombre = :nombre", Estado.class)
+                .setParameter("nombre", nombre)
+                .getResultList();
+
+        if (!estados.isEmpty()) {
+            return estados.get(0); // Si ya existe (ej. por un data.sql), lo usamos
+        }
+        // Si no existe, lo creamos
+        Estado nuevo = Estado.builder().nombre(nombre).build();
+        return entityManager.persist(nuevo);
+    }
+
+    private TipoDocumento obtenerOCrearTipo(String nombre) {
+        List<TipoDocumento> tipos = entityManager.getEntityManager()
+                .createQuery("SELECT t FROM TipoDocumento t WHERE t.nombre = :nombre", TipoDocumento.class)
+                .setParameter("nombre", nombre)
+                .getResultList();
+
+        if (!tipos.isEmpty()) {
+            return tipos.get(0);
+        }
+        TipoDocumento nuevo = TipoDocumento.builder().nombre(nombre).build();
+        return entityManager.persist(nuevo);
     }
 
     @Test

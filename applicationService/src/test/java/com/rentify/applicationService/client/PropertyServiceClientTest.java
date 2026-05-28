@@ -1,305 +1,184 @@
-//package com.rentify.applicationService.client;
-//
-//import com.rentify.applicationService.dto.PropiedadDTO;
-//import com.rentify.applicationService.exception.MicroserviceException;
-//import okhttp3.mockwebserver.MockResponse;
-//import okhttp3.mockwebserver.MockWebServer;
-//import org.junit.jupiter.api.AfterEach;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.web.reactive.function.client.WebClient;
-//
-//import java.io.IOException;
-//import java.util.concurrent.TimeUnit;
-//
-//import static org.assertj.core.api.Assertions.*;
-//
-///**
-// * Tests unitarios para PropertyServiceClient
-// * Utiliza MockWebServer para simular las respuestas del servicio
-// */
-//@DisplayName("Tests de PropertyServiceClient")
-//class PropertyServiceClientTest {
-//
-//    private MockWebServer mockWebServer;
-//    private PropertyServiceClient client;
-//
-//    @BeforeEach
-//    void setUp() throws IOException {
-//        mockWebServer = new MockWebServer();
-//        mockWebServer.start();
-//
-//        String baseUrl = mockWebServer.url("/").toString();
-//
-//        // Crear el cliente con el builder real
-//        WebClient.Builder webClientBuilder = WebClient.builder();
-//        client = new PropertyServiceClient(webClientBuilder);
-//
-//        // Usar reflexión para inyectar la URL del mock server
-//        try {
-//            var field = PropertyServiceClient.class.getDeclaredField("propertyServiceUrl");
-//            field.setAccessible(true);
-//            field.set(client, baseUrl.substring(0, baseUrl.length() - 1));
-//        } catch (Exception e) {
-//            throw new RuntimeException("Error configurando test", e);
-//        }
-//    }
-//
-//    @AfterEach
-//    void tearDown() throws IOException {
-//        try {
-//            // Dar tiempo para que las requests pendientes terminen
-//            mockWebServer.shutdown();
-//        } catch (IOException e) {
-//            // Si falla el shutdown normal, intentar un shutdown más agresivo
-//            System.err.println("Warning: MockWebServer shutdown failed - " + e.getMessage());
-//        }
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar propiedad cuando existe")
-//    void getPropertyById_PropiedadExiste_ReturnsPropiedad() {
-//        // Arrange
-//        String jsonResponse = """
-//            {
-//                "id": 1,
-//                "titulo": "Depto 2D/1B",
-//                "direccion": "Av. Providencia 123",
-//                "precio": 500000.0,
-//                "tipo": "Departamento",
-//                "disponible": true
-//            }
-//            """;
-//
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody(jsonResponse)
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(1L);
-//
-//        // Assert
-//        assertThat(result).isNotNull();
-//        assertThat(result.getId()).isEqualTo(1L);
-//        assertThat(result.getTitulo()).isEqualTo("Depto 2D/1B");
-//        assertThat(result.getPrecio()).isEqualTo(500000.0);
-//        assertThat(result.getDisponible()).isTrue();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar null cuando la propiedad no existe")
-//    void getPropertyById_PropiedadNoExiste_ReturnsNull() {
-//        // Arrange
-//        mockWebServer.enqueue(new MockResponse()
-//                .setResponseCode(404)
-//                .setBody("Not Found"));
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(999L);
-//
-//        // Assert
-//        assertThat(result).isNull();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar null cuando hay error de comunicación (el cliente usa onErrorResume)")
-//    void getPropertyById_ErrorComunicacion_ReturnsNull() {
-//        // Arrange - simular error 500
-//        mockWebServer.enqueue(new MockResponse()
-//                .setResponseCode(500)
-//                .setBody("Internal Server Error"));
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(1L);
-//
-//        // Assert
-//        // El cliente actual maneja errores con onErrorResume y retorna null
-//        // En lugar de lanzar excepción
-//        assertThat(result).isNull();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar null cuando hay error de servidor no disponible")
-//    void getPropertyById_ServidorNoDisponible_ReturnsNull() {
-//        // Arrange - Crear un cliente con URL inválida
-//        try {
-//            var field = PropertyServiceClient.class.getDeclaredField("propertyServiceUrl");
-//            field.setAccessible(true);
-//            field.set(client, "http://localhost:65535"); // Puerto que no escucha
-//        } catch (Exception e) {
-//            throw new RuntimeException("Error configurando test", e);
-//        }
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(1L);
-//
-//        // Assert
-//        // El onErrorResume del cliente captura el error y retorna null
-//        assertThat(result).isNull();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar true cuando la propiedad existe")
-//    void existsProperty_PropiedadExiste_ReturnsTrue() {
-//        // Arrange
-//        String jsonResponse = """
-//            {
-//                "id": 1,
-//                "titulo": "Depto 2D/1B",
-//                "disponible": true
-//            }
-//            """;
-//
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody(jsonResponse)
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        boolean exists = client.existsProperty(1L);
-//
-//        // Assert
-//        assertThat(exists).isTrue();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar false cuando la propiedad no existe")
-//    void existsProperty_PropiedadNoExiste_ReturnsFalse() {
-//        // Arrange
-//        mockWebServer.enqueue(new MockResponse()
-//                .setResponseCode(404));
-//
-//        // Act
-//        boolean exists = client.existsProperty(999L);
-//
-//        // Assert
-//        assertThat(exists).isFalse();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar true cuando la propiedad está disponible")
-//    void isPropertyAvailable_PropiedadDisponible_ReturnsTrue() {
-//        // Arrange
-//        String jsonResponse = """
-//            {
-//                "id": 1,
-//                "titulo": "Depto 2D/1B",
-//                "disponible": true
-//            }
-//            """;
-//
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody(jsonResponse)
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        boolean available = client.isPropertyAvailable(1L);
-//
-//        // Assert
-//        assertThat(available).isTrue();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar false cuando la propiedad no está disponible")
-//    void isPropertyAvailable_PropiedadNoDisponible_ReturnsFalse() {
-//        // Arrange
-//        String jsonResponse = """
-//            {
-//                "id": 1,
-//                "titulo": "Depto 2D/1B",
-//                "disponible": false
-//            }
-//            """;
-//
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody(jsonResponse)
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        boolean available = client.isPropertyAvailable(1L);
-//
-//        // Assert
-//        assertThat(available).isFalse();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar false cuando hay error al verificar disponibilidad")
-//    void isPropertyAvailable_ErrorComunicacion_ReturnsFalse() {
-//        // Arrange
-//        mockWebServer.enqueue(new MockResponse()
-//                .setResponseCode(500));
-//
-//        // Act
-//        boolean available = client.isPropertyAvailable(1L);
-//
-//        // Assert
-//        assertThat(available).isFalse();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe manejar timeout correctamente")
-//    void getPropertyById_Timeout_ReturnsNull() {
-//        // Arrange - delay de 6 segundos (mayor al timeout de 5)
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody("{}")
-//                .setBodyDelay(6, TimeUnit.SECONDS));
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(1L);
-//
-//        // Assert
-//        assertThat(result).isNull();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe manejar respuesta vacía correctamente")
-//    void getPropertyById_RespuestaVacia_ReturnsNull() {
-//        // Arrange
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody("")
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(1L);
-//
-//        // Assert
-//        assertThat(result).isNull();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe manejar JSON malformado")
-//    void getPropertyById_JsonMalformado_ReturnsNull() {
-//        // Arrange
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody("{invalid json}")
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        PropiedadDTO result = client.getPropertyById(1L);
-//
-//        // Assert
-//        assertThat(result).isNull();
-//    }
-//
-//    @Test
-//    @DisplayName("Debe retornar false cuando existe pero sin ID válido")
-//    void existsProperty_PropiedadSinId_ReturnsFalse() {
-//        // Arrange - propiedad sin ID
-//        String jsonResponse = """
-//            {
-//                "titulo": "Depto sin ID",
-//                "disponible": true
-//            }
-//            """;
-//
-//        mockWebServer.enqueue(new MockResponse()
-//                .setBody(jsonResponse)
-//                .addHeader("Content-Type", "application/json"));
-//
-//        // Act
-//        boolean exists = client.existsProperty(1L);
-//
-//        // Assert
-//        assertThat(exists).isFalse();
-//    }
-//}
+package com.rentify.applicationService.client;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rentify.applicationService.dto.PropiedadDTO;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class PropertyServiceClientTest {
+
+    private MockWebServer mockWebServer;
+    private PropertyServiceClient client;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setUp() throws IOException {
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+
+        String baseUrl = "http://localhost:" + mockWebServer.getPort();
+        client = new PropertyServiceClient(WebClient.builder());
+        ReflectionTestUtils.setField(client, "propertyServiceUrl", baseUrl);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        mockWebServer.shutdown();
+    }
+
+    // ────────────────── getPropertyById ──────────────────
+
+    @Test
+    void getPropertyById_respuesta200_retornaPropiedad() throws Exception {
+        PropiedadDTO propiedad = new PropiedadDTO();
+        propiedad.setId(7L);
+        propiedad.setTitulo("Departamento Providencia");
+        propiedad.setPrecioMensual(650000.0);
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(objectMapper.writeValueAsString(propiedad))
+                .addHeader("Content-Type", "application/json"));
+
+        PropiedadDTO result = client.getPropertyById(7L);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(7L);
+        assertThat(result.getTitulo()).isEqualTo("Departamento Providencia");
+        assertThat(result.getPrecioMensual()).isEqualTo(650000.0);
+
+        RecordedRequest request = mockWebServer.takeRequest();
+        assertThat(request.getPath()).isEqualTo("/api/propiedades/7");
+        assertThat(request.getMethod()).isEqualTo("GET");
+    }
+
+    @Test
+    void getPropertyById_respuesta404_retornaNull() throws Exception {
+        // onErrorResume captura el 404 y retorna Mono.empty() -> block() = null
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
+
+        PropiedadDTO result = client.getPropertyById(99L);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void getPropertyById_respuesta500_retornaNull() {
+        // onErrorResume captura el 500 y retorna Mono.empty() -> block() = null
+        // El catch externo NO se alcanza porque onErrorResume absorbe el error
+        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
+
+        PropiedadDTO result = client.getPropertyById(1L);
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void getPropertyById_servidorInaccesible_retornaNull() throws IOException {
+        // onErrorResume captura WebClientRequestException (ConnectionRefused) -> null
+        mockWebServer.shutdown();
+
+        PropiedadDTO result = client.getPropertyById(1L);
+
+        assertThat(result).isNull();
+
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+    }
+
+    // ────────────────── existsProperty ──────────────────
+
+    @Test
+    void existsProperty_propiedadExiste_retornaTrue() throws Exception {
+        PropiedadDTO propiedad = new PropiedadDTO();
+        propiedad.setId(1L);
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(objectMapper.writeValueAsString(propiedad))
+                .addHeader("Content-Type", "application/json"));
+
+        boolean result = client.existsProperty(1L);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsProperty_propiedadNoExiste_retornaFalse() throws Exception {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
+
+        boolean result = client.existsProperty(99L);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existsProperty_respuestaConIdNull_retornaFalse() throws Exception {
+        // La propiedad existe pero sin id -> existsProperty devuelve false
+        PropiedadDTO sinId = new PropiedadDTO();
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(objectMapper.writeValueAsString(sinId))
+                .addHeader("Content-Type", "application/json"));
+
+        boolean result = client.existsProperty(1L);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existsProperty_error500_retornaFalse() {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
+
+        boolean result = client.existsProperty(1L);
+
+        assertThat(result).isFalse();
+    }
+
+    // ────────────────── isPropertyAvailable ──────────────────
+
+    @Test
+    void isPropertyAvailable_propiedadExiste_retornaTrue() throws Exception {
+        PropiedadDTO propiedad = new PropiedadDTO();
+        propiedad.setId(1L);
+        propiedad.setTitulo("Test");
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(objectMapper.writeValueAsString(propiedad))
+                .addHeader("Content-Type", "application/json"));
+
+        boolean result = client.isPropertyAvailable(1L);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void isPropertyAvailable_propiedadNoExiste_retornaFalse() throws Exception {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
+
+        boolean result = client.isPropertyAvailable(99L);
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void isPropertyAvailable_error500_retornaFalse() {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
+
+        boolean result = client.isPropertyAvailable(1L);
+
+        assertThat(result).isFalse();
+    }
+}

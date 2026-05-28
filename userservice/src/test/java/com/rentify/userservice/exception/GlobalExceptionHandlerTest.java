@@ -6,8 +6,10 @@ import com.rentify.userservice.service.UsuarioService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -15,12 +17,15 @@ import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = {UsuarioController.class, GlobalExceptionHandler.class})
+@ActiveProfiles("test") // <-- Evita cargar propiedades de BDD o seguridad de produccion
+@AutoConfigureMockMvc(addFilters = false) // <-- Desactiva la seguridad para probar solo el Controller y el Handler
 @DisplayName("Tests de GlobalExceptionHandler")
 class GlobalExceptionHandlerTest {
 
@@ -34,7 +39,8 @@ class GlobalExceptionHandlerTest {
     @DisplayName("Debe manejar ResourceNotFoundException y retornar 404")
     void handleResourceNotFoundException_Returns404() throws Exception {
         // Arrange
-        when(usuarioService.obtenerPorId(anyLong(), any(Boolean.class)))
+        // Cambiado any(Boolean.class) por anyBoolean() para evitar NullPointerException al desempaquetar el primitivo
+        when(usuarioService.obtenerPorId(anyLong(), anyBoolean()))
                 .thenThrow(new ResourceNotFoundException("Usuario con ID 999 no encontrado"));
 
         // Act & Assert
@@ -118,7 +124,8 @@ class GlobalExceptionHandlerTest {
     @DisplayName("Debe manejar Exception genérica y retornar 500")
     void handleGenericException_Returns500() throws Exception {
         // Arrange
-        when(usuarioService.obtenerPorId(anyLong(), any(Boolean.class)))
+        // Cambiado any(Boolean.class) por anyBoolean()
+        when(usuarioService.obtenerPorId(anyLong(), anyBoolean()))
                 .thenThrow(new RuntimeException("Error inesperado"));
 
         // Act & Assert

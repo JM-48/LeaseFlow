@@ -54,7 +54,6 @@ public class SolicitudArriendoServiceTest {
         usuario.setRolId(3); // ARRIENDATARIO
         when(userClient.getUserById(1L)).thenReturn(usuario);
 
-        // 🔑 MOCK AÑADIDO (Solución del error "Propiedad no existe")
         // Simula que la propiedad SÍ existe. Esto es VITAL para que el servicio no lance la excepción.
         when(propertyClient.existsProperty(10L)).thenReturn(true);
 
