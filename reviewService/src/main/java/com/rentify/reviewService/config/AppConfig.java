@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies; // <--- Nuevo Import
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,11 +18,16 @@ public class AppConfig {
 
     /**
      * Bean de ModelMapper para conversión entre DTOs y Entidades.
-     * @return instancia configurada de ModelMapper
+     * @return instancia configurada de ModelMapper con estrategia estricta
      */
     @Bean
     public ModelMapper modelMapper() {
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Configuración crítica: Evita ambigüedades con IDs anidados en los DTOs
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        return modelMapper;
     }
 
     /**

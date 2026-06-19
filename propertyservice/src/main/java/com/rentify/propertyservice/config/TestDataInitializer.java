@@ -36,7 +36,7 @@ import java.util.Arrays;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-@Profile({"dev", "test"})
+@Profile({"dev"})
 @ConditionalOnProperty(name = "app.init.load-test-data", havingValue = "true", matchIfMissing = false)
 public class TestDataInitializer {
 
