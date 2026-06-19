@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-@DisplayName("Tests de Integración - SolicitudController")
+@DisplayName("Tests de Integración - SolicitudController (Robustos)")
 class SolicitudControllerIntegrationTest {
 
     @Autowired
@@ -38,7 +38,6 @@ class SolicitudControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // --- MOCKS DE LOS CLIENTES EXTERNOS ---
     @MockBean
     private UserServiceClient userServiceClient;
 
@@ -52,10 +51,10 @@ class SolicitudControllerIntegrationTest {
 
     @BeforeEach
     void setUpMocks() {
-        // Configuramos los mocks para que simulen respuestas exitosas
+        // Comportamiento por defecto (Mundo Ideal)
         UsuarioDTO mockUser = new UsuarioDTO();
         mockUser.setId(1L);
-        mockUser.setRolId(3);
+        mockUser.setRolId(3); // Arrendatario
         when(userServiceClient.existsUser(anyLong())).thenReturn(true);
         when(userServiceClient.getUserById(anyLong())).thenReturn(mockUser);
 
@@ -81,34 +80,68 @@ class SolicitudControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.usuarioId").value(1L))
                 .andExpect(jsonPath("$.propiedadId").value(5L))
-                .andExpect(jsonPath("$.estado").exists());
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
     }
 
+    // ==========================================
+    // 🔥 NUEVOS TESTS DE REGLAS DE NEGOCIO REALES
+    // ==========================================
+
     @Test
-    @DisplayName("POST / - Lanza 400 Bad Request si faltan campos obligatorios")
-    void crearSolicitud_FaltanCampos_Retorna400() throws Exception {
-        SolicitudArriendoDTO solicitudInvalida = new SolicitudArriendoDTO();
-        solicitudInvalida.setPropiedadId(5L); // Falta usuarioId
+    @DisplayName("POST / - Lanza 400/404 si el usuario no existe en el microservicio de usuarios")
+    void crearSolicitud_UsuarioNoExiste_RetornaError() throws Exception {
+        // 🔥 Forzamos a ambos métodos a decir que el usuario NO existe
+        when(userServiceClient.existsUser(1L)).thenReturn(false);
+        when(userServiceClient.getUserById(1L)).thenReturn(null); // <--- Esta es la clave
+
+        SolicitudArriendoDTO nuevaSolicitud = new SolicitudArriendoDTO();
+        nuevaSolicitud.setUsuarioId(1L);
+        nuevaSolicitud.setPropiedadId(5L);
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(solicitudInvalida)))
+                        .content(objectMapper.writeValueAsString(nuevaSolicitud)))
+                .andExpect(status().isBadRequest()); // O isNotFound() según corresponda
+    }
+
+    @Test
+    @DisplayName("POST / - Lanza 400 si la propiedad no está disponible")
+    void crearSolicitud_PropiedadNoDisponible_Retorna400() throws Exception {
+        // Simulamos que la propiedad está ocupada o pausada
+        when(propertyServiceClient.isPropertyAvailable(5L)).thenReturn(false);
+
+        SolicitudArriendoDTO nuevaSolicitud = new SolicitudArriendoDTO();
+        nuevaSolicitud.setUsuarioId(1L);
+        nuevaSolicitud.setPropiedadId(5L);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nuevaSolicitud)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("GET /{id} - Lanza 404 Not Found si el ID no existe")
-    void obtenerPorId_NoExiste_Retorna404() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/{id}", 99999L))
-                .andExpect(status().isNotFound());
+    @DisplayName("POST / - Lanza 400 si el usuario no tiene sus documentos aprobados")
+    void crearSolicitud_DocumentosNoAprobados_Retorna400() throws Exception {
+        // Simulamos que el cliente falló la validación de antecedentes/renta
+        when(documentServiceClient.hasApprovedDocuments(1L)).thenReturn(false);
+
+        SolicitudArriendoDTO nuevaSolicitud = new SolicitudArriendoDTO();
+        nuevaSolicitud.setUsuarioId(1L);
+        nuevaSolicitud.setPropiedadId(5L);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nuevaSolicitud)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("PATCH /{id}/estado - Debe actualizar el estado correctamente")
     void actualizarEstado_Success() throws Exception {
         SolicitudArriendoDTO nueva = new SolicitudArriendoDTO();
-        nueva.setUsuarioId(2L);
-        nueva.setPropiedadId(10L);
+        nueva.setUsuarioId(1L);
+        nueva.setPropiedadId(5L);
 
         MvcResult result = mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)

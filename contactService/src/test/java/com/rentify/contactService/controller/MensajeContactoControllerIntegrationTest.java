@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-@DisplayName("Tests de Integración - MensajeContactoController")
+@DisplayName("Tests de Integración - MensajeContactoController (Robustos)")
 class MensajeContactoControllerIntegrationTest {
 
     @Autowired
@@ -36,42 +36,61 @@ class MensajeContactoControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Mock del cliente externo para que la lógica de negocio no falle al validar admins
     @MockBean
     private UserServiceClient userServiceClient;
 
     private static final String BASE_URL = "/api/contacto";
     private static final Long ADMIN_ID = 5L;
+    private static final Long USUARIO_NORMAL_ID = 2L;
 
     @BeforeEach
     void setUpMocks() {
-        // Configuramos un usuario ADMIN simulado con sus objetos anidados reales
+        // --- SETUP ADMIN ---
         UsuarioDTO adminUser = new UsuarioDTO();
         adminUser.setId(ADMIN_ID);
         adminUser.setEmail("admin@rentify.com");
 
-        // Creamos y asignamos el objeto Rol
         UsuarioDTO.RolDTO rolAdmin = new UsuarioDTO.RolDTO();
         rolAdmin.setId(1L);
         rolAdmin.setNombre("ADMIN");
         adminUser.setRol(rolAdmin);
 
-        // Creamos y asignamos el objeto Estado
         UsuarioDTO.EstadoDTO estadoActivo = new UsuarioDTO.EstadoDTO();
         estadoActivo.setId(1L);
         estadoActivo.setNombre("ACTIVO");
         adminUser.setEstado(estadoActivo);
 
-        // Al consultar por el ID 5, el sistema jurará que es un administrador activo
         when(userServiceClient.existsUser(ADMIN_ID)).thenReturn(true);
         when(userServiceClient.isAdmin(ADMIN_ID)).thenReturn(true);
         when(userServiceClient.getUserById(ADMIN_ID)).thenReturn(adminUser);
         when(userServiceClient.isUserActive(ADMIN_ID)).thenReturn(true);
 
-        // Configuramos el mock para cualquier otro ID (como usuarios normales)
-        when(userServiceClient.existsUser(1L)).thenReturn(true);
-        when(userServiceClient.isAdmin(1L)).thenReturn(false);
+        // --- SETUP USUARIO NORMAL ---
+        when(userServiceClient.existsUser(USUARIO_NORMAL_ID)).thenReturn(true);
+        when(userServiceClient.isAdmin(USUARIO_NORMAL_ID)).thenReturn(false); // NO es admin
+        when(userServiceClient.isUserActive(USUARIO_NORMAL_ID)).thenReturn(true);
     }
+
+    // Método auxiliar DRY para crear un mensaje rápidamente en los tests
+    private Long crearMensajeBase() throws Exception {
+        MensajeContactoDTO nuevoMensaje = new MensajeContactoDTO();
+        nuevoMensaje.setNombre("Ana López");
+        nuevoMensaje.setEmail("ana@email.com");
+        nuevoMensaje.setAsunto("Problema genérico");
+        nuevoMensaje.setMensaje("Tengo un problema que requiere asistencia inmediata.");
+
+        MvcResult result = mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nuevoMensaje)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(), MensajeContactoDTO.class).getId();
+    }
+
+    // ==========================================
+    // 🟢 TESTS DE CAMINO FELIZ (HAPPY PATH)
+    // ==========================================
 
     @Test
     @DisplayName("POST / - Debe crear mensaje de contacto y retornar 201 Created")
@@ -80,7 +99,7 @@ class MensajeContactoControllerIntegrationTest {
         nuevoMensaje.setNombre("Juan Pérez");
         nuevoMensaje.setEmail("juan.perez@email.com");
         nuevoMensaje.setAsunto("Consulta arriendo Providencia");
-        nuevoMensaje.setMensaje("Hola, quisiera agendar una visita para el departamento."); // > 10 caracteres
+        nuevoMensaje.setMensaje("Hola, quisiera agendar una visita para el departamento.");
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -88,47 +107,17 @@ class MensajeContactoControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nombre").value("Juan Pérez"))
                 .andExpect(jsonPath("$.email").value("juan.perez@email.com"))
-                // El servicio probablemente asigna el estado inicial a PENDIENTE
                 .andExpect(jsonPath("$.estado").exists());
-    }
-
-    @Test
-    @DisplayName("POST / - Falla con 400 Bad Request si los datos son inválidos")
-    void crearMensaje_DatosInvalidos_Retorna400() throws Exception {
-        MensajeContactoDTO mensajeInvalido = new MensajeContactoDTO();
-        mensajeInvalido.setNombre("J"); // Falla @Size (min=2)
-        mensajeInvalido.setEmail("correo-no-valido"); // Falla @Email
-        mensajeInvalido.setAsunto(""); // Falla @NotBlank
-        mensajeInvalido.setMensaje("Corto"); // Falla @Size (min=10)
-
-        mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(mensajeInvalido)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("POST /{id}/responder - Admin debe poder responder un mensaje")
     void responderMensaje_Success() throws Exception {
-        // 1. Creamos un mensaje previo en la base de datos de prueba
-        MensajeContactoDTO nuevoMensaje = new MensajeContactoDTO();
-        nuevoMensaje.setNombre("Ana López");
-        nuevoMensaje.setEmail("ana@email.com");
-        nuevoMensaje.setAsunto("Problema con pago");
-        nuevoMensaje.setMensaje("Tengo problemas para procesar mi pago de la reserva.");
+        Long mensajeId = crearMensajeBase();
 
-        MvcResult result = mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(nuevoMensaje)))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Long mensajeId = objectMapper.readValue(result.getResponse().getContentAsString(), MensajeContactoDTO.class).getId();
-
-        // 2. Intentamos responderlo actuando como ADMIN (ID = 5)
         RespuestaMensajeDTO respuesta = new RespuestaMensajeDTO();
-        respuesta.setRespondidoPor(ADMIN_ID);
-        respuesta.setRespuesta("Hola Ana, hemos verificado el sistema. Intenta nuevamente."); // > 10 caracteres
+        respuesta.setRespondidoPor(ADMIN_ID); // Usa el ID autorizado
+        respuesta.setRespuesta("Hola Ana, hemos verificado el sistema. Intenta nuevamente.");
         respuesta.setNuevoEstado("RESUELTO");
 
         mockMvc.perform(post(BASE_URL + "/{id}/responder", mensajeId)
@@ -143,28 +132,62 @@ class MensajeContactoControllerIntegrationTest {
     @Test
     @DisplayName("DELETE /{id} - Admin debe poder eliminar un mensaje")
     void eliminarMensaje_Success() throws Exception {
-        // 1. Creamos el mensaje
-        MensajeContactoDTO nuevoMensaje = new MensajeContactoDTO();
-        nuevoMensaje.setNombre("Spammer");
-        nuevoMensaje.setEmail("spam@spam.com");
-        nuevoMensaje.setAsunto("Gana dinero rapido");
-        nuevoMensaje.setMensaje("Haz clic aqui para ganar millones.");
+        Long mensajeId = crearMensajeBase();
 
-        MvcResult result = mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(nuevoMensaje)))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Long mensajeId = objectMapper.readValue(result.getResponse().getContentAsString(), MensajeContactoDTO.class).getId();
-
-        // 2. Lo eliminamos usando el adminId
         mockMvc.perform(delete(BASE_URL + "/{id}", mensajeId)
                         .param("adminId", String.valueOf(ADMIN_ID)))
                 .andExpect(status().isNoContent());
 
-        // 3. Verificamos que ya no existe (Lanzará 404 Not Found)
         mockMvc.perform(get(BASE_URL + "/{id}", mensajeId))
                 .andExpect(status().isNotFound());
+    }
+
+    // ==========================================
+    // 🔥 TESTS DE REGLAS DE NEGOCIO Y ERRORES
+    // ==========================================
+
+    @Test
+    @DisplayName("POST / - Falla con 400 Bad Request si los datos de creación son inválidos")
+    void crearMensaje_DatosInvalidos_Retorna400() throws Exception {
+        MensajeContactoDTO mensajeInvalido = new MensajeContactoDTO();
+        mensajeInvalido.setNombre("J"); // Falla @Size
+        mensajeInvalido.setEmail("correo-no-valido"); // Falla @Email
+        mensajeInvalido.setAsunto(""); // Falla @NotBlank
+        mensajeInvalido.setMensaje("Corto"); // Falla @Size
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mensajeInvalido)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Validation Error"));
+    }
+
+    @Test
+    @DisplayName("POST /{id}/responder - Falla con 400/403 si el usuario NO es admin")
+    void responderMensaje_NoEsAdmin_RetornaError() throws Exception {
+        Long mensajeId = crearMensajeBase();
+
+        RespuestaMensajeDTO respuesta = new RespuestaMensajeDTO();
+        respuesta.setRespondidoPor(USUARIO_NORMAL_ID); // Intentamos con un usuario sin privilegios
+        respuesta.setRespuesta("Respuesta ilegítima intentando saltar seguridad.");
+        respuesta.setNuevoEstado("RESUELTO");
+
+        mockMvc.perform(post(BASE_URL + "/{id}/responder", mensajeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(respuesta)))
+                // Dependiendo de tu GlobalExceptionHandler, puede ser isBadRequest() o isForbidden()
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Business Validation Error"));
+    }
+
+    @Test
+    @DisplayName("DELETE /{id} - Falla con 400/403 si el usuario NO es admin")
+    void eliminarMensaje_NoEsAdmin_RetornaError() throws Exception {
+        Long mensajeId = crearMensajeBase();
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", mensajeId)
+                        .param("adminId", String.valueOf(USUARIO_NORMAL_ID))) // Pasamos ID sin privilegios
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Business Validation Error"));
     }
 }

@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional // Revierte los cambios en la BD después de cada test
-@DisplayName("Tests de Integración - PropertyService (Flujo Completo Relacional)")
+@DisplayName("Tests de Integración - PropertyService (Robustos)")
 class PropertyServiceIntegrationTest {
 
     @Autowired
@@ -34,56 +34,60 @@ class PropertyServiceIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    @DisplayName("Flujo Maestro: Crear Región -> Comuna -> Tipo -> Propiedad -> Búsqueda")
-    void flujoCompleto_CrearPropiedadYBuscar() throws Exception {
+    // ==========================================
+    // 🛠️ MÉTODOS AUXILIARES (DRY)
+    // ==========================================
 
-        // ==========================================
-        // PASO 1: Crear una Región
-        // ==========================================
+    private Long crearRegion(String nombre) throws Exception {
         RegionDTO regionDTO = new RegionDTO();
-        regionDTO.setNombre("Región Metropolitana");
+        regionDTO.setNombre(nombre);
 
-        MvcResult resultRegion = mockMvc.perform(post("/api/regiones")
+        MvcResult result = mockMvc.perform(post("/api/regiones")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(regionDTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+        return objectMapper.readValue(result.getResponse().getContentAsString(), RegionDTO.class).getId();
+    }
 
-        Long regionId = objectMapper.readValue(resultRegion.getResponse().getContentAsString(), RegionDTO.class).getId();
-
-        // ==========================================
-        // PASO 2: Crear una Comuna asociada a la Región
-        // ==========================================
+    private Long crearComuna(String nombre, Long regionId) throws Exception {
         ComunaDTO comunaDTO = new ComunaDTO();
-        comunaDTO.setNombre("Providencia");
+        comunaDTO.setNombre(nombre);
         comunaDTO.setRegionId(regionId);
 
-        MvcResult resultComuna = mockMvc.perform(post("/api/comunas")
+        MvcResult result = mockMvc.perform(post("/api/comunas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comunaDTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+        return objectMapper.readValue(result.getResponse().getContentAsString(), ComunaDTO.class).getId();
+    }
 
-        Long comunaId = objectMapper.readValue(resultComuna.getResponse().getContentAsString(), ComunaDTO.class).getId();
-
-        // ==========================================
-        // PASO 3: Crear un Tipo de Propiedad
-        // ==========================================
+    private Long crearTipo(String nombre) throws Exception {
         TipoDTO tipoDTO = new TipoDTO();
-        tipoDTO.setNombre("Departamento");
+        tipoDTO.setNombre(nombre);
 
-        MvcResult resultTipo = mockMvc.perform(post("/api/tipos")
+        MvcResult result = mockMvc.perform(post("/api/tipos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tipoDTO)))
                 .andExpect(status().isCreated())
                 .andReturn();
+        return objectMapper.readValue(result.getResponse().getContentAsString(), TipoDTO.class).getId();
+    }
 
-        Long tipoId = objectMapper.readValue(resultTipo.getResponse().getContentAsString(), TipoDTO.class).getId();
+    // ==========================================
+    // 🟢 TESTS DE CAMINO FELIZ
+    // ==========================================
 
-        // ==========================================
-        // PASO 4: Crear la Propiedad
-        // ==========================================
+    @Test
+    @DisplayName("Flujo Maestro: Crear Región -> Comuna -> Tipo -> Propiedad -> Búsqueda")
+    void flujoCompleto_CrearPropiedadYBuscar() throws Exception {
+        // 1, 2 y 3. Usamos nuestros helpers limpios
+        Long regionId = crearRegion("Región Metropolitana");
+        Long comunaId = crearComuna("Providencia", regionId);
+        Long tipoId = crearTipo("Departamento");
+
+        // 4. Crear la Propiedad
         PropertyDTO propiedadDTO = PropertyDTO.builder()
                 .codigo("DP001")
                 .titulo("Hermoso depto en arriendo")
@@ -96,7 +100,7 @@ class PropertyServiceIntegrationTest {
                 .direccion("Av. Providencia 1234")
                 .tipoId(tipoId)
                 .comunaId(comunaId)
-                .propietarioId(99L) // ID simulado del usuario
+                .propietarioId(99L) // ID simulado
                 .build();
 
         MvcResult resultPropiedad = mockMvc.perform(post("/api/propiedades")
@@ -109,9 +113,7 @@ class PropertyServiceIntegrationTest {
 
         Long propiedadId = objectMapper.readValue(resultPropiedad.getResponse().getContentAsString(), PropertyDTO.class).getId();
 
-        // ==========================================
-        // PASO 5: Probar el endpoint de Búsqueda con Filtros
-        // ==========================================
+        // 5. Probar el endpoint de Búsqueda
         mockMvc.perform(get("/api/propiedades/buscar")
                         .param("comunaId", comunaId.toString())
                         .param("petFriendly", "true")
@@ -123,23 +125,81 @@ class PropertyServiceIntegrationTest {
                 .andExpect(jsonPath("$[0].titulo").value("Hermoso depto en arriendo"));
     }
 
+    // ==========================================
+    // 🔥 TESTS DE REGLAS DE NEGOCIO Y ERRORES
+    // ==========================================
+
     @Test
-    @DisplayName("POST /api/propiedades - Debe fallar (400) si las validaciones no se cumplen")
+    @DisplayName("POST /api/propiedades - Falla (400) si las validaciones del DTO no se cumplen")
     void crearPropiedad_ValidacionesFallan_Retorna400() throws Exception {
-        // Preparamos un DTO con errores (precio negativo, divisa inválida, código muy largo)
         PropertyDTO propiedadInvalida = PropertyDTO.builder()
-                .codigo("CODIGO_DEMASIADO_LARGO_PARA_LA_VALIDACION") // Falla @Size(max=10)
+                .codigo("CODIGO_DEMASIADO_LARGO_PARA_LA_VALIDACION") // Falla @Size
                 .titulo("Test")
                 .precioMensual(new BigDecimal("-100")) // Falla @DecimalMin
-                .divisa("ARS") // Falla @Pattern (Solo CLP, USD, EUR)
-                .m2(new BigDecimal("0.5")) // Falla @DecimalMin(1.0)
-                .nHabit(-1) // Falla @Min(0)
-                .nBanos(30) // Falla @Max(20)
+                .divisa("ARS") // Falla @Pattern
+                .m2(new BigDecimal("0.5")) // Falla @DecimalMin
+                .nHabit(-1) // Falla @Min
+                .nBanos(30) // Falla @Max
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Validation Error"));
+    }
+
+    @Test
+    @DisplayName("POST /api/propiedades - Falla si la Comuna no existe en BD")
+    void crearPropiedad_ComunaInexistente_RetornaError() throws Exception {
+        Long tipoId = crearTipo("Casa");
+
+        PropertyDTO propiedadInvalida = PropertyDTO.builder()
+                .codigo("CS001")
+                .titulo("Casa en comuna fantasma")
+                .precioMensual(new BigDecimal("500000"))
+                .divisa("CLP")
+                .m2(new BigDecimal("100.0"))
+                .nHabit(3)
+                .nBanos(2)
+                .petFriendly(false)
+                .direccion("Calle Falsa 123")
+                .tipoId(tipoId)
+                .comunaId(99999L) // ID Inexistente
+                .propietarioId(1L)
+                .build();
+
+        mockMvc.perform(post("/api/propiedades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(propiedadInvalida)))
+                // Dependiendo de tu lógica, esto podría ser isNotFound() o isBadRequest()
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @DisplayName("POST /api/propiedades - Falla si el Tipo de Propiedad no existe en BD")
+    void crearPropiedad_TipoInexistente_RetornaError() throws Exception {
+        Long regionId = crearRegion("Valparaíso");
+        Long comunaId = crearComuna("Viña del Mar", regionId);
+
+        PropertyDTO propiedadInvalida = PropertyDTO.builder()
+                .codigo("XX001")
+                .titulo("Propiedad de tipo OVNI")
+                .precioMensual(new BigDecimal("500000"))
+                .divisa("CLP")
+                .m2(new BigDecimal("100.0"))
+                .nHabit(3)
+                .nBanos(2)
+                .petFriendly(false)
+                .direccion("Av. Libertad 456")
+                .tipoId(99999L) // ID Inexistente
+                .comunaId(comunaId)
+                .propietarioId(1L)
+                .build();
+
+        mockMvc.perform(post("/api/propiedades")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(propiedadInvalida)))
+                .andExpect(status().is4xxClientError());
     }
 }
