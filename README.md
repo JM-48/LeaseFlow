@@ -134,12 +134,12 @@ Ejecutar un microservicio:
 ```
 
 Swagger UI por servicio:
-- userservice: http://localhost:8081/swagger-ui/index.html
-- propertyservice: http://localhost:8082/swagger-ui/index.html
-- documentService: http://localhost:8083/swagger-ui/index.html
-- applicationService: http://localhost:8084/swagger-ui/index.html
-- contactService: http://localhost:8085/swagger-ui/index.html
-- reviewService: http://localhost:8086/swagger-ui/index.html
+- userservice: [http://localhost:8081/swagger-ui/index.html](https://userservice.calmbeach-1addaf50.brazilsouth.azurecontainerapps.io/swagger-ui/index.html#/)
+- propertyservice: [http://localhost:8082/swagger-ui/index.html](https://propertyservice.calmbeach-1addaf50.brazilsouth.azurecontainerapps.io/swagger-ui/index.html#/)
+- documentService: [http://localhost:8083/swagger-ui/index.html](https://documentservice.calmbeach-1addaf50.brazilsouth.azurecontainerapps.io/swagger-ui/index.html#/)
+- applicationService: [http://localhost:8084/swagger-ui/index.html](https://applicationservice.calmbeach-1addaf50.brazilsouth.azurecontainerapps.io/swagger-ui/index.html#/)
+- contactService: [http://localhost:8085/swagger-ui/index.html](https://contactservice.calmbeach-1addaf50.brazilsouth.azurecontainerapps.io/swagger-ui/index.html#/)
+- reviewService: [http://localhost:8086/swagger-ui/index.html](https://reviewservice.calmbeach-1addaf50.brazilsouth.azurecontainerapps.io/swagger-ui/index.html#/)
 
 ## Flujos funcionales (alto nivel)
 
