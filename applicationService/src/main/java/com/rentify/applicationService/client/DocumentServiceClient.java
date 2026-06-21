@@ -38,7 +38,7 @@ public class DocumentServiceClient {
                     .uri(documentServiceUrl + "/api/documentos/usuario/" + userId + "/verificar-aprobados")
                     .retrieve()
                     .bodyToMono(Boolean.class)
-                    .timeout(Duration.ofSeconds(5))
+                    .timeout(Duration.ofSeconds(15))
                     .onErrorResume(error -> {
                         log.error("Error al verificar documentos del usuario {}: {}", userId, error.getMessage());
                         return Mono.just(false);
@@ -73,7 +73,7 @@ public class DocumentServiceClient {
                     .uri(documentServiceUrl + "/api/documentos/usuario/" + userId + "/contar-aprobados")
                     .retrieve()
                     .bodyToMono(Integer.class)
-                    .timeout(Duration.ofSeconds(5))
+                    .timeout(Duration.ofSeconds(15))
                     .onErrorResume(error -> {
                         log.error("Error al contar documentos del usuario {}: {}", userId, error.getMessage());
                         return Mono.just(0);
@@ -102,7 +102,7 @@ public class DocumentServiceClient {
                     .uri(documentServiceUrl + "/actuator/health")
                     .retrieve()
                     .bodyToMono(String.class)
-                    .timeout(Duration.ofSeconds(3))
+                    .timeout(Duration.ofSeconds(15))
                     .block();
             return true;
         } catch (Exception e) {

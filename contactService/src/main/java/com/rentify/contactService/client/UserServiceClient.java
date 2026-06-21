@@ -35,7 +35,7 @@ public class UserServiceClient {
                     .uri(userServiceUrl + "/api/usuarios/" + userId + "?includeDetails=true")
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
-                    .timeout(Duration.ofSeconds(5))
+                    .timeout(Duration.ofSeconds(15))
                     .onErrorResume(error -> {
                         log.error("Error al obtener usuario {}: {}", userId, error.getMessage());
                         return Mono.empty();

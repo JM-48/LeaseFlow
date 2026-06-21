@@ -41,7 +41,7 @@ public class UserServiceClient {
                     .uri(userServiceUrl + "/api/usuarios/" + userId)
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
-                    .timeout(Duration.ofSeconds(10)) // Aumentado a 10 segundos
+                    .timeout(Duration.ofSeconds(15)) // Aumentado a 10 segundos
                     .onErrorResume(WebClientResponseException.NotFound.class, error -> {
                         log.warn("Usuario {} no encontrado en User Service (404)", userId);
                         return Mono.empty();

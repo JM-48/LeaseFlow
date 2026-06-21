@@ -37,7 +37,7 @@ public class PropertyServiceClient {
                     .uri(propertyServiceUrl + "/api/propiedades/" + propertyId)
                     .retrieve()
                     .bodyToMono(PropiedadDTO.class)
-                    .timeout(Duration.ofSeconds(5))
+                    .timeout(Duration.ofSeconds(15))
                     .onErrorResume(error -> {
                         log.error("Error al obtener propiedad {}: {}", propertyId, error.getMessage());
                         return Mono.empty();
