@@ -121,12 +121,22 @@ public class SolicitudArriendoService {
     }
 
     /**
-     * Lista todas las solicitudes con opción de incluir detalles
+     * Lista las solicitudes basándose en el rol del usuario (Seguridad de Datos)
      */
     @Transactional(readOnly = true)
-    public List<SolicitudArriendoDTO> listarTodas(boolean includeDetails) {
-        log.debug("Listando todas las solicitudes (includeDetails: {})", Boolean.valueOf(includeDetails));
-        return repository.findAll().stream()
+    public List<SolicitudArriendoDTO> listarSolicitudesSeguras(Long usuarioId, Long rolId, boolean includeDetails) {
+        log.debug("Listando solicitudes de forma segura. Usuario: {}, Rol: {}", usuarioId, rolId);
+
+        // Asumiendo que el ID del rol ADMIN es 1 (ajusta este número si en tu BD es distinto)
+        if (rolId != null && rolId == 1L) {
+            // Es ADMIN: Puede ver el JSON con absolutamente todo
+            return repository.findAll().stream()
+                    .map(s -> convertToDTO(s, includeDetails))
+                    .collect(Collectors.toList());
+        }
+
+        // Es Usuario Normal: Solo le devolvemos SUS propias solicitudes
+        return repository.findByUsuarioId(usuarioId).stream()
                 .map(s -> convertToDTO(s, includeDetails))
                 .collect(Collectors.toList());
     }

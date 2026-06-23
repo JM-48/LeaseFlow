@@ -89,14 +89,21 @@ public class MensajeContactoService {
     }
 
     /**
-     * Lista todos los mensajes de contacto
-     * @param includeDetails Si debe incluir información del usuario
-     * @return Lista de MensajeContactoDTO
+     * Lista los mensajes basándose en el rol del usuario (Seguridad de Datos)
      */
     @Transactional(readOnly = true)
-    public List<MensajeContactoDTO> listarTodos(boolean includeDetails) {
-        log.debug("Listando todos los mensajes (includeDetails: {})", Boolean.valueOf(includeDetails));
-        return repository.findAll().stream()
+    public List<MensajeContactoDTO> listarMensajesSeguros(Long usuarioId, Long rolId, boolean includeDetails) {
+        log.debug("Listando mensajes de forma segura. Usuario: {}, Rol: {}", usuarioId, rolId);
+
+        // Si es ADMIN (rol 1), ve todo el buzón
+        if (rolId != null && rolId == 1L) {
+            return repository.findAll().stream()
+                    .map(m -> convertToDTO(m, includeDetails))
+                    .collect(Collectors.toList());
+        }
+
+        // Si es un usuario normal, solo ve los mensajes que él mismo envió
+        return repository.findByUsuarioId(usuarioId).stream()
                 .map(m -> convertToDTO(m, includeDetails))
                 .collect(Collectors.toList());
     }

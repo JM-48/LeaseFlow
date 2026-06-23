@@ -32,13 +32,23 @@ public class MensajeContactoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    // --- ENDPOINT CORREGIDO: Seguridad de Listado ---
     @GetMapping
-    @Operation(summary = "Listar todos los mensajes",
-            description = "Lista todos los mensajes de contacto (solo admin)")
-    public ResponseEntity<List<MensajeContactoDTO>> listarTodos(
+    @Operation(summary = "Listar mensajes (Protegido)",
+            description = "Usuarios normales ven los suyos, ADMIN ve todos")
+    public ResponseEntity<List<MensajeContactoDTO>> listarMensajesSeguros(
             @Parameter(description = "Incluir detalles del usuario")
-            @RequestParam(defaultValue = "false") boolean includeDetails) {
-        return ResponseEntity.ok(service.listarTodos(includeDetails));
+            @RequestParam(defaultValue = "false") boolean includeDetails,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        // Si no envían credenciales en los Headers, devolvemos 401 Unauthorized
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Llamamos al nuevo método seguro en el Service
+        return ResponseEntity.ok(service.listarMensajesSeguros(usuarioId, rolId, includeDetails));
     }
 
     @GetMapping("/{id}")
@@ -74,10 +84,18 @@ public class MensajeContactoController {
         return ResponseEntity.ok(service.listarPorEstado(estado));
     }
 
+    // --- ENDPOINT CORREGIDO: Solo Admin ---
     @GetMapping("/sin-responder")
-    @Operation(summary = "Listar mensajes sin responder",
-            description = "Obtiene todos los mensajes pendientes sin respuesta (solo admin)")
-    public ResponseEntity<List<MensajeContactoDTO>> listarSinResponder() {
+    @Operation(summary = "Listar mensajes sin responder (Solo Admin)",
+            description = "Obtiene todos los mensajes pendientes sin respuesta")
+    public ResponseEntity<List<MensajeContactoDTO>> listarSinResponder(
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        // Bloqueo estricto: Si no hay rol o el rol no es 1 (Admin), lanzamos 403 Forbidden
+        if (rolId == null || rolId != 1L) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(service.listarMensajesSinResponder());
     }
 
@@ -117,10 +135,18 @@ public class MensajeContactoController {
         return ResponseEntity.noContent().build();
     }
 
+    // --- ENDPOINT CORREGIDO: Solo Admin ---
     @GetMapping("/estadisticas")
-    @Operation(summary = "Obtener estadísticas",
-            description = "Obtiene estadísticas de mensajes por estado (solo admin)")
-    public ResponseEntity<Map<String, Long>> obtenerEstadisticas() {
+    @Operation(summary = "Obtener estadísticas (Solo Admin)",
+            description = "Obtiene estadísticas de mensajes por estado")
+    public ResponseEntity<Map<String, Long>> obtenerEstadisticas(
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        // Bloqueo estricto: Solo el Admin puede ver estadísticas globales
+        if (rolId == null || rolId != 1L) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(service.obtenerEstadisticas());
     }
 }

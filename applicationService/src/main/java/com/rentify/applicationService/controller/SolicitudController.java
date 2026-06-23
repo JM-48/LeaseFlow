@@ -30,11 +30,24 @@ public class SolicitudController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todas las solicitudes")
-    public ResponseEntity<List<SolicitudArriendoDTO>> listarTodas(
+    @Operation(summary = "Listar solicitudes (Protegido por Rol)",
+            description = "Los usuarios normales solo ven las suyas, los ADMIN ven todas")
+    public ResponseEntity<List<SolicitudArriendoDTO>> listarSolicitudesSeguras(
             @Parameter(description = "Incluir detalles de usuario y propiedad")
-            @RequestParam(defaultValue = "false") boolean includeDetails) {
-        return ResponseEntity.ok(service.listarTodas(includeDetails));
+            @RequestParam(defaultValue = "false") boolean includeDetails,
+
+            // Extraemos los datos de quién hace la petición desde los Headers
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        // Si alguien intenta entrar por el navegador directamente sin identificarse -> 401 No Autorizado
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Pasamos los datos a la nueva lógica de negocio
+        List<SolicitudArriendoDTO> solicitudes = service.listarSolicitudesSeguras(usuarioId, rolId, includeDetails);
+        return ResponseEntity.ok(solicitudes);
     }
 
     @GetMapping("/{id}")
