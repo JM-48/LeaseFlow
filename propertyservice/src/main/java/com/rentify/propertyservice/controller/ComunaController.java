@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,9 +36,24 @@ public class ComunaController {
     private final ModelMapper modelMapper;
     private final PropertyService propertyService; // <-- INYECCIÓN DEL SERVICIO
 
+    /**
+     * Valida de forma sencilla si el request trae un token Bearer.
+     */
+    private boolean isNoAutorizado(String token) {
+        return token == null || token.trim().isEmpty() || !token.startsWith("Bearer ");
+    }
+
     @PostMapping
     @Operation(summary = "Crear comuna", description = "Crea una nueva comuna")
-    public ResponseEntity<ComunaDTO> crear(@Valid @RequestBody ComunaDTO comunaDTO) {
+    public ResponseEntity<?> crear(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @Valid @RequestBody ComunaDTO comunaDTO) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a POST /api/comunas");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Creando nueva comuna: {}", comunaDTO.getNombre());
 
         Region region = regionRepository.findById(comunaDTO.getRegionId())
@@ -55,7 +71,14 @@ public class ComunaController {
 
     @GetMapping
     @Operation(summary = "Listar comunas", description = "Obtiene todas las comunas disponibles")
-    public ResponseEntity<List<ComunaDTO>> listar() {
+    public ResponseEntity<?> listar(
+            @RequestHeader(value = "Authorization", required = false) String token) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/comunas");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.debug("Listando todas las comunas");
 
         List<ComunaDTO> comunas = propertyService.listarTodasComunas();
@@ -65,9 +88,16 @@ public class ComunaController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener comuna por ID")
-    public ResponseEntity<ComunaDTO> obtenerPorId(
+    public ResponseEntity<?> obtenerPorId(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la comuna", example = "1")
             @PathVariable Long id) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/comunas/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.debug("Obteniendo comuna con ID: {}", id);
 
         return comunaRepository.findById(id)
@@ -77,11 +107,17 @@ public class ComunaController {
 
     @GetMapping("/region/{regionId}")
     @Operation(summary = "Obtener comunas por región")
-    public ResponseEntity<List<ComunaDTO>> obtenerPorRegion(
+    public ResponseEntity<?> obtenerPorRegion(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la región", example = "1")
             @PathVariable Long regionId) {
-        log.debug("Obteniendo comunas de la región: {}", regionId);
 
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/comunas/region/{}", regionId);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.debug("Obteniendo comunas de la región: {}", regionId);
 
         List<ComunaDTO> comunas = comunaRepository.findByRegionId(regionId).stream()
                 .map(this::convertToDTO)
@@ -92,10 +128,17 @@ public class ComunaController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar comuna")
-    public ResponseEntity<ComunaDTO> actualizar(
+    public ResponseEntity<?> actualizar(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la comuna", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody ComunaDTO comunaDTO) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a PUT /api/comunas/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Actualizando comuna con ID: {}", id);
 
         return comunaRepository.findById(id)
@@ -114,9 +157,16 @@ public class ComunaController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar comuna")
-    public ResponseEntity<Void> eliminar(
+    public ResponseEntity<?> eliminar(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la comuna", example = "1")
             @PathVariable Long id) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a DELETE /api/comunas/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Eliminando comuna con ID: {}", id);
 
         if (!comunaRepository.existsById(id)) {

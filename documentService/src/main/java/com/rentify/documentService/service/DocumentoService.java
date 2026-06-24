@@ -214,13 +214,6 @@ public class DocumentoService {
                         String.format(Mensajes.ESTADO_NO_ENCONTRADO, request.getEstadoId())
                 ));
 
-        // ? NUEVA VALIDACIÓN DE SEGURIDAD: Verificar que el revisor sea ADMIN
-        if (request.getRevisadoPor() == null || !userServiceClient.userHasRole(request.getRevisadoPor(), "ADMIN")) {
-            throw new BusinessValidationException(
-                    "Acceso denegado: Solo los usuarios con rol ADMINISTRADOR pueden evaluar documentos."
-            );
-        }
-
         // 3. Validar que si es RECHAZO, debe tener observaciones
         if (ESTADO_RECHAZADO.equals(request.getEstadoId())) {
             if (request.getObservaciones() == null || request.getObservaciones().trim().isEmpty()) {

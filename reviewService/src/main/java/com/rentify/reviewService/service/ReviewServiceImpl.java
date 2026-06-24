@@ -19,14 +19,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.rentify.reviewService.constants.ReviewConstants.Mensajes;
 
 /**
  * Implementación del servicio de reseñas.
- * Contiene toda la lógica de negocio para gestión de reseñas.
+ * Optimizado para evitar problemas de rendimiento N+1 en ecosistemas de microservicios.
  */
 @Service
 @RequiredArgsConstructor
@@ -107,47 +109,35 @@ public class ReviewServiceImpl implements ReviewService {
         return convertToDTO(saved, true);
     }
 
-    /**
-     * Validaciones específicas para reseñas de propiedades.
-     */
     private void validarResenaPropiedad(ReviewDTO reviewDTO, UsuarioDTO usuario) {
-        // Validar que la propiedad existe
         if (!propertyServiceClient.existsProperty(reviewDTO.getPropiedadId())) {
             throw new BusinessValidationException(
                     String.format(Mensajes.PROPIEDAD_NO_EXISTE, reviewDTO.getPropiedadId())
             );
         }
 
-        // Validar que no sea reseña duplicada
         if (reviewRepository.existsByUsuarioIdAndPropiedadId(
                 reviewDTO.getUsuarioId(), reviewDTO.getPropiedadId())) {
             throw new BusinessValidationException(Mensajes.RESENA_DUPLICADA);
         }
 
-        // Validar que el propietario no reseñe su propia propiedad
         if (propertyServiceClient.isPropertyOwner(reviewDTO.getPropiedadId(), reviewDTO.getUsuarioId())) {
             throw new BusinessValidationException(Mensajes.USUARIO_NO_PUEDE_RESENAR_PROPIA_PROPIEDAD);
         }
     }
 
-    /**
-     * Validaciones específicas para reseñas de usuarios.
-     */
     private void validarResenaUsuario(ReviewDTO reviewDTO) {
-        // Validar que el usuario reseñado existe
         if (!userServiceClient.existsUser(reviewDTO.getUsuarioResenadoId())) {
             throw new BusinessValidationException(
                     String.format(Mensajes.USUARIO_NO_EXISTE, reviewDTO.getUsuarioResenadoId())
             );
         }
 
-        // Validar que no sea reseña duplicada
         if (reviewRepository.existsByUsuarioIdAndUsuarioResenadoId(
                 reviewDTO.getUsuarioId(), reviewDTO.getUsuarioResenadoId())) {
             throw new BusinessValidationException(Mensajes.RESENA_DUPLICADA);
         }
 
-        // Validar que no se reseñe a sí mismo
         if (reviewDTO.getUsuarioId().equals(reviewDTO.getUsuarioResenadoId())) {
             throw new BusinessValidationException("Un usuario no puede reseñarse a sí mismo");
         }
@@ -156,10 +146,8 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> listarTodas(boolean includeDetails) {
-        log.debug("Listando todas las reseñas (includeDetails: {})", Boolean.valueOf(includeDetails));
-        return reviewRepository.findAll().stream()
-                .map(r -> convertToDTO(r, includeDetails))
-                .collect(Collectors.toList());
+        log.debug("Listando todas las reseñas (includeDetails: {})", includeDetails);
+        return convertToDTOList(reviewRepository.findAll(), includeDetails);
     }
 
     @Override
@@ -177,27 +165,21 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public List<ReviewDTO> obtenerPorUsuario(Long usuarioId, boolean includeDetails) {
         log.debug("Obteniendo reseñas del usuario {}", usuarioId);
-        return reviewRepository.findByUsuarioId(usuarioId).stream()
-                .map(r -> convertToDTO(r, includeDetails))
-                .collect(Collectors.toList());
+        return convertToDTOList(reviewRepository.findByUsuarioId(usuarioId), includeDetails);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> obtenerPorPropiedad(Long propiedadId, boolean includeDetails) {
         log.debug("Obteniendo reseñas de la propiedad {}", propiedadId);
-        return reviewRepository.findByPropiedadId(propiedadId).stream()
-                .map(r -> convertToDTO(r, includeDetails))
-                .collect(Collectors.toList());
+        return convertToDTOList(reviewRepository.findByPropiedadId(propiedadId), includeDetails);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ReviewDTO> obtenerPorUsuarioResenado(Long usuarioResenadoId, boolean includeDetails) {
         log.debug("Obteniendo reseñas sobre el usuario {}", usuarioResenadoId);
-        return reviewRepository.findByUsuarioResenadoId(usuarioResenadoId).stream()
-                .map(r -> convertToDTO(r, includeDetails))
-                .collect(Collectors.toList());
+        return convertToDTOList(reviewRepository.findByUsuarioResenadoId(usuarioResenadoId), includeDetails);
     }
 
     @Override
@@ -236,6 +218,8 @@ public class ReviewServiceImpl implements ReviewService {
         review.setEstado(estadoUpper);
         if (Estados.BANEADA.equals(estadoUpper) && review.getFechaBaneo() == null) {
             review.setFechaBaneo(new Date());
+        } else if (!Estados.BANEADA.equals(estadoUpper)) {
+            review.setFechaBaneo(null); // Limpieza de estado si vuelve a activarse
         }
 
         Review updated = reviewRepository.save(review);
@@ -258,12 +242,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     /**
-     * Convierte una entidad Review a ReviewDTO con o sin detalles.
+     * Convierte un solo elemento Review a ReviewDTO.
      */
     private ReviewDTO convertToDTO(Review review, boolean includeDetails) {
         ReviewDTO dto = modelMapper.map(review, ReviewDTO.class);
 
-        // Obtener nombre del tipo de reseña
         try {
             tipoResenaRepository.findById(review.getTipoResenaId())
                     .ifPresent(tipo -> dto.setTipoResenaNombre(tipo.getNombre()));
@@ -272,38 +255,82 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         if (includeDetails) {
-            // Obtener información del usuario que creó la reseña
             try {
-                UsuarioDTO usuario = userServiceClient.getUserById(review.getUsuarioId());
-                dto.setUsuario(usuario);
+                dto.setUsuario(userServiceClient.getUserById(review.getUsuarioId()));
             } catch (Exception e) {
-                log.warn("No se pudo obtener información del usuario {}: {}",
-                        review.getUsuarioId(), e.getMessage());
+                log.warn("No se pudo obtener información del usuario {}: {}", review.getUsuarioId(), e.getMessage());
             }
 
-            // Obtener información de la propiedad si existe
             if (review.getPropiedadId() != null) {
                 try {
-                    PropiedadDTO propiedad = propertyServiceClient.getPropertyById(review.getPropiedadId());
-                    dto.setPropiedad(propiedad);
+                    dto.setPropiedad(propertyServiceClient.getPropertyById(review.getPropiedadId()));
                 } catch (Exception e) {
-                    log.warn("No se pudo obtener información de la propiedad {}: {}",
-                            review.getPropiedadId(), e.getMessage());
+                    log.warn("No se pudo obtener información de la propiedad {}: {}", review.getPropiedadId(), e.getMessage());
                 }
             }
 
-            // Obtener información del usuario reseñado si existe
             if (review.getUsuarioResenadoId() != null) {
                 try {
-                    UsuarioDTO usuarioResenado = userServiceClient.getUserById(review.getUsuarioResenadoId());
-                    dto.setUsuarioResenado(usuarioResenado);
+                    dto.setUsuarioResenado(userServiceClient.getUserById(review.getUsuarioResenadoId()));
                 } catch (Exception e) {
-                    log.warn("No se pudo obtener información del usuario reseñado {}: {}",
-                            review.getUsuarioResenadoId(), e.getMessage());
+                    log.warn("No se pudo obtener información del usuario reseñado {}: {}", review.getUsuarioResenadoId(), e.getMessage());
                 }
             }
         }
-
         return dto;
+    }
+
+    /**
+     * Convierte y mapea colecciones completas optimizando accesos a DB y Red (Caché local por petición).
+     */
+    private List<ReviewDTO> convertToDTOList(List<Review> reviews, boolean includeDetails) {
+        if (reviews.isEmpty()) return List.of();
+
+        // 1. Evitar N+1 en BD: Una sola lectura masiva de tipos de reseña activos en el lote
+        Map<Long, String> mapaTipos = tipoResenaRepository.findAll().stream()
+                .collect(Collectors.toMap(TipoResena::getId, TipoResena::getNombre, (k1, k2) -> k1));
+
+        // 2. Evitar Blasting HTTP: Caché local temporal para reutilizar llamadas duplicadas en este mismo request
+        Map<Long, UsuarioDTO> cacheUsuarios = new HashMap<>();
+        Map<Long, PropiedadDTO> cachePropiedades = new HashMap<>();
+
+        return reviews.stream().map(review -> {
+            ReviewDTO dto = modelMapper.map(review, ReviewDTO.class);
+
+            if (mapaTipos.containsKey(review.getTipoResenaId())) {
+                dto.setTipoResenaNombre(mapaTipos.get(review.getTipoResenaId()));
+            }
+
+            if (includeDetails) {
+                // Mapear Usuario Creador
+                try {
+                    cacheUsuarios.computeIfAbsent(review.getUsuarioId(), userServiceClient::getUserById);
+                    dto.setUsuario(cacheUsuarios.get(review.getUsuarioId()));
+                } catch (Exception e) {
+                    log.warn("Error en lote para usuario {}: {}", review.getUsuarioId(), e.getMessage());
+                }
+
+                // Mapear Propiedad Reseñada
+                if (review.getPropiedadId() != null) {
+                    try {
+                        cachePropiedades.computeIfAbsent(review.getPropiedadId(), propertyServiceClient::getPropertyById);
+                        dto.setPropiedad(cachePropiedades.get(review.getPropiedadId()));
+                    } catch (Exception e) {
+                        log.warn("Error en lote para propiedad {}: {}", review.getPropiedadId(), e.getMessage());
+                    }
+                }
+
+                // Mapear Usuario Reseñado (Propietario/Inquilino según corresponda)
+                if (review.getUsuarioResenadoId() != null) {
+                    try {
+                        cacheUsuarios.computeIfAbsent(review.getUsuarioResenadoId(), userServiceClient::getUserById);
+                        dto.setUsuarioResenado(cacheUsuarios.get(review.getUsuarioResenadoId()));
+                    } catch (Exception e) {
+                        log.warn("Error en lote para usuario reseñado {}: {}", review.getUsuarioResenadoId(), e.getMessage());
+                    }
+                }
+            }
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

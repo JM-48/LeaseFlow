@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Utiliza @WebMvcTest con Spring Boot 3.4+ @MockitoBean.
  */
 @WebMvcTest(FotoController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Tests de FotoController")
 class FotoControllerTest {
 
@@ -40,6 +42,9 @@ class FotoControllerTest {
     private FotoService fotoService;
 
     private FotoDTO fotoDTO;
+
+    // Token simulado para pasar la validación del controlador
+    private static final String VALID_TOKEN = "Bearer token-de-prueba-valido";
 
     @BeforeEach
     void setUp() {
@@ -70,7 +75,8 @@ class FotoControllerTest {
 
         // Act & Assert
         mockMvc.perform(multipart("/api/propiedades/1/fotos")
-                        .file(file))
+                        .file(file)
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nombre").value("test.jpg"))
@@ -95,7 +101,8 @@ class FotoControllerTest {
 
         // Act & Assert
         mockMvc.perform(multipart("/api/propiedades/1/fotos")
-                        .file(file))
+                        .file(file)
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isBadRequest());
     }
 
@@ -115,7 +122,8 @@ class FotoControllerTest {
 
         // Act & Assert
         mockMvc.perform(multipart("/api/propiedades/999/fotos")
-                        .file(file))
+                        .file(file)
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isNotFound());
     }
 
@@ -135,7 +143,8 @@ class FotoControllerTest {
 
         // Act & Assert
         mockMvc.perform(multipart("/api/propiedades/1/fotos")
-                        .file(file))
+                        .file(file)
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isBadRequest());
     }
 
@@ -149,7 +158,8 @@ class FotoControllerTest {
                 .thenReturn(List.of(fotoDTO));
 
         // Act & Assert
-        mockMvc.perform(get("/api/propiedades/1/fotos"))
+        mockMvc.perform(get("/api/propiedades/1/fotos")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].nombre").value("test.jpg"))
@@ -166,7 +176,8 @@ class FotoControllerTest {
                 .thenThrow(new ResourceNotFoundException("Propiedad no encontrada"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/propiedades/999/fotos"))
+        mockMvc.perform(get("/api/propiedades/999/fotos")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isNotFound());
     }
 
@@ -178,7 +189,8 @@ class FotoControllerTest {
                 .thenReturn(List.of());
 
         // Act & Assert
-        mockMvc.perform(get("/api/propiedades/1/fotos"))
+        mockMvc.perform(get("/api/propiedades/1/fotos")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
@@ -193,7 +205,8 @@ class FotoControllerTest {
                 .thenReturn(fotoDTO);
 
         // Act & Assert
-        mockMvc.perform(get("/api/fotos/1"))
+        mockMvc.perform(get("/api/fotos/1")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.nombre").value("test.jpg"));
@@ -209,7 +222,8 @@ class FotoControllerTest {
                 .thenThrow(new ResourceNotFoundException("Foto no encontrada"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/fotos/999"))
+        mockMvc.perform(get("/api/fotos/999")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isNotFound());
     }
 
@@ -222,7 +236,8 @@ class FotoControllerTest {
         doNothing().when(fotoService).eliminarFoto(1L);
 
         // Act & Assert
-        mockMvc.perform(delete("/api/fotos/1"))
+        mockMvc.perform(delete("/api/fotos/1")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isNoContent());
 
         verify(fotoService, times(1)).eliminarFoto(1L);
@@ -236,7 +251,8 @@ class FotoControllerTest {
                 .when(fotoService).eliminarFoto(999L);
 
         // Act & Assert
-        mockMvc.perform(delete("/api/fotos/999"))
+        mockMvc.perform(delete("/api/fotos/999")
+                        .header("Authorization", VALID_TOKEN))
                 .andExpect(status().isNotFound());
     }
 
@@ -251,6 +267,7 @@ class FotoControllerTest {
 
         // Act & Assert
         mockMvc.perform(put("/api/propiedades/1/fotos/reordenar")
+                        .header("Authorization", VALID_TOKEN)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(fotosIds)))
                 .andExpect(status().isNoContent());
@@ -268,6 +285,7 @@ class FotoControllerTest {
 
         // Act & Assert
         mockMvc.perform(put("/api/propiedades/999/fotos/reordenar")
+                        .header("Authorization", VALID_TOKEN)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(fotosIds)))
                 .andExpect(status().isNotFound());
@@ -282,6 +300,7 @@ class FotoControllerTest {
         // Act & Assert
         // Spring no valida lista vacía por defecto, pero el servicio debería
         mockMvc.perform(put("/api/propiedades/1/fotos/reordenar")
+                        .header("Authorization", VALID_TOKEN)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(fotosIds)))
                 .andExpect(status().isNoContent()); // O 400 si agregas validación

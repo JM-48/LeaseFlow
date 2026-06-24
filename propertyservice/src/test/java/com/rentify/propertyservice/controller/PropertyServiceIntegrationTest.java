@@ -22,9 +22,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false) // Desactiva filtros básicos por defecto de Spring Security
 @ActiveProfiles("test")
-@Transactional // Revierte los cambios en la BD después de cada test
+@Transactional
 @DisplayName("Tests de Integración - PropertyService (Robustos)")
 class PropertyServiceIntegrationTest {
 
@@ -33,6 +33,9 @@ class PropertyServiceIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    // Token simulado para pasar la validación personalizada del controlador
+    private static final String VALID_TOKEN = "Bearer token-de-prueba-integracion-valido";
 
     // ==========================================
     // 🛠️ MÉTODOS AUXILIARES (DRY)
@@ -43,6 +46,7 @@ class PropertyServiceIntegrationTest {
         regionDTO.setNombre(nombre);
 
         MvcResult result = mockMvc.perform(post("/api/regiones")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(regionDTO)))
                 .andExpect(status().isCreated())
@@ -56,6 +60,7 @@ class PropertyServiceIntegrationTest {
         comunaDTO.setRegionId(regionId);
 
         MvcResult result = mockMvc.perform(post("/api/comunas")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comunaDTO)))
                 .andExpect(status().isCreated())
@@ -68,6 +73,7 @@ class PropertyServiceIntegrationTest {
         tipoDTO.setNombre(nombre);
 
         MvcResult result = mockMvc.perform(post("/api/tipos")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tipoDTO)))
                 .andExpect(status().isCreated())
@@ -82,7 +88,7 @@ class PropertyServiceIntegrationTest {
     @Test
     @DisplayName("Flujo Maestro: Crear Región -> Comuna -> Tipo -> Propiedad -> Búsqueda")
     void flujoCompleto_CrearPropiedadYBuscar() throws Exception {
-        // 1, 2 y 3. Usamos nuestros helpers limpios
+        // Los helpers ya llevan el token incorporado internamente
         Long regionId = crearRegion("Región Metropolitana");
         Long comunaId = crearComuna("Providencia", regionId);
         Long tipoId = crearTipo("Departamento");
@@ -100,10 +106,11 @@ class PropertyServiceIntegrationTest {
                 .direccion("Av. Providencia 1234")
                 .tipoId(tipoId)
                 .comunaId(comunaId)
-                .propietarioId(99L) // ID simulado
+                .propietarioId(99L)
                 .build();
 
         MvcResult resultPropiedad = mockMvc.perform(post("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadDTO)))
                 .andExpect(status().isCreated())
@@ -115,6 +122,7 @@ class PropertyServiceIntegrationTest {
 
         // 5. Probar el endpoint de Búsqueda
         mockMvc.perform(get("/api/propiedades/buscar")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("comunaId", comunaId.toString())
                         .param("petFriendly", "true")
                         .param("minPrecio", "600000")
@@ -133,16 +141,17 @@ class PropertyServiceIntegrationTest {
     @DisplayName("POST /api/propiedades - Falla (400) si las validaciones del DTO no se cumplen")
     void crearPropiedad_ValidacionesFallan_Retorna400() throws Exception {
         PropertyDTO propiedadInvalida = PropertyDTO.builder()
-                .codigo("CODIGO_DEMASIADO_LARGO_PARA_LA_VALIDACION") // Falla @Size
+                .codigo("CODIGO_DEMASIADO_LARGO_PARA_LA_VALIDACION")
                 .titulo("Test")
-                .precioMensual(new BigDecimal("-100")) // Falla @DecimalMin
-                .divisa("ARS") // Falla @Pattern
-                .m2(new BigDecimal("0.5")) // Falla @DecimalMin
-                .nHabit(-1) // Falla @Min
-                .nBanos(30) // Falla @Max
+                .precioMensual(new BigDecimal("-100"))
+                .divisa("ARS")
+                .m2(new BigDecimal("0.5"))
+                .nHabit(-1)
+                .nBanos(30)
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
                 .andExpect(status().isBadRequest())
@@ -165,14 +174,14 @@ class PropertyServiceIntegrationTest {
                 .petFriendly(false)
                 .direccion("Calle Falsa 123")
                 .tipoId(tipoId)
-                .comunaId(99999L) // ID Inexistente
+                .comunaId(99999L)
                 .propietarioId(1L)
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
-                // Dependiendo de tu lógica, esto podría ser isNotFound() o isBadRequest()
                 .andExpect(status().is4xxClientError());
     }
 
@@ -192,12 +201,13 @@ class PropertyServiceIntegrationTest {
                 .nBanos(2)
                 .petFriendly(false)
                 .direccion("Av. Libertad 456")
-                .tipoId(99999L) // ID Inexistente
+                .tipoId(99999L)
                 .comunaId(comunaId)
                 .propietarioId(1L)
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
                 .andExpect(status().is4xxClientError());

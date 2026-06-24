@@ -28,6 +28,7 @@ public class EstadoController {
 
     /**
      * Lista todos los estados disponibles.
+     * (Público/Acceso general para rellenar selectores en el Front-End)
      */
     @GetMapping
     @Operation(summary = "Listar todos los estados",
@@ -38,6 +39,7 @@ public class EstadoController {
 
     /**
      * Obtiene un estado específico por ID.
+     * (Público/Acceso general)
      */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener estado por ID",
@@ -52,46 +54,75 @@ public class EstadoController {
 
     /**
      * Crea un nuevo estado.
+     * (Blindado: SOLO ADMIN)
      */
     @PostMapping
     @Operation(summary = "Crear nuevo estado",
-            description = "Crea un nuevo estado de documento en el sistema")
+            description = "Crea un nuevo estado de documento en el sistema. Requiere permisos de administrador.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Estado creado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos")
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: Solo administradores")
     })
-    public ResponseEntity<EstadoDTO> crear(@Valid @RequestBody EstadoDTO estadoDTO) {
+    public ResponseEntity<?> crear(
+            @Valid @RequestBody EstadoDTO estadoDTO,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (rolId == null || rolId != 1L) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden crear nuevos estados.");
+        }
+
         EstadoDTO created = estadoService.crear(estadoDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
      * Actualiza un estado existente.
+     * (Blindado: SOLO ADMIN)
      */
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar estado",
-            description = "Actualiza la información de un estado existente")
+            description = "Actualiza la información de un estado existente. Requiere permisos de administrador.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estado actualizado exitosamente"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: Solo administradores"),
             @ApiResponse(responseCode = "404", description = "Estado no encontrado")
     })
-    public ResponseEntity<EstadoDTO> actualizar(
+    public ResponseEntity<?> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody EstadoDTO estadoDTO) {
+            @Valid @RequestBody EstadoDTO estadoDTO,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (rolId == null || rolId != 1L) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden actualizar estados.");
+        }
+
         return ResponseEntity.ok(estadoService.actualizar(id, estadoDTO));
     }
 
     /**
      * Elimina un estado.
+     * (Blindado: SOLO ADMIN)
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar estado",
-            description = "Elimina permanentemente un estado del sistema")
+            description = "Elimina permanentemente un estado del sistema. Requiere permisos de administrador.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Estado eliminado exitosamente"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: Solo administradores"),
             @ApiResponse(responseCode = "404", description = "Estado no encontrado")
     })
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> eliminar(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (rolId == null || rolId != 1L) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden eliminar estados.");
+        }
+
         estadoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

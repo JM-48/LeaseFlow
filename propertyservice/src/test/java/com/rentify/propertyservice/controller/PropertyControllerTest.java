@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Utiliza @WebMvcTest con Spring Boot 3.4+ @MockitoBean.
  */
 @WebMvcTest(PropertyController.class)
+@AutoConfigureMockMvc(addFilters = false) // <-- AGREGADO para evitar que salte el Basic Auth de Spring Security
 @DisplayName("Tests de PropertyController")
 class PropertyControllerTest {
 
@@ -42,6 +44,9 @@ class PropertyControllerTest {
     private PropertyService propertyService;
 
     private PropertyDTO propertyDTO;
+
+    // Token simulado para pasar la validación del controlador
+    private static final String VALID_TOKEN = "Bearer token-de-prueba-valido";
 
     @BeforeEach
     void setUp() {
@@ -59,7 +64,7 @@ class PropertyControllerTest {
                 .fcreacion(LocalDate.now())
                 .tipoId(1L)
                 .comunaId(1L)
-                .propietarioId(1L) // <-- ¡AQUÍ ESTABA EL CAMPO FALTANTE!
+                .propietarioId(1L)
                 .build();
     }
 
@@ -82,7 +87,7 @@ class PropertyControllerTest {
                 .fcreacion(LocalDate.now())
                 .tipoId(1L)
                 .comunaId(1L)
-                .propietarioId(1L) // <-- AGREGADO AQUÍ TAMBIÉN
+                .propietarioId(1L)
                 .build();
 
         when(propertyService.crearProperty(any(PropertyDTO.class)))
@@ -90,6 +95,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isCreated())
@@ -107,15 +113,14 @@ class PropertyControllerTest {
     @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades")
     void listar_SinDetalles_Returns200() throws Exception {
         // Arrange
-        // Mapeamos el nuevo mock con Pageable
         when(propertyService.listarTodas(any(Pageable.class), eq(false)))
                 .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
-                // Al ser una página, los datos vienen dentro de "content"
                 .andExpect(jsonPath("$.content[0].codigo").value("DP001"));
 
         verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(false));
@@ -130,6 +135,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray());
@@ -145,7 +151,8 @@ class PropertyControllerTest {
                 .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
         // Act & Assert
-        mockMvc.perform(get("/api/propiedades"))
+        mockMvc.perform(get("/api/propiedades")
+                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
                 .andExpect(status().isOk());
 
         verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(false));
@@ -162,6 +169,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades/1")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -179,6 +187,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades/999")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("includeDetails", "true"))
                 .andExpect(status().isNotFound());
     }
@@ -194,6 +203,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades/codigo/DP001")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codigo").value("DP001"));
@@ -210,6 +220,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/propiedades/codigo/NOEXISTE")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .param("includeDetails", "true"))
                 .andExpect(status().isNotFound());
     }
@@ -233,7 +244,7 @@ class PropertyControllerTest {
                 .fcreacion(LocalDate.now())
                 .tipoId(1L)
                 .comunaId(1L)
-                .propietarioId(1L) // <-- Y AGREGADO AQUÍ
+                .propietarioId(1L)
                 .build();
 
         when(propertyService.actualizar(eq(1L), any(PropertyDTO.class)))
@@ -241,6 +252,7 @@ class PropertyControllerTest {
 
         // Act & Assert
         mockMvc.perform(put("/api/propiedades/1")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isOk())
@@ -257,8 +269,8 @@ class PropertyControllerTest {
                 .thenThrow(new ResourceNotFoundException("Propiedad no encontrada"));
 
         // Act & Assert
-        // Al usar propertyDTO aquí, ya incluirá el propietarioId que le agregamos en el setUp()
         mockMvc.perform(put("/api/propiedades/999")
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(propertyDTO)))
                 .andExpect(status().isNotFound());
@@ -273,7 +285,8 @@ class PropertyControllerTest {
         doNothing().when(propertyService).eliminar(1L);
 
         // Act & Assert
-        mockMvc.perform(delete("/api/propiedades/1"))
+        mockMvc.perform(delete("/api/propiedades/1")
+                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
                 .andExpect(status().isNoContent());
 
         verify(propertyService, times(1)).eliminar(1L);
@@ -287,7 +300,8 @@ class PropertyControllerTest {
                 .when(propertyService).eliminar(999L);
 
         // Act & Assert
-        mockMvc.perform(delete("/api/propiedades/999"))
+        mockMvc.perform(delete("/api/propiedades/999")
+                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
                 .andExpect(status().isNotFound());
     }
 
@@ -298,19 +312,12 @@ class PropertyControllerTest {
     void buscarConFiltros_ConFiltros_Returns200() throws Exception {
 
         when(propertyService.buscarConFiltros(
-                // Argumentos 0 (tipoId), 1 (comunaId)
                 anyLong(),
                 nullable(Long.class),
-
-                // Argumentos 2 (minPrecio), 3 (maxPrecio)
                 any(BigDecimal.class),
                 any(BigDecimal.class),
-
-                // Argumentos 4 (nHabit), 5 (nBanos)
                 nullable(Integer.class),
                 nullable(Integer.class),
-
-                // Argumentos 6 (petFriendly), 7 (includeDetails)
                 nullable(Boolean.class),
                 anyBoolean()))
                 .thenReturn(List.of(propertyDTO));
@@ -318,24 +325,25 @@ class PropertyControllerTest {
 
 
         mockMvc.perform(get("/api/propiedades/buscar")
-                        .param("comunaId", "1") // Corresponde al 1er Long o 2do Long en la firma? ASUMIMOS el 2do Long (comunaId)
-                        .param("minPrecio", "600000") // Mapeado a BigDecimal
-                        .param("maxPrecio", "700000") // Mapeado a BigDecimal
+                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .param("comunaId", "1")
+                        .param("minPrecio", "600000")
+                        .param("maxPrecio", "700000")
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
 
-        // Verificamos la llamada con los matchers corregidos
         verify(propertyService, times(1)).buscarConFiltros(
-                nullable(Long.class), // TipoId (no se envió, debe ser null)
-                eq(1L),               // ComunaId (se envió "1")
-                any(BigDecimal.class), // minPrecio
-                any(BigDecimal.class), // maxPrecio
-                nullable(Integer.class), // nHabit (no se envió, debe ser null)
-                nullable(Integer.class), // nBanos (no se envió, debe ser null)
-                nullable(Boolean.class), // petFriendly (no se envió, debe ser null)
-                eq(false)); // includeDetails (se envió "false")
+                nullable(Long.class),
+                eq(1L),
+                any(BigDecimal.class),
+                any(BigDecimal.class),
+                nullable(Integer.class),
+                nullable(Integer.class),
+                nullable(Boolean.class),
+                eq(false));
     }
+
     // ==================== Tests GET/{id}/existe ====================
 
     @Test
@@ -346,7 +354,8 @@ class PropertyControllerTest {
                 .thenReturn(true);
 
         // Act & Assert
-        mockMvc.perform(get("/api/propiedades/1/existe"))
+        mockMvc.perform(get("/api/propiedades/1/existe")
+                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
 
@@ -361,7 +370,8 @@ class PropertyControllerTest {
                 .thenReturn(false);
 
         // Act & Assert
-        mockMvc.perform(get("/api/propiedades/999/existe"))
+        mockMvc.perform(get("/api/propiedades/999/existe")
+                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(false));
 

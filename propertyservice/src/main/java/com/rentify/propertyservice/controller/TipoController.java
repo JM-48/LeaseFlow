@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +31,24 @@ public class TipoController {
     private final TipoRepository tipoRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * Valida de forma sencilla si el request trae un token Bearer.
+     */
+    private boolean isNoAutorizado(String token) {
+        return token == null || token.trim().isEmpty() || !token.startsWith("Bearer ");
+    }
+
     @PostMapping
     @Operation(summary = "Crear tipo", description = "Crea un nuevo tipo de propiedad")
-    public ResponseEntity<TipoDTO> crear(@Valid @RequestBody TipoDTO tipoDTO) {
+    public ResponseEntity<?> crear(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @Valid @RequestBody TipoDTO tipoDTO) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a POST /api/tipos");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Creando nuevo tipo: {}", tipoDTO.getNombre());
 
         Tipo tipo = modelMapper.map(tipoDTO, Tipo.class);
@@ -44,7 +60,14 @@ public class TipoController {
 
     @GetMapping
     @Operation(summary = "Listar tipos", description = "Obtiene todos los tipos disponibles")
-    public ResponseEntity<List<TipoDTO>> listar() {
+    public ResponseEntity<?> listar(
+            @RequestHeader(value = "Authorization", required = false) String token) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/tipos");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.debug("Listando todos los tipos");
 
         List<TipoDTO> tipos = tipoRepository.findAll().stream()
@@ -56,9 +79,16 @@ public class TipoController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener tipo por ID")
-    public ResponseEntity<TipoDTO> obtenerPorId(
+    public ResponseEntity<?> obtenerPorId(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/tipos/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.debug("Obteniendo tipo con ID: {}", id);
 
         return tipoRepository.findById(id)
@@ -68,10 +98,17 @@ public class TipoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar tipo")
-    public ResponseEntity<TipoDTO> actualizar(
+    public ResponseEntity<?> actualizar(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody TipoDTO tipoDTO) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a PUT /api/tipos/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Actualizando tipo con ID: {}", id);
 
         return tipoRepository.findById(id)
@@ -85,9 +122,16 @@ public class TipoController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar tipo")
-    public ResponseEntity<Void> eliminar(
+    public ResponseEntity<?> eliminar(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a DELETE /api/tipos/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Eliminando tipo con ID: {}", id);
 
         if (!tipoRepository.existsById(id)) {

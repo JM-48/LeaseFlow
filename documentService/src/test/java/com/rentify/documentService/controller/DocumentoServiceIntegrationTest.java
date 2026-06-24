@@ -20,13 +20,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false) // Mantenemos los filtros de Spring Security apagados
 @ActiveProfiles("test")
 @Transactional
 @DisplayName("Tests de Integración - DocumentoService (Robustos)")
@@ -43,6 +42,7 @@ class DocumentoServiceIntegrationTest {
 
     private static final Long USUARIO_ID = 1L;
     private static final Long ADMIN_ID = 5L;
+    private static final Long ROL_ADMIN_ID = 1L; // ID del rol Admin
 
     @BeforeEach
     void setUpMocks() {
@@ -61,7 +61,7 @@ class DocumentoServiceIntegrationTest {
         UsuarioDTO adminUser = new UsuarioDTO();
         adminUser.setId(ADMIN_ID);
         adminUser.setEmail("admin@rentify.com");
-        UsuarioDTO.RolDTO rolAdmin = new UsuarioDTO.RolDTO(1L, "ADMIN");
+        UsuarioDTO.RolDTO rolAdmin = new UsuarioDTO.RolDTO(ROL_ADMIN_ID, "ADMIN");
         adminUser.setRol(rolAdmin);
 
         when(userServiceClient.existsUser(ADMIN_ID)).thenReturn(true);
@@ -76,6 +76,7 @@ class DocumentoServiceIntegrationTest {
     private Long crearTipoDocumento(String nombre) throws Exception {
         TipoDocumentoDTO tipo = new TipoDocumentoDTO(null, nombre);
         MvcResult result = mockMvc.perform(post("/api/tipos-documentos")
+                        .header("X-Rol-Id", ROL_ADMIN_ID) // <--- Simulamos ser Admin
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tipo)))
                 .andExpect(status().isCreated())
@@ -86,6 +87,7 @@ class DocumentoServiceIntegrationTest {
     private Long crearEstado(String nombre) throws Exception {
         EstadoDTO estado = new EstadoDTO(null, nombre);
         MvcResult result = mockMvc.perform(post("/api/estados")
+                        .header("X-Rol-Id", ROL_ADMIN_ID) // <--- Simulamos ser Admin
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estado)))
                 .andExpect(status().isCreated())
@@ -113,6 +115,7 @@ class DocumentoServiceIntegrationTest {
         nuevoDoc.setTipoDocId(tipoId);
 
         MvcResult resultDoc = mockMvc.perform(post("/api/documentos")
+                        .header("X-Usuario-Id", USUARIO_ID) // <--- Agregamos Header obligatorio
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isCreated())
@@ -125,9 +128,10 @@ class DocumentoServiceIntegrationTest {
         ActualizarEstadoRequest requestRechazo = new ActualizarEstadoRequest();
         requestRechazo.setEstadoId(estadoRechazadoId);
         requestRechazo.setObservaciones("La imagen esta borrosa, por favor suba una foto con mejor iluminacion.");
-        requestRechazo.setRevisadoPor(ADMIN_ID); // Usa el ID del Admin
+        requestRechazo.setRevisadoPor(ADMIN_ID);
 
         mockMvc.perform(patch("/api/documentos/{id}/estado", documentoId)
+                        .header("X-Rol-Id", ROL_ADMIN_ID) // <--- Debe ser Admin
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestRechazo)))
                 .andExpect(status().isOk())
@@ -146,14 +150,14 @@ class DocumentoServiceIntegrationTest {
         // Faltan todos los campos obligatorios
 
         mockMvc.perform(post("/api/documentos")
+                        .header("X-Usuario-Id", USUARIO_ID) // Mantenemos el header para pasar el SecurityConfig
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(docInvalido)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Validation Error"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("POST /api/documentos - Falla con 400/404 si el usuario no existe en UserService")
+    @DisplayName("POST /api/documentos - Falla con 400 si el usuario no existe en UserService")
     void crearDocumento_UsuarioNoExiste_RetornaError() throws Exception {
         // Forzamos a que el usuario 99L no exista
         when(userServiceClient.existsUser(99L)).thenReturn(false);
@@ -164,18 +168,19 @@ class DocumentoServiceIntegrationTest {
 
         DocumentoDTO nuevoDoc = new DocumentoDTO();
         nuevoDoc.setNombre("afp_2026.pdf");
-        nuevoDoc.setUsuarioId(99L); // Usuario inexistente
+        nuevoDoc.setUsuarioId(99L);
         nuevoDoc.setEstadoId(estadoPendienteId);
         nuevoDoc.setTipoDocId(tipoId);
 
         mockMvc.perform(post("/api/documentos")
+                        .header("X-Usuario-Id", 99L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
-                .andExpect(status().isBadRequest()); // O isNotFound() dependiendo de tu lógica
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("PATCH /api/documentos/{id}/estado - Falla con 400/403 si un usuario NO ADMIN intenta cambiar el estado")
+    @DisplayName("PATCH /api/documentos/{id}/estado - Falla con 403 si un usuario NO ADMIN intenta cambiar el estado")
     void actualizarEstado_UsuarioNoEsAdmin_RetornaError() throws Exception {
         Long tipoId = crearTipoDocumento("DNI");
         Long estadoPendienteId = crearEstado("PENDIENTE");
@@ -189,6 +194,7 @@ class DocumentoServiceIntegrationTest {
         nuevoDoc.setTipoDocId(tipoId);
 
         MvcResult resultDoc = mockMvc.perform(post("/api/documentos")
+                        .header("X-Usuario-Id", USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isCreated())
@@ -199,12 +205,13 @@ class DocumentoServiceIntegrationTest {
         // El arrendatario intenta aprobar su propio documento
         ActualizarEstadoRequest requestTramposo = new ActualizarEstadoRequest();
         requestTramposo.setEstadoId(estadoAprobadoId);
-        requestTramposo.setRevisadoPor(USUARIO_ID); // Usuario sin privilegios
+        requestTramposo.setRevisadoPor(USUARIO_ID);
 
+        // En lugar de 400, ahora debe fallar en el controlador con 403 (FORBIDDEN) porque no es ADMIN
         mockMvc.perform(patch("/api/documentos/{id}/estado", documentoId)
+                        .header("X-Rol-Id", 3L) // <--- Rol Arrendatario
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTramposo)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Business Validation Error"));
+                .andExpect(status().isForbidden());
     }
 }

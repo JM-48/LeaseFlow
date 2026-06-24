@@ -31,9 +31,25 @@ public class CategoriaController {
     private final CategoriaRepository categoriaRepository;
     private final ModelMapper modelMapper;
 
+    /**
+     * Valida de forma sencilla si el request trae un token Bearer.
+     * Al entrar desde un navegador, esto será nulo.
+     */
+    private boolean isNoAutorizado(String token) {
+        return token == null || token.trim().isEmpty() || !token.startsWith("Bearer ");
+    }
+
     @PostMapping
     @Operation(summary = "Crear categoría", description = "Crea una nueva categoría de propiedad")
-    public ResponseEntity<CategoriaDTO> crear(@Valid @RequestBody CategoriaDTO categoriaDTO) {
+    public ResponseEntity<?> crear(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @Valid @RequestBody CategoriaDTO categoriaDTO) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a POST /api/categorias");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Creando nueva categoría: {}", categoriaDTO.getNombre());
 
         Categoria categoria = modelMapper.map(categoriaDTO, Categoria.class);
@@ -45,7 +61,14 @@ public class CategoriaController {
 
     @GetMapping
     @Operation(summary = "Listar categorías", description = "Obtiene todas las categorías disponibles")
-    public ResponseEntity<List<CategoriaDTO>> listar() {
+    public ResponseEntity<?> listar(
+            @RequestHeader(value = "Authorization", required = false) String token) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/categorias");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.debug("Listando todas las categorías");
 
         List<CategoriaDTO> categorias = categoriaRepository.findAll().stream()
@@ -57,9 +80,16 @@ public class CategoriaController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener categoría por ID")
-    public ResponseEntity<CategoriaDTO> obtenerPorId(
+    public ResponseEntity<?> obtenerPorId(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a GET /api/categorias/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.debug("Obteniendo categoría con ID: {}", id);
 
         return categoriaRepository.findById(id)
@@ -69,10 +99,17 @@ public class CategoriaController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar categoría")
-    public ResponseEntity<CategoriaDTO> actualizar(
+    public ResponseEntity<?> actualizar(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody CategoriaDTO categoriaDTO) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a PUT /api/categorias/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Actualizando categoría con ID: {}", id);
 
         return categoriaRepository.findById(id)
@@ -86,9 +123,16 @@ public class CategoriaController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar categoría")
-    public ResponseEntity<Void> eliminar(
+    public ResponseEntity<?> eliminar(
+            @RequestHeader(value = "Authorization", required = false) String token,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id) {
+
+        if (isNoAutorizado(token)) {
+            log.warn("Intento de acceso no autorizado a DELETE /api/categorias/{}", id);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         log.info("Eliminando categoría con ID: {}", id);
 
         if (!categoriaRepository.existsById(id)) {
