@@ -79,10 +79,8 @@ class MensajeContactoControllerTest {
     @Test
     @DisplayName("GET /api/contacto - Debe listar mensajes autorizados con Headers")
     void listarMensajesSeguros_ConHeadersValidos_Returns200() throws Exception {
-        // Arrange - Ahora mockeamos el nuevo método seguro
         when(service.listarMensajesSeguros(1L, 1L, false)).thenReturn(List.of(mensajeDTO));
 
-        // Act & Assert - Enviamos los headers de seguridad simulados por la Gateway
         mockMvc.perform(get("/api/contacto")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L)
@@ -110,7 +108,7 @@ class MensajeContactoControllerTest {
         when(service.listarMensajesSinResponder()).thenReturn(List.of(mensajeDTO));
 
         mockMvc.perform(get("/api/contacto/sin-responder")
-                        .header("X-Rol-Id", 1L)) // Rol Admin
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
 
@@ -121,7 +119,7 @@ class MensajeContactoControllerTest {
     @DisplayName("GET /api/contacto/sin-responder - Usuario común (Rol 2) recibe 403")
     void listarSinResponder_NoAdmin_Returns403() throws Exception {
         mockMvc.perform(get("/api/contacto/sin-responder")
-                        .header("X-Rol-Id", 2L)) // Rol común
+                        .header("X-Rol-Id", 2L))
                 .andExpect(status().isForbidden());
 
         verify(service, never()).listarMensajesSinResponder();
@@ -151,8 +149,6 @@ class MensajeContactoControllerTest {
         verify(service, never()).obtenerEstadisticas();
     }
 
-    // --- Los demás métodos que no sufrieron cambios de endpoint se mantienen limpios ---
-
     @Test
     @DisplayName("POST /api/contacto - Debe retornar 400 cuando faltan campos obligatorios")
     void crearMensaje_CamposFaltantes_Returns400() throws Exception {
@@ -164,15 +160,56 @@ class MensajeContactoControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/contacto/{id}
+    // ==============================================================================
+
     @Test
-    @DisplayName("GET /api/contacto/{id} - Debe retornar mensaje cuando existe")
-    void obtenerPorId_MensajeExiste_ReturnsMensaje() throws Exception {
+    @DisplayName("GET /api/contacto/{id} - Debe retornar 401 si faltan headers")
+    void obtenerPorId_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/contacto/1")
+                        .param("includeDetails", "true"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).obtenerPorId(any(), anyBoolean());
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/{id} - El propietario del mensaje puede consultarlo")
+    void obtenerPorId_Propietario_Returns200() throws Exception {
         when(service.obtenerPorId(1L, true)).thenReturn(mensajeDTO);
 
         mockMvc.perform(get("/api/contacto/1")
-                        .param("includeDetails", "true"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 3L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/{id} - Un ADMIN puede consultar cualquier mensaje")
+    void obtenerPorId_Admin_Returns200() throws Exception {
+        when(service.obtenerPorId(1L, true)).thenReturn(mensajeDTO);
+
+        mockMvc.perform(get("/api/contacto/1")
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 99L)
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/{id} - Un usuario que no es dueño ni admin recibe 403")
+    void obtenerPorId_UsuarioAjeno_Returns403() throws Exception {
+        when(service.obtenerPorId(1L, true)).thenReturn(mensajeDTO);
+
+        mockMvc.perform(get("/api/contacto/1")
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 99L)
+                        .header("X-Rol-Id", 3L))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -181,8 +218,170 @@ class MensajeContactoControllerTest {
         when(service.obtenerPorId(999L, true)).thenThrow(new ResourceNotFoundException("Mensaje no encontrado"));
 
         mockMvc.perform(get("/api/contacto/999")
-                        .param("includeDetails", "true"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isNotFound());
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/contacto/email/{email}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/contacto/email/{email} - Sin rol Admin recibe 403")
+    void listarPorEmail_NoAdmin_Returns403() throws Exception {
+        mockMvc.perform(get("/api/contacto/email/juan@email.com"))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).listarPorEmail(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/email/{email} - Admin puede listar por email")
+    void listarPorEmail_Admin_Returns200() throws Exception {
+        when(service.listarPorEmail("juan@email.com")).thenReturn(List.of(mensajeDTO));
+
+        mockMvc.perform(get("/api/contacto/email/juan@email.com")
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+
+        verify(service, times(1)).listarPorEmail("juan@email.com");
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/contacto/usuario/{usuarioId}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/contacto/usuario/{usuarioId} - Sin headers recibe 401")
+    void listarPorUsuario_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/contacto/usuario/1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).listarPorUsuario(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/usuario/{usuarioId} - Un usuario distinto sin ser admin recibe 403")
+    void listarPorUsuario_UsuarioDistintoSinSerAdmin_Returns403() throws Exception {
+        mockMvc.perform(get("/api/contacto/usuario/1")
+                        .header("X-Usuario-Id", 2L)
+                        .header("X-Rol-Id", 3L))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).listarPorUsuario(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/usuario/{usuarioId} - El propio usuario puede consultar sus mensajes")
+    void listarPorUsuario_Propietario_Returns200() throws Exception {
+        when(service.listarPorUsuario(1L)).thenReturn(List.of(mensajeDTO));
+
+        mockMvc.perform(get("/api/contacto/usuario/1")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 3L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+
+        verify(service, times(1)).listarPorUsuario(1L);
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/contacto/estado/{estado}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/contacto/estado/{estado} - Sin rol Admin recibe 403")
+    void listarPorEstado_NoAdmin_Returns403() throws Exception {
+        mockMvc.perform(get("/api/contacto/estado/PENDIENTE"))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).listarPorEstado(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/estado/{estado} - Admin puede filtrar por estado")
+    void listarPorEstado_Admin_Returns200() throws Exception {
+        when(service.listarPorEstado("PENDIENTE")).thenReturn(List.of(mensajeDTO));
+
+        mockMvc.perform(get("/api/contacto/estado/PENDIENTE")
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).listarPorEstado("PENDIENTE");
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/contacto/buscar
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/contacto/buscar - Sin rol Admin recibe 403")
+    void buscarPorPalabraClave_NoAdmin_Returns403() throws Exception {
+        mockMvc.perform(get("/api/contacto/buscar")
+                        .param("keyword", "departamento"))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).buscarPorPalabraClave(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/contacto/buscar - Admin puede buscar por palabra clave")
+    void buscarPorPalabraClave_Admin_Returns200() throws Exception {
+        when(service.buscarPorPalabraClave("departamento")).thenReturn(List.of(mensajeDTO));
+
+        mockMvc.perform(get("/api/contacto/buscar")
+                        .param("keyword", "departamento")
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk());
+
+        verify(service, times(1)).buscarPorPalabraClave("departamento");
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA PATCH /api/contacto/{id}/estado
+    // ==============================================================================
+
+    @Test
+    @DisplayName("PATCH /api/contacto/{id}/estado - Sin rol Admin recibe 403")
+    void actualizarEstado_NoAdmin_Returns403() throws Exception {
+        mockMvc.perform(patch("/api/contacto/1/estado")
+                        .param("estado", "RESUELTO"))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).actualizarEstado(any(), any());
+    }
+
+    @Test
+    @DisplayName("PATCH /api/contacto/{id}/estado - Admin puede actualizar el estado")
+    void actualizarEstado_Admin_Returns200() throws Exception {
+        mensajeDTO.setEstado("RESUELTO");
+        when(service.actualizarEstado(1L, "RESUELTO")).thenReturn(mensajeDTO);
+
+        mockMvc.perform(patch("/api/contacto/1/estado")
+                        .param("estado", "RESUELTO")
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("RESUELTO"));
+
+        verify(service, times(1)).actualizarEstado(1L, "RESUELTO");
+    }
+
+    // ==============================================================================
+    // RESPONDER Y ELIMINAR (requieren X-Rol-Id = Admin a nivel de transporte)
+    // ==============================================================================
+
+    @Test
+    @DisplayName("POST /api/contacto/{id}/responder - Sin rol Admin recibe 403")
+    void responderMensaje_SinRolAdmin_Returns403() throws Exception {
+        mockMvc.perform(post("/api/contacto/1/responder")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(respuestaDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).responderMensaje(any(), any());
     }
 
     @Test
@@ -194,9 +393,20 @@ class MensajeContactoControllerTest {
 
         mockMvc.perform(post("/api/contacto/1/responder")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(respuestaDTO)))
+                        .content(objectMapper.writeValueAsString(respuestaDTO))
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("RESUELTO"));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/contacto/{id} - Sin rol Admin recibe 403")
+    void eliminarMensaje_SinRolAdmin_Returns403() throws Exception {
+        mockMvc.perform(delete("/api/contacto/1")
+                        .param("adminId", "5"))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).eliminarMensaje(any(), any());
     }
 
     @Test
@@ -205,7 +415,8 @@ class MensajeContactoControllerTest {
         doNothing().when(service).eliminarMensaje(1L, 5L);
 
         mockMvc.perform(delete("/api/contacto/1")
-                        .param("adminId", "5"))
+                        .param("adminId", "5")
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isNoContent());
     }
 }

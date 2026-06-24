@@ -102,6 +102,20 @@ class RegistroControllerTest {
         verify(service, times(1)).crearRegistro(any(RegistroArriendoDTO.class));
     }
 
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/registros
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/registros - Debe retornar 401 si faltan headers")
+    void listarTodos_SinHeaders_DeberiaRetornar401() throws Exception {
+        mockMvc.perform(get("/api/registros")
+                        .param("includeDetails", "false"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).listarTodos(anyBoolean());
+    }
+
     @Test
     @DisplayName("GET /api/registros - Listar todos")
     void listarTodos_DeberiaRetornar200ConLista() throws Exception {
@@ -111,12 +125,28 @@ class RegistroControllerTest {
 
         // When & Then
         mockMvc.perform(get("/api/registros")
-                        .param("includeDetails", "false"))
+                        .param("includeDetails", "false")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(1));
 
         verify(service, times(1)).listarTodos(false);
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/registros/{id}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/registros/{id} - Debe retornar 401 si faltan headers")
+    void obtenerPorId_SinHeaders_DeberiaRetornar401() throws Exception {
+        mockMvc.perform(get("/api/registros/1")
+                        .param("includeDetails", "true"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).obtenerPorId(any(), anyBoolean());
     }
 
     @Test
@@ -127,7 +157,9 @@ class RegistroControllerTest {
 
         // When & Then
         mockMvc.perform(get("/api/registros/1")
-                        .param("includeDetails", "true"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.solicitudId").value(1));
@@ -144,10 +176,25 @@ class RegistroControllerTest {
 
         // When & Then
         mockMvc.perform(get("/api/registros/999")
-                        .param("includeDetails", "true"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isNotFound());
 
         verify(service, times(1)).obtenerPorId(999L, true);
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/registros/solicitud/{solicitudId}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/registros/solicitud/{solicitudId} - Debe retornar 401 si faltan headers")
+    void obtenerPorSolicitud_SinHeaders_DeberiaRetornar401() throws Exception {
+        mockMvc.perform(get("/api/registros/solicitud/1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).obtenerPorSolicitud(any());
     }
 
     @Test
@@ -158,11 +205,26 @@ class RegistroControllerTest {
         when(service.obtenerPorSolicitud(1L)).thenReturn(registros);
 
         // When & Then
-        mockMvc.perform(get("/api/registros/solicitud/1"))
+        mockMvc.perform(get("/api/registros/solicitud/1")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
         verify(service, times(1)).obtenerPorSolicitud(1L);
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA PATCH /api/registros/{id}/finalizar
+    // ==============================================================================
+
+    @Test
+    @DisplayName("PATCH /api/registros/{id}/finalizar - Debe retornar 401 si faltan headers")
+    void finalizarRegistro_SinHeaders_DeberiaRetornar401() throws Exception {
+        mockMvc.perform(patch("/api/registros/1/finalizar"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).finalizarRegistro(any());
     }
 
     @Test
@@ -173,7 +235,9 @@ class RegistroControllerTest {
         when(service.finalizarRegistro(1L)).thenReturn(registroDTO);
 
         // When & Then
-        mockMvc.perform(patch("/api/registros/1/finalizar"))
+        mockMvc.perform(patch("/api/registros/1/finalizar")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.activo").value(false));
 
@@ -188,7 +252,9 @@ class RegistroControllerTest {
                 .thenThrow(new BusinessValidationException("El registro ya está inactivo"));
 
         // When & Then
-        mockMvc.perform(patch("/api/registros/1/finalizar"))
+        mockMvc.perform(patch("/api/registros/1/finalizar")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isBadRequest());
 
         verify(service, times(1)).finalizarRegistro(1L);
@@ -202,7 +268,9 @@ class RegistroControllerTest {
                 .thenThrow(new ResourceNotFoundException("Registro no encontrado con ID: 999"));
 
         // When & Then
-        mockMvc.perform(patch("/api/registros/999/finalizar"))
+        mockMvc.perform(patch("/api/registros/999/finalizar")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isNotFound());
 
         verify(service, times(1)).finalizarRegistro(999L);

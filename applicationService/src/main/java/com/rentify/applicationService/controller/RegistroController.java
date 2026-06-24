@@ -29,30 +29,59 @@ public class RegistroController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos los registros")
+    @Operation(summary = "Listar todos los registros", description = "Requiere headers de identificación")
     public ResponseEntity<List<RegistroArriendoDTO>> listarTodos(
-            @RequestParam(defaultValue = "false") boolean includeDetails) {
+            @RequestParam(defaultValue = "false") boolean includeDetails,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.listarTodos(includeDetails));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener registro por ID")
+    @Operation(summary = "Obtener registro por ID", description = "Requiere headers de identificación")
     public ResponseEntity<RegistroArriendoDTO> obtenerPorId(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "true") boolean includeDetails) {
+            @RequestParam(defaultValue = "true") boolean includeDetails,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.obtenerPorId(id, includeDetails));
     }
 
     @GetMapping("/solicitud/{solicitudId}")
-    @Operation(summary = "Obtener registros por solicitud")
+    @Operation(summary = "Obtener registros por solicitud", description = "Requiere headers de identificación")
     public ResponseEntity<List<RegistroArriendoDTO>> obtenerPorSolicitud(
-            @PathVariable Long solicitudId) {
+            @PathVariable Long solicitudId,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.obtenerPorSolicitud(solicitudId));
     }
 
     @PatchMapping("/{id}/finalizar")
-    @Operation(summary = "Finalizar registro", description = "Marca un registro como inactivo")
-    public ResponseEntity<RegistroArriendoDTO> finalizarRegistro(@PathVariable Long id) {
+    @Operation(summary = "Finalizar registro", description = "Marca un registro como inactivo. Requiere headers de identificación")
+    public ResponseEntity<RegistroArriendoDTO> finalizarRegistro(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.finalizarRegistro(id));
     }
 }

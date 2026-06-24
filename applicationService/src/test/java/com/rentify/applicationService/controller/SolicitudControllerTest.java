@@ -97,7 +97,7 @@ class SolicitudControllerTest {
     }
 
     // ==============================================================================
-    // NUEVOS TESTS DE SEGURIDAD PARA LISTAR SOLICITUDES
+    // TESTS DE SEGURIDAD PARA LISTAR SOLICITUDES (GET /api/solicitudes)
     // ==============================================================================
 
     @Test
@@ -140,6 +140,18 @@ class SolicitudControllerTest {
     }
 
     // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/solicitudes/{id}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/solicitudes/{id} - Debe retornar 401 si faltan headers")
+    void obtenerPorId_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/solicitudes/1")
+                        .param("includeDetails", "true"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).obtenerPorId(any(), anyBoolean());
+    }
 
     @Test
     @DisplayName("GET /api/solicitudes/{id} - Debe retornar solicitud cuando existe")
@@ -147,7 +159,9 @@ class SolicitudControllerTest {
         when(service.obtenerPorId(1L, true)).thenReturn(solicitudDTO);
 
         mockMvc.perform(get("/api/solicitudes/1")
-                        .param("includeDetails", "true"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
@@ -161,8 +175,34 @@ class SolicitudControllerTest {
                 .thenThrow(new ResourceNotFoundException("Solicitud no encontrada con ID: 999"));
 
         mockMvc.perform(get("/api/solicitudes/999")
-                        .param("includeDetails", "true"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isNotFound());
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/solicitudes/usuario/{usuarioId}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Debe retornar 401 si faltan headers")
+    void obtenerPorUsuario_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/solicitudes/usuario/1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).obtenerPorUsuario(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Debe retornar 403 si un usuario normal consulta a otro")
+    void obtenerPorUsuario_UsuarioDistintoSinSerAdmin_Returns403() throws Exception {
+        mockMvc.perform(get("/api/solicitudes/usuario/1")
+                        .header("X-Usuario-Id", 2L)
+                        .header("X-Rol-Id", 3L))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).obtenerPorUsuario(any());
     }
 
     @Test
@@ -170,7 +210,9 @@ class SolicitudControllerTest {
     void obtenerPorUsuario_Returns200() throws Exception {
         when(service.obtenerPorUsuario(1L)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes/usuario/1"))
+        mockMvc.perform(get("/api/solicitudes/usuario/1")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 3L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
@@ -178,14 +220,57 @@ class SolicitudControllerTest {
     }
 
     @Test
+    @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Un ADMIN puede consultar a cualquier usuario")
+    void obtenerPorUsuario_Admin_Returns200() throws Exception {
+        when(service.obtenerPorUsuario(1L)).thenReturn(Arrays.asList(solicitudDTO));
+
+        mockMvc.perform(get("/api/solicitudes/usuario/1")
+                        .header("X-Usuario-Id", 99L)
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+
+        verify(service, times(1)).obtenerPorUsuario(1L);
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA GET /api/solicitudes/propiedad/{propiedadId}
+    // ==============================================================================
+
+    @Test
+    @DisplayName("GET /api/solicitudes/propiedad/{propiedadId} - Debe retornar 401 si faltan headers")
+    void obtenerPorPropiedad_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/solicitudes/propiedad/1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).obtenerPorPropiedad(any());
+    }
+
+    @Test
     @DisplayName("GET /api/solicitudes/propiedad/{propiedadId} - Debe retornar solicitudes de la propiedad")
     void obtenerPorPropiedad_Returns200() throws Exception {
         when(service.obtenerPorPropiedad(1L)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes/propiedad/1"))
+        mockMvc.perform(get("/api/solicitudes/propiedad/1")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk());
 
         verify(service, times(1)).obtenerPorPropiedad(1L);
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD PARA PATCH /api/solicitudes/{id}/estado
+    // ==============================================================================
+
+    @Test
+    @DisplayName("PATCH /api/solicitudes/{id}/estado - Debe retornar 401 si faltan headers")
+    void actualizarEstado_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(patch("/api/solicitudes/1/estado")
+                        .param("estado", "ACEPTADA"))
+                .andExpect(status().isUnauthorized());
+
+        verify(service, never()).actualizarEstado(any(), any());
     }
 
     @Test
@@ -195,7 +280,9 @@ class SolicitudControllerTest {
         when(service.actualizarEstado(1L, "ACEPTADA")).thenReturn(solicitudDTO);
 
         mockMvc.perform(patch("/api/solicitudes/1/estado")
-                        .param("estado", "ACEPTADA"))
+                        .param("estado", "ACEPTADA")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("ACEPTADA"));
 
@@ -209,7 +296,9 @@ class SolicitudControllerTest {
                 .thenThrow(new BusinessValidationException("Estado inválido: INVALIDO"));
 
         mockMvc.perform(patch("/api/solicitudes/1/estado")
-                        .param("estado", "INVALIDO"))
+                        .param("estado", "INVALIDO")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isBadRequest());
     }
 }

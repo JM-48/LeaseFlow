@@ -19,6 +19,8 @@ import java.util.List;
 @Tag(name = "Solicitudes de Arriendo", description = "Gestión de solicitudes de arriendo")
 public class SolicitudController {
 
+    private static final Long ROL_ADMIN = 1L;
+
     private final SolicitudArriendoService service;
 
     @PostMapping
@@ -36,47 +38,78 @@ public class SolicitudController {
             @Parameter(description = "Incluir detalles de usuario y propiedad")
             @RequestParam(defaultValue = "false") boolean includeDetails,
 
-            // Extraemos los datos de quién hace la petición desde los Headers
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
 
-        // Si alguien intenta entrar por el navegador directamente sin identificarse -> 401 No Autorizado
         if (usuarioId == null || rolId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Pasamos los datos a la nueva lógica de negocio
         List<SolicitudArriendoDTO> solicitudes = service.listarSolicitudesSeguras(usuarioId, rolId, includeDetails);
         return ResponseEntity.ok(solicitudes);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener solicitud por ID")
+    @Operation(summary = "Obtener solicitud por ID", description = "Requiere headers de identificación")
     public ResponseEntity<SolicitudArriendoDTO> obtenerPorId(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "true") boolean includeDetails) {
+            @RequestParam(defaultValue = "true") boolean includeDetails,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.obtenerPorId(id, includeDetails));
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    @Operation(summary = "Obtener solicitudes por usuario")
+    @Operation(summary = "Obtener solicitudes por usuario",
+            description = "Requiere headers de identificación. Un usuario normal solo puede consultar sus propias solicitudes")
     public ResponseEntity<List<SolicitudArriendoDTO>> obtenerPorUsuario(
-            @PathVariable Long usuarioId) {
+            @PathVariable Long usuarioId,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioIdHeader == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        boolean esAdmin = ROL_ADMIN.equals(rolId);
+        if (!esAdmin && !usuarioIdHeader.equals(usuarioId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(service.obtenerPorUsuario(usuarioId));
     }
 
     @GetMapping("/propiedad/{propiedadId}")
-    @Operation(summary = "Obtener solicitudes por propiedad")
+    @Operation(summary = "Obtener solicitudes por propiedad", description = "Requiere headers de identificación")
     public ResponseEntity<List<SolicitudArriendoDTO>> obtenerPorPropiedad(
-            @PathVariable Long propiedadId) {
+            @PathVariable Long propiedadId,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.obtenerPorPropiedad(propiedadId));
     }
 
     @PatchMapping("/{id}/estado")
-    @Operation(summary = "Actualizar estado de solicitud")
+    @Operation(summary = "Actualizar estado de solicitud", description = "Requiere headers de identificación")
     public ResponseEntity<SolicitudArriendoDTO> actualizarEstado(
             @PathVariable Long id,
-            @RequestParam String estado) {
+            @RequestParam String estado,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         return ResponseEntity.ok(service.actualizarEstado(id, estado));
     }
 }

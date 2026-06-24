@@ -86,15 +86,22 @@ class RegistroControllerIntegrationTest {
         return objectMapper.readValue(resultSolicitud.getResponse().getContentAsString(), SolicitudArriendoDTO.class).getId();
     }
 
+    // Método auxiliar para cambiar el estado de una solicitud, ya con los headers requeridos
+    private void cambiarEstadoSolicitud(Long solicitudId, String estado) throws Exception {
+        mockMvc.perform(patch(SOLICITUD_URL + "/{id}/estado", solicitudId)
+                        .param("estado", estado)
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk());
+    }
+
     @Test
     @DisplayName("POST / - Debe crear registro y retornar 201 Created cuando Solicitud está ACEPTADA")
     void crearRegistro_Success() throws Exception {
         Long solicitudId = crearSolicitudBase();
 
         // ACEPTAMOS la solicitud
-        mockMvc.perform(patch(SOLICITUD_URL + "/{id}/estado", solicitudId)
-                        .param("estado", "ACEPTADA"))
-                .andExpect(status().isOk());
+        cambiarEstadoSolicitud(solicitudId, "ACEPTADA");
 
         // Intentamos crear el registro
         RegistroArriendoDTO nuevoRegistro = new RegistroArriendoDTO();
@@ -153,9 +160,7 @@ class RegistroControllerIntegrationTest {
         Long solicitudId = crearSolicitudBase();
 
         // RECHAZAMOS la solicitud
-        mockMvc.perform(patch(SOLICITUD_URL + "/{id}/estado", solicitudId)
-                        .param("estado", "RECHAZADA"))
-                .andExpect(status().isOk());
+        cambiarEstadoSolicitud(solicitudId, "RECHAZADA");
 
         RegistroArriendoDTO nuevoRegistro = new RegistroArriendoDTO();
         nuevoRegistro.setSolicitudId(solicitudId);

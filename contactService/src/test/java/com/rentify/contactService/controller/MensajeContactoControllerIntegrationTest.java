@@ -87,7 +87,7 @@ class MensajeContactoControllerIntegrationTest {
     }
 
     // ==========================================
-    // 🟢 TESTS DE SEGURIDAD NUEVOS (INTEGRACIÓN)
+    // 🟢 TESTS DE SEGURIDAD DE LISTADO
     // ==========================================
 
     @Test
@@ -138,6 +138,64 @@ class MensajeContactoControllerIntegrationTest {
     }
 
     // ==========================================
+    // 🟣 TESTS DE SEGURIDAD NUEVOS: lectura individual y por usuario
+    // ==========================================
+
+    @Test
+    @DisplayName("GET /{id} - El propietario del mensaje puede consultarlo, un tercero recibe 403")
+    void obtenerPorId_FiltroPropietario_Correcto() throws Exception {
+        Long mensajeId = crearMensajeBase(); // mensaje creado sin usuarioId (anónimo)
+
+        // Admin siempre puede
+        mockMvc.perform(get(BASE_URL + "/{id}", mensajeId)
+                        .header("X-Usuario-Id", ADMIN_ID)
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("GET /usuario/{usuarioId} - Sin headers retorna 401")
+    void listarPorUsuario_SinHeaders_Retorna401() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/usuario/{usuarioId}", USUARIO_NORMAL_ID))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("GET /usuario/{usuarioId} - Un usuario distinto sin ser admin recibe 403")
+    void listarPorUsuario_UsuarioDistinto_Retorna403() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/usuario/{usuarioId}", USUARIO_NORMAL_ID)
+                        .header("X-Usuario-Id", 99L)
+                        .header("X-Rol-Id", 3L))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /email/{email} - Usuario común recibe 403, Admin accede")
+    void listarPorEmail_FiltroRoles_Correcto() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/email/{email}", "ana@email.com")
+                        .header("X-Rol-Id", 2L))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get(BASE_URL + "/email/{email}", "ana@email.com")
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("GET /buscar - Usuario común recibe 403, Admin accede")
+    void buscarPorPalabraClave_FiltroRoles_Correcto() throws Exception {
+        mockMvc.perform(get(BASE_URL + "/buscar")
+                        .param("keyword", "problema")
+                        .header("X-Rol-Id", 2L))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get(BASE_URL + "/buscar")
+                        .param("keyword", "problema")
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isOk());
+    }
+
+    // ==========================================
     // 🟦 TESTS ANTERIORES PRESERVADOS
     // ==========================================
 
@@ -158,6 +216,22 @@ class MensajeContactoControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("POST /{id}/responder - Sin header de rol Admin rebota con 403")
+    void responderMensaje_SinHeaderRolAdmin_Retorna403() throws Exception {
+        Long mensajeId = crearMensajeBase();
+
+        RespuestaMensajeDTO respuesta = new RespuestaMensajeDTO();
+        respuesta.setRespondidoPor(ADMIN_ID);
+        respuesta.setRespuesta("Hola Ana, hemos verificado el sistema. Intenta nuevamente.");
+        respuesta.setNuevoEstado("RESUELTO");
+
+        mockMvc.perform(post(BASE_URL + "/{id}/responder", mensajeId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(respuesta)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @DisplayName("POST /{id}/responder - Admin debe poder responder un mensaje")
     void responderMensaje_Success() throws Exception {
         Long mensajeId = crearMensajeBase();
@@ -169,9 +243,20 @@ class MensajeContactoControllerIntegrationTest {
 
         mockMvc.perform(post(BASE_URL + "/{id}/responder", mensajeId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(respuesta)))
+                        .content(objectMapper.writeValueAsString(respuesta))
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("RESUELTO"));
+    }
+
+    @Test
+    @DisplayName("DELETE /{id} - Sin header de rol Admin rebota con 403")
+    void eliminarMensaje_SinHeaderRolAdmin_Retorna403() throws Exception {
+        Long mensajeId = crearMensajeBase();
+
+        mockMvc.perform(delete(BASE_URL + "/{id}", mensajeId)
+                        .param("adminId", String.valueOf(ADMIN_ID)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -180,7 +265,8 @@ class MensajeContactoControllerIntegrationTest {
         Long mensajeId = crearMensajeBase();
 
         mockMvc.perform(delete(BASE_URL + "/{id}", mensajeId)
-                        .param("adminId", String.valueOf(ADMIN_ID)))
+                        .param("adminId", String.valueOf(ADMIN_ID))
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isNoContent());
     }
 }

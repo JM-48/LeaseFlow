@@ -137,6 +137,26 @@ class SolicitudControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("PATCH /{id}/estado - Debe retornar 401 si faltan headers de identificación")
+    void actualizarEstado_SinHeaders_Retorna401() throws Exception {
+        SolicitudArriendoDTO nueva = new SolicitudArriendoDTO();
+        nueva.setUsuarioId(1L);
+        nueva.setPropiedadId(5L);
+
+        MvcResult result = mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nueva)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        Long idGenerado = objectMapper.readValue(result.getResponse().getContentAsString(), SolicitudArriendoDTO.class).getId();
+
+        mockMvc.perform(patch(BASE_URL + "/{id}/estado", idGenerado)
+                        .param("estado", "ACEPTADA"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @DisplayName("PATCH /{id}/estado - Debe actualizar el estado correctamente")
     void actualizarEstado_Success() throws Exception {
         SolicitudArriendoDTO nueva = new SolicitudArriendoDTO();
@@ -152,7 +172,9 @@ class SolicitudControllerIntegrationTest {
         Long idGenerado = objectMapper.readValue(result.getResponse().getContentAsString(), SolicitudArriendoDTO.class).getId();
 
         mockMvc.perform(patch(BASE_URL + "/{id}/estado", idGenerado)
-                        .param("estado", "ACEPTADA"))
+                        .param("estado", "ACEPTADA")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("ACEPTADA"));
     }
