@@ -3,7 +3,6 @@ package com.rentify.propertyservice.controller;
 import com.rentify.propertyservice.dto.PropertyDTO;
 import com.rentify.propertyservice.service.PropertyService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import java.util.List;
 /**
  * Controller REST para gestión de propiedades.
  * Expone endpoints CRUD y búsqueda avanzada de propiedades.
- * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
  */
 @RestController
 @RequestMapping("/api/propiedades")
@@ -33,10 +31,10 @@ public class PropertyController {
 
     /**
      * Crea una nueva propiedad.
-     * BLINDADO: Si no es admin, se fuerza a que el creador sea el usuario logueado.
+     * 🔴 BLINDADO: Requiere identidad obligatoria.
      */
     @PostMapping
-    @Operation(summary = "Crear nueva propiedad", description = "Crea una nueva propiedad con validaciones de negocio")
+    @Operation(summary = "Crear nueva propiedad", description = "Crea una nueva propiedad con validaciones de negocio. Requiere cabeceras.")
     public ResponseEntity<?> crear(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -47,8 +45,6 @@ public class PropertyController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autorizado: Faltan cabeceras de identidad.");
         }
 
-        // Medida Anti-Fraude: Si el usuario no es Admin (1L), forzamos que el propietario
-        // sea él mismo, evitando que un usuario común cree propiedades a nombre de otros.
         if (!ROL_ADMIN.equals(rolIdHeader)) {
             propertyDTO.setPropietarioId(usuarioIdHeader);
         }
@@ -63,19 +59,14 @@ public class PropertyController {
 
     /**
      * Obtiene todas las propiedades (CON PAGINACIÓN).
+     * 🟢 PÚBLICO: Para que la web muestre el catálogo inicial.
      */
     @GetMapping
-    @Operation(summary = "Listar todas las propiedades", description = "Retorna las propiedades registradas en el sistema divididas en páginas")
+    @Operation(summary = "Listar todas las propiedades", description = "Retorna las propiedades registradas divididas en páginas. Endpoint público.")
     public ResponseEntity<?> listar(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean includeDetails) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Endpoint GET /api/propiedades - Listar todas paginadas (includeDetails: {})", includeDetails);
         org.springframework.data.domain.Pageable paginacion = org.springframework.data.domain.PageRequest.of(page, size);
@@ -86,18 +77,13 @@ public class PropertyController {
 
     /**
      * Obtiene una propiedad por su ID.
+     * 🟢 PÚBLICO: Para ver la ficha de una casa.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener propiedad por ID", description = "Retorna los detalles de una propiedad específica")
+    @Operation(summary = "Obtener propiedad por ID", description = "Retorna los detalles de una propiedad específica. Endpoint público.")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id,
             @RequestParam(defaultValue = "true") boolean includeDetails) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Endpoint GET /api/propiedades/{} - Obtener por ID (includeDetails: {})", id, includeDetails);
         PropertyDTO propiedad = propertyService.obtenerPorId(id, includeDetails);
@@ -107,18 +93,13 @@ public class PropertyController {
 
     /**
      * Obtiene todas las propiedades publicadas por un usuario/propietario específico.
+     * 🟢 PÚBLICO: Para ver el perfil público de un arrendador y sus casas.
      */
     @GetMapping("/usuario/{usuarioId}")
-    @Operation(summary = "Listar propiedades por ID de usuario", description = "Retorna todas las propiedades que pertenecen a un propietario específico")
+    @Operation(summary = "Listar propiedades por ID de usuario", description = "Retorna todas las propiedades que pertenecen a un propietario. Endpoint público.")
     public ResponseEntity<?> listarPorUsuario(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long usuarioId,
             @RequestParam(defaultValue = "true") boolean includeDetails) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.info("Endpoint GET /api/propiedades/usuario/{} - Listar por usuario", usuarioId);
         List<PropertyDTO> propiedades = propertyService.listarPorUsuario(usuarioId, includeDetails);
@@ -128,18 +109,13 @@ public class PropertyController {
 
     /**
      * Obtiene una propiedad por su código único.
+     * 🟢 PÚBLICO: Usado para búsquedas directas o URLs limpias.
      */
     @GetMapping("/codigo/{codigo}")
-    @Operation(summary = "Obtener propiedad por código", description = "Retorna una propiedad específica usando su código único")
+    @Operation(summary = "Obtener propiedad por código", description = "Retorna una propiedad específica usando su código único. Endpoint público.")
     public ResponseEntity<?> obtenerPorCodigo(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable String codigo,
             @RequestParam(defaultValue = "true") boolean includeDetails) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Endpoint GET /api/propiedades/codigo/{} - Obtener por código", codigo);
         PropertyDTO propiedad = propertyService.obtenerPorCodigo(codigo, includeDetails);
@@ -149,10 +125,10 @@ public class PropertyController {
 
     /**
      * Actualiza una propiedad existente.
-     * BLINDADO: Solo el administrador o el dueño de la propiedad pueden actualizarla.
+     * 🔴 BLINDADO: Solo el admin o el dueño pueden editar.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar propiedad", description = "Actualiza los datos de una propiedad existente")
+    @Operation(summary = "Actualizar propiedad", description = "Actualiza los datos de una propiedad existente. Requiere cabeceras.")
     public ResponseEntity<?> actualizar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -163,17 +139,14 @@ public class PropertyController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Buscamos la propiedad actual para saber a quién le pertenece
         PropertyDTO propiedadActual = propertyService.obtenerPorId(id, false);
 
-        // Seguridad estricta: Si no es Admin, validamos que la propiedad le pertenezca
         if (!ROL_ADMIN.equals(rolIdHeader) && !propiedadActual.getPropietarioId().equals(usuarioIdHeader)) {
             log.warn("Usuario {} intentó modificar propiedad {} que no le pertenece", usuarioIdHeader, id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Acceso denegado: No puedes modificar propiedades que no te pertenecen.");
         }
 
-        // Evitar que un usuario cambie de dueño la propiedad durante la actualización
         if (!ROL_ADMIN.equals(rolIdHeader)) {
             propertyDTO.setPropietarioId(usuarioIdHeader);
         }
@@ -186,10 +159,10 @@ public class PropertyController {
 
     /**
      * Elimina una propiedad.
-     * BLINDADO: Solo el administrador o el dueño de la propiedad pueden eliminarla.
+     * 🔴 BLINDADO: Solo admin o dueño eliminan.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar propiedad", description = "Elimina una propiedad del sistema")
+    @Operation(summary = "Eliminar propiedad", description = "Elimina una propiedad del sistema. Requiere cabeceras.")
     public ResponseEntity<?> eliminar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -199,10 +172,8 @@ public class PropertyController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Buscamos la propiedad actual para saber a quién le pertenece
         PropertyDTO propiedadActual = propertyService.obtenerPorId(id, false);
 
-        // Seguridad estricta: Si no es Admin, validamos que la propiedad le pertenezca
         if (!ROL_ADMIN.equals(rolIdHeader) && !propiedadActual.getPropietarioId().equals(usuarioIdHeader)) {
             log.warn("Usuario {} intentó eliminar propiedad {} que no le pertenece", usuarioIdHeader, id);
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -217,12 +188,11 @@ public class PropertyController {
 
     /**
      * Busca propiedades con filtros avanzados.
+     * 🟢 PÚBLICO: Es el motor de búsqueda que usa cualquier visitante en la web.
      */
     @GetMapping("/buscar")
-    @Operation(summary = "Buscar propiedades con filtros", description = "Busca propiedades aplicando múltiples filtros opcionales")
+    @Operation(summary = "Buscar propiedades con filtros", description = "Busca propiedades aplicando múltiples filtros opcionales. Endpoint público.")
     public ResponseEntity<?> buscarConFiltros(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @RequestParam(required = false) Long comunaId,
             @RequestParam(required = false) Long tipoId,
             @RequestParam(required = false) BigDecimal minPrecio,
@@ -231,10 +201,6 @@ public class PropertyController {
             @RequestParam(required = false) Integer nBanos,
             @RequestParam(required = false) Boolean petFriendly,
             @RequestParam(defaultValue = "false") boolean includeDetails) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Endpoint GET /api/propiedades/buscar - Búsqueda con filtros");
         List<PropertyDTO> propiedades = propertyService.buscarConFiltros(
@@ -246,21 +212,13 @@ public class PropertyController {
 
     /**
      * Verifica si existe una propiedad.
+     * 🟢 PÚBLICO: Comunicación rápida o validaciones de interfaz.
      */
     @GetMapping("/{id}/existe")
-    @Operation(summary = "Verificar existencia de propiedad", description = "Verifica si una propiedad existe en el sistema")
-    public ResponseEntity<?> existe(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
-            @PathVariable Long id) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
+    @Operation(summary = "Verificar existencia de propiedad", description = "Verifica si una propiedad existe. Endpoint público.")
+    public ResponseEntity<?> existe(@PathVariable Long id) {
         log.debug("Endpoint GET /api/propiedades/{}/existe - Verificar existencia", id);
         boolean existe = propertyService.existsProperty(id);
-
         return ResponseEntity.ok(existe);
     }
 }

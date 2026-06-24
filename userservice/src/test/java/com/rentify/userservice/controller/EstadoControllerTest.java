@@ -56,7 +56,7 @@ class EstadoControllerTest {
     }
 
     // =========================================================================
-    // TESTS DE SEGURIDAD (RBAC Y HEADERS)
+    // 🛡️ TESTS DE SEGURIDAD (RBAC Y HEADERS)
     // =========================================================================
 
     @Test
@@ -90,8 +90,22 @@ class EstadoControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @DisplayName("GET /api/estados/{id} - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerPorId_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/estados/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("GET /api/estados/nombre/{nombre} - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerPorNombre_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/estados/nombre/ACTIVO"))
+                .andExpect(status().isUnauthorized());
+    }
+
     // =========================================================================
-    // TESTS FUNCIONALES (CON CABECERAS VÁLIDAS)
+    // 🔴 TESTS DE ESCRITURA (BLINDADOS)
     // =========================================================================
 
     @Test
@@ -131,6 +145,10 @@ class EstadoControllerTest {
 
         verify(estadoService, never()).crearEstado(any());
     }
+
+    // =========================================================================
+    // 🟡 TESTS DE LECTURA (PROTEGIDOS)
+    // =========================================================================
 
     @Test
     @DisplayName("GET /api/estados - Debe retornar lista de estados (Usuario Autenticado)")

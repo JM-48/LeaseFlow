@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller REST para gestión de regiones.
- * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
+ * Endpoints de lectura públicos. Modificaciones protegidas solo para Administradores.
  */
 @RestController
 @RequestMapping("/api/regiones")
@@ -36,10 +36,10 @@ public class RegionController {
 
     /**
      * Crea una nueva región.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PostMapping
-    @Operation(summary = "Crear región", description = "Crea una nueva región (Solo Administradores)")
+    @Operation(summary = "Crear región", description = "Crea una nueva región (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> crear(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -67,18 +67,11 @@ public class RegionController {
 
     /**
      * Lista todas las regiones.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para cargar los selectores en la web.
      */
     @GetMapping
-    @Operation(summary = "Listar regiones", description = "Obtiene todas las regiones disponibles")
-    public ResponseEntity<?> listar(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/regiones");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    @Operation(summary = "Listar regiones", description = "Obtiene todas las regiones disponibles. Endpoint público.")
+    public ResponseEntity<?> listar() {
 
         log.debug("Listando todas las regiones");
 
@@ -91,20 +84,13 @@ public class RegionController {
 
     /**
      * Obtiene una región por ID.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para detalles y lecturas en la web.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener región por ID")
+    @Operation(summary = "Obtener región por ID", description = "Obtiene los detalles de una región. Endpoint público.")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la región", example = "1")
             @PathVariable Long id) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/regiones/{}", id);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Obteniendo región con ID: {}", id);
 
@@ -115,10 +101,10 @@ public class RegionController {
 
     /**
      * Actualiza una región.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar región", description = "Actualiza el nombre de una región (Solo Administradores)")
+    @Operation(summary = "Actualizar región", description = "Actualiza el nombre de una región (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> actualizar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -150,10 +136,10 @@ public class RegionController {
 
     /**
      * Elimina una región.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar región", description = "Elimina una región del sistema (Solo Administradores)")
+    @Operation(summary = "Eliminar región", description = "Elimina una región del sistema (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> eliminar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,

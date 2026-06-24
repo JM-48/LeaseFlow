@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests de integración para FotoController.
- * Actualizado para soportar cabeceras inyectadas y validación de propiedad.
+ * Actualizado con endpoints GET públicos y POST/PUT/DELETE protegidos.
  */
 @WebMvcTest(FotoController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -49,7 +49,7 @@ class FotoControllerTest {
     private FotoDTO fotoDTO;
     private PropertyDTO mockPropertyDTO;
 
-    // Headers requeridos por el nuevo filtro de seguridad
+    // Headers requeridos por los endpoints protegidos
     private static final String HEADER_USER = "X-Usuario-Id";
     private static final String HEADER_ROLE = "X-Rol-Id";
 
@@ -75,7 +75,7 @@ class FotoControllerTest {
         when(mockPropertyDTO.getPropietarioId()).thenReturn(Long.valueOf(OWNER_ID));
     }
 
-    // ==================== Tests POST - Upload ====================
+    // ==================== Tests POST - Upload (PROTEGIDO) ====================
 
     @Test
     @DisplayName("POST /api/propiedades/{id}/fotos - Faltan cabeceras retorna 401 UNAUTHORIZED")
@@ -118,24 +118,14 @@ class FotoControllerTest {
         verify(fotoService, times(1)).guardarFoto(eq(PROPERTY_ID), any());
     }
 
-    // ==================== Tests GET - Listar Fotos ====================
+    // ==================== Tests GET - Listar Fotos (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/{id}/fotos - Faltan cabeceras retorna 401 UNAUTHORIZED")
-    void listarFotos_FaltanCabeceras_Returns401() throws Exception {
-        mockMvc.perform(get("/api/propiedades/1/fotos"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades/{id}/fotos - Debe retornar lista de fotos (Acceso lectura)")
+    @DisplayName("GET /api/propiedades/{id}/fotos - Debe retornar lista de fotos sin requerir headers")
     void listarFotos_PropiedadExiste_Returns200() throws Exception {
         when(fotoService.listarFotos(1L)).thenReturn(List.of(fotoDTO));
 
-        // Para lectura, cualquier usuario logueado sirve
-        mockMvc.perform(get("/api/propiedades/1/fotos")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER))
+        mockMvc.perform(get("/api/propiedades/1/fotos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].nombre").value("test.jpg"));
@@ -143,23 +133,21 @@ class FotoControllerTest {
         verify(fotoService, times(1)).listarFotos(1L);
     }
 
-    // ==================== Tests GET/{fotoId} ====================
+    // ==================== Tests GET/{fotoId} (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/fotos/{fotoId} - Debe retornar foto cuando existe")
+    @DisplayName("GET /api/fotos/{fotoId} - Debe retornar foto sin requerir headers")
     void obtenerFoto_FotoExiste_Returns200() throws Exception {
         when(fotoService.obtenerPorId(1L)).thenReturn(fotoDTO);
 
-        mockMvc.perform(get("/api/fotos/1")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER))
+        mockMvc.perform(get("/api/fotos/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
 
         verify(fotoService, times(1)).obtenerPorId(1L);
     }
 
-    // ==================== Tests DELETE ====================
+    // ==================== Tests DELETE (PROTEGIDO) ====================
 
     @Test
     @DisplayName("DELETE /api/fotos/{fotoId} - Usuario no dueño retorna 403 FORBIDDEN")
@@ -203,7 +191,7 @@ class FotoControllerTest {
         verify(fotoService, times(1)).eliminarFoto(1L);
     }
 
-    // ==================== Tests PUT - Reordenar Fotos ====================
+    // ==================== Tests PUT - Reordenar Fotos (PROTEGIDO) ====================
 
     @Test
     @DisplayName("PUT /api/propiedades/{id}/fotos/reordenar - Faltan cabeceras retorna 401")

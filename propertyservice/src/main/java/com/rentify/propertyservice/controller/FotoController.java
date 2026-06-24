@@ -19,8 +19,7 @@ import java.util.List;
 
 /**
  * Controller REST para gestión de fotos de propiedades.
- * Maneja subida, listado y eliminación de fotos.
- * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
+ * Endpoints de lectura públicos. Modificaciones protegidas para el dueño o Admin.
  */
 @RestController
 @RequestMapping("/api")
@@ -36,12 +35,12 @@ public class FotoController {
 
     /**
      * Sube una nueva foto para una propiedad.
-     * BLINDADO: Solo Administradores o el dueño de la propiedad pueden subir fotos.
+     * 🔴 BLINDADO: Solo Administradores o el dueño de la propiedad pueden subir fotos.
      */
     @PostMapping("/propiedades/{id}/fotos")
     @Operation(
             summary = "Subir foto a propiedad",
-            description = "Sube una nueva foto a una propiedad. Máximo 20 fotos por propiedad, máximo 10 MB por archivo"
+            description = "Sube una nueva foto a una propiedad. Máximo 20 fotos por propiedad, máximo 10 MB por archivo. Requiere cabeceras."
     )
     public ResponseEntity<?> uploadFoto(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
@@ -74,23 +73,16 @@ public class FotoController {
 
     /**
      * Lista todas las fotos de una propiedad.
-     * Acceso: Cualquier usuario autenticado puede verlas.
+     * 🟢 PÚBLICO: Para cargar el carrusel de imágenes en la web.
      */
     @GetMapping("/propiedades/{id}/fotos")
     @Operation(
             summary = "Listar fotos de propiedad",
-            description = "Obtiene todas las fotos de una propiedad ordenadas por orden de visualización"
+            description = "Obtiene todas las fotos de una propiedad ordenadas por orden de visualización. Endpoint público."
     )
     public ResponseEntity<?> listarFotos(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la propiedad", example = "1")
             @PathVariable(name = "id") Long propertyId) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades/{}/fotos", propertyId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Endpoint GET /api/propiedades/{}/fotos - Listar fotos", propertyId);
         List<FotoDTO> fotos = fotoService.listarFotos(propertyId);
@@ -100,23 +92,16 @@ public class FotoController {
 
     /**
      * Obtiene una foto específica por su ID.
-     * Acceso: Cualquier usuario autenticado puede verla.
+     * 🟢 PÚBLICO: Para visualizaciones individuales.
      */
     @GetMapping("/fotos/{fotoId}")
     @Operation(
             summary = "Obtener foto por ID",
-            description = "Obtiene los detalles de una foto específica"
+            description = "Obtiene los detalles de una foto específica. Endpoint público."
     )
     public ResponseEntity<?> obtenerFoto(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la foto", example = "1")
             @PathVariable Long fotoId) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/fotos/{}", fotoId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Endpoint GET /api/fotos/{} - Obtener foto", fotoId);
         FotoDTO fotoDTO = fotoService.obtenerPorId(fotoId);
@@ -126,12 +111,12 @@ public class FotoController {
 
     /**
      * Elimina una foto.
-     * BLINDADO: Solo Administradores o el dueño de la propiedad pueden eliminar fotos.
+     * 🔴 BLINDADO: Solo Administradores o el dueño de la propiedad pueden eliminar fotos.
      */
     @DeleteMapping("/fotos/{fotoId}")
     @Operation(
             summary = "Eliminar foto",
-            description = "Elimina una foto de la propiedad"
+            description = "Elimina una foto de la propiedad. Requiere cabeceras."
     )
     public ResponseEntity<?> eliminarFoto(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
@@ -147,8 +132,6 @@ public class FotoController {
         // Recuperamos la foto para saber a qué propiedad pertenece
         FotoDTO fotoActual = fotoService.obtenerPorId(fotoId);
 
-        // Asumiendo que FotoDTO tiene la referencia a la propiedad (ajusta getPropertyId si se llama distinto)
-        // NOTA: Si tu FotoDTO no tiene este campo, podrías necesitar una consulta personalizada en el repositorio.
         PropertyDTO propiedadActual = propertyService.obtenerPorId(fotoActual.getPropiedadId(), false);
 
         if (!ROL_ADMIN.equals(rolIdHeader) && !propiedadActual.getPropietarioId().equals(usuarioIdHeader)) {
@@ -165,12 +148,12 @@ public class FotoController {
 
     /**
      * Reordena las fotos de una propiedad.
-     * BLINDADO: Solo Administradores o el dueño de la propiedad pueden reordenar.
+     * 🔴 BLINDADO: Solo Administradores o el dueño de la propiedad pueden reordenar.
      */
     @PutMapping("/propiedades/{id}/fotos/reordenar")
     @Operation(
             summary = "Reordenar fotos",
-            description = "Cambia el orden de visualización de las fotos de una propiedad"
+            description = "Cambia el orden de visualización de las fotos de una propiedad. Requiere cabeceras."
     )
     public ResponseEntity<?> reordenarFotos(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,

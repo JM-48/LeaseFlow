@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * Controller para gestión de roles.
  * Protegido mediante control de flujo perimetral por cabeceras de identidad del API Gateway.
@@ -39,12 +37,12 @@ public class RolController {
     }
 
     /**
-     * Crea un nuevo rol
-     * POST /api/roles
+     * Crea un nuevo rol.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PostMapping
-    @Operation(summary = "Crear nuevo rol (Solo Admin)",
-            description = "Crea un nuevo rol en el sistema. Requiere privilegios de Administrador.")
+    @Operation(summary = "Crear nuevo rol",
+            description = "🔴 BLINDADO (Solo Admin): Crea un nuevo rol en el sistema.")
     public ResponseEntity<?> crearRol(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -64,12 +62,12 @@ public class RolController {
     }
 
     /**
-     * Obtiene todos los roles
-     * GET /api/roles
+     * Obtiene todos los roles.
+     * 🟡 PROTEGIDO: Cualquier usuario autenticado.
      */
     @GetMapping
-    @Operation(summary = "Listar todos los roles (Usuarios Autenticados)",
-            description = "Obtiene la lista completa de roles del sistema.")
+    @Operation(summary = "Listar todos los roles",
+            description = "🟡 PROTEGIDO (Usuarios Autenticados): Obtiene la lista completa de roles del sistema.")
     public ResponseEntity<?> obtenerTodos(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader) {
@@ -82,12 +80,12 @@ public class RolController {
     }
 
     /**
-     * Obtiene un rol por su ID
-     * GET /api/roles/{id}
+     * Obtiene un rol por su ID.
+     * 🟡 PROTEGIDO: Cualquier usuario autenticado.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener rol por ID (Usuarios Autenticados)",
-            description = "Obtiene un rol específico por su ID.")
+    @Operation(summary = "Obtener rol por ID",
+            description = "🟡 PROTEGIDO (Usuarios Autenticados): Obtiene un rol específico por su ID.")
     public ResponseEntity<?> obtenerPorId(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -102,12 +100,12 @@ public class RolController {
     }
 
     /**
-     * Obtiene un rol por su nombre
-     * GET /api/roles/nombre/{nombre}
+     * Obtiene un rol por su nombre.
+     * 🟡 PROTEGIDO: Cualquier usuario autenticado.
      */
     @GetMapping("/nombre/{nombre}")
-    @Operation(summary = "Obtener rol por nombre (Usuarios Autenticados)",
-            description = "Obtiene un rol específico por su nombre (ADMIN, PROPIETARIO, ARRIENDATARIO)")
+    @Operation(summary = "Obtener rol por nombre",
+            description = "🟡 PROTEGIDO (Usuarios Autenticados): Obtiene un rol específico por su nombre (ADMIN, PROPIETARIO, ARRIENDATARIO)")
     public ResponseEntity<?> obtenerPorNombre(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,

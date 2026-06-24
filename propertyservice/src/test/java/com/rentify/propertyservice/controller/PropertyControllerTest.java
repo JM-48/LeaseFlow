@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests de integración para PropertyController.
- * Actualizado para soportar cabeceras inyectadas y validación de autoría.
+ * Actualizado con endpoints GET públicos y POST/PUT/DELETE protegidos.
  */
 @WebMvcTest(PropertyController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -44,7 +44,7 @@ class PropertyControllerTest {
 
     private PropertyDTO propertyDTO;
 
-    // Headers requeridos por el nuevo filtro de seguridad
+    // Headers requeridos por los endpoints protegidos
     private static final String HEADER_USER = "X-Usuario-Id";
     private static final String HEADER_ROLE = "X-Rol-Id";
 
@@ -74,7 +74,7 @@ class PropertyControllerTest {
                 .build();
     }
 
-    // ==================== Tests POST - Crear ====================
+    // ==================== Tests POST - Crear (PROTEGIDO) ====================
 
     @Test
     @DisplayName("POST /api/propiedades - Faltan cabeceras retorna 401 UNAUTHORIZED")
@@ -102,60 +102,47 @@ class PropertyControllerTest {
         verify(propertyService, times(1)).crearProperty(any(PropertyDTO.class));
     }
 
-    // ==================== Tests GET - Listar ====================
+    // ==================== Tests GET - Listar (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades - Faltan cabeceras retorna 401 UNAUTHORIZED")
-    void listar_FaltanCabeceras_Returns401() throws Exception {
-        mockMvc.perform(get("/api/propiedades"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades")
+    @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades sin requerir headers")
     void listar_SinDetalles_Returns200() throws Exception {
         when(propertyService.listarTodas(any(Pageable.class), eq(false)))
                 .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
         mockMvc.perform(get("/api/propiedades")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER)
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].codigo").value("DP001"));
     }
 
-    // ==================== Tests GET/{id} ====================
+    // ==================== Tests GET/{id} (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/{id} - Debe retornar propiedad cuando existe")
+    @DisplayName("GET /api/propiedades/{id} - Debe retornar propiedad sin requerir headers")
     void obtenerPorId_Existe_Returns200() throws Exception {
         when(propertyService.obtenerPorId(1L, true)).thenReturn(propertyDTO);
 
         mockMvc.perform(get("/api/propiedades/1")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER)
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codigo").value("DP001"));
     }
 
-    // ==================== Tests GET/codigo/{codigo} ====================
+    // ==================== Tests GET/codigo/{codigo} (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/codigo/{codigo} - Debe retornar propiedad por código")
+    @DisplayName("GET /api/propiedades/codigo/{codigo} - Debe retornar propiedad sin requerir headers")
     void obtenerPorCodigo_Existe_Returns200() throws Exception {
         when(propertyService.obtenerPorCodigo("DP001", true)).thenReturn(propertyDTO);
 
         mockMvc.perform(get("/api/propiedades/codigo/DP001")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER)
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codigo").value("DP001"));
     }
 
-    // ==================== Tests PUT - Actualizar ====================
+    // ==================== Tests PUT - Actualizar (PROTEGIDO) ====================
 
     @Test
     @DisplayName("PUT /api/propiedades/{id} - Usuario no dueño retorna 403 FORBIDDEN")
@@ -185,7 +172,7 @@ class PropertyControllerTest {
                 .andExpect(jsonPath("$.id").value(1));
     }
 
-    // ==================== Tests DELETE ====================
+    // ==================== Tests DELETE (PROTEGIDO) ====================
 
     @Test
     @DisplayName("DELETE /api/propiedades/{id} - Usuario no dueño retorna 403 FORBIDDEN")
@@ -222,17 +209,15 @@ class PropertyControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    // ==================== Tests GET/buscar ====================
+    // ==================== Tests GET/buscar (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/buscar - Debe retornar propiedades con filtros")
+    @DisplayName("GET /api/propiedades/buscar - Debe retornar propiedades sin requerir headers")
     void buscarConFiltros_ConFiltros_Returns200() throws Exception {
         when(propertyService.buscarConFiltros(anyLong(), nullable(Long.class), any(), any(), nullable(Integer.class), nullable(Integer.class), nullable(Boolean.class), anyBoolean()))
                 .thenReturn(List.of(propertyDTO));
 
         mockMvc.perform(get("/api/propiedades/buscar")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER)
                         .param("comunaId", "1")
                         .param("minPrecio", "600000")
                         .param("maxPrecio", "700000")
@@ -241,16 +226,14 @@ class PropertyControllerTest {
                 .andExpect(jsonPath("$").isArray());
     }
 
-    // ==================== Tests GET/{id}/existe ====================
+    // ==================== Tests GET/{id}/existe (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/{id}/existe - Debe retornar true si existe")
+    @DisplayName("GET /api/propiedades/{id}/existe - Debe retornar true sin requerir headers")
     void existe_PropiedadExiste_ReturnsTrue() throws Exception {
         when(propertyService.existsProperty(1L)).thenReturn(true);
 
-        mockMvc.perform(get("/api/propiedades/1/existe")
-                        .header(HEADER_USER, OTHER_USER_ID)
-                        .header(HEADER_ROLE, ROL_USER))
+        mockMvc.perform(get("/api/propiedades/1/existe"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
     }

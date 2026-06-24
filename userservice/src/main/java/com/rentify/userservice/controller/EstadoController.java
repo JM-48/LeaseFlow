@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * Controller para gestión de estados.
  * Protegido mediante control de flujo por cabeceras de identidad del API Gateway.
@@ -39,11 +37,11 @@ public class EstadoController {
     }
 
     /**
-     * Crea un nuevo estado
-     * POST /api/estados
+     * Crea un nuevo estado.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PostMapping
-    @Operation(summary = "Crear nuevo estado (Solo Admin)", description = "Crea un nuevo estado en el sistema. Requiere privilegios de Administrador.")
+    @Operation(summary = "Crear nuevo estado", description = "🔴 BLINDADO (Solo Admin): Crea un nuevo estado en el sistema.")
     public ResponseEntity<?> crearEstado(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -63,11 +61,11 @@ public class EstadoController {
     }
 
     /**
-     * Obtiene todos los estados
-     * GET /api/estados
+     * Obtiene todos los estados.
+     * 🟡 PROTEGIDO: Cualquier usuario autenticado.
      */
     @GetMapping
-    @Operation(summary = "Listar todos los estados (Usuarios Autenticados)", description = "Obtiene la lista completa de estados para uso de la plataforma.")
+    @Operation(summary = "Listar todos los estados", description = "🟡 PROTEGIDO (Usuarios Autenticados): Obtiene la lista completa de estados para uso de la plataforma.")
     public ResponseEntity<?> obtenerTodos(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader) {
@@ -80,11 +78,11 @@ public class EstadoController {
     }
 
     /**
-     * Obtiene un estado por su ID
-     * GET /api/estados/{id}
+     * Obtiene un estado por su ID.
+     * 🟡 PROTEGIDO: Cualquier usuario autenticado.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener estado por ID (Usuarios Autenticados)", description = "Obtiene un estado específico por su ID.")
+    @Operation(summary = "Obtener estado por ID", description = "🟡 PROTEGIDO (Usuarios Autenticados): Obtiene un estado específico por su ID.")
     public ResponseEntity<?> obtenerPorId(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -99,12 +97,12 @@ public class EstadoController {
     }
 
     /**
-     * Obtiene un estado por su nombre
-     * GET /api/estados/nombre/{nombre}
+     * Obtiene un estado por su nombre.
+     * 🟡 PROTEGIDO: Cualquier usuario autenticado.
      */
     @GetMapping("/nombre/{nombre}")
-    @Operation(summary = "Obtener estado por nombre (Usuarios Autenticados)",
-            description = "Obtiene un estado específico por su nombre (ACTIVO, INACTIVO, SUSPENDIDO)")
+    @Operation(summary = "Obtener estado por nombre",
+            description = "🟡 PROTEGIDO (Usuarios Autenticados): Obtiene un estado específico por su nombre (ACTIVO, INACTIVO, SUSPENDIDO).")
     public ResponseEntity<?> obtenerPorNombre(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,

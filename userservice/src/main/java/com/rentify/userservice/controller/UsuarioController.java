@@ -6,7 +6,6 @@ import com.rentify.userservice.dto.LoginDTO;
 import com.rentify.userservice.dto.LoginResponseDTO;
 import com.rentify.userservice.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Controller para gestión de usuarios.
@@ -47,7 +44,7 @@ public class UsuarioController {
 
     @PostMapping
     @Operation(summary = "Registrar nuevo usuario",
-            description = "Endpoint Público. Registra un nuevo usuario en el sistema. Solo mayores de 18 años.")
+            description = "? PÚBLICO: Registra un nuevo usuario en el sistema. Solo mayores de 18 años.")
     public ResponseEntity<UsuarioDTO> registrarUsuario(
             @Valid @RequestBody UsuarioDTO usuarioDTO) {
         UsuarioDTO creado = usuarioService.registrarUsuario(usuarioDTO);
@@ -56,7 +53,7 @@ public class UsuarioController {
 
     @PostMapping("/login")
     @Operation(summary = "Login de usuario",
-            description = "Endpoint Público. Autentica un usuario con email y contraseña utilizando hash BCrypt.")
+            description = "? PÚBLICO: Autentica un usuario con email y contraseña utilizando hash BCrypt.")
     public ResponseEntity<LoginResponseDTO> login(
             @Valid @RequestBody LoginDTO loginDTO) {
         UsuarioDTO usuario = usuarioService.login(loginDTO);
@@ -72,8 +69,8 @@ public class UsuarioController {
     // ==========================================
 
     @GetMapping
-    @Operation(summary = "Listar todos los usuarios (Solo Admin)",
-            description = "Obtiene la lista completa de usuarios registrados. Requiere privilegios de Administrador.")
+    @Operation(summary = "Listar todos los usuarios",
+            description = "? BLINDADO (Solo Admin): Obtiene la lista completa de usuarios registrados.")
     public ResponseEntity<?> obtenerTodos(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -92,8 +89,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener usuario por ID (Dueño o Admin)",
-            description = "Obtiene un usuario específico por su ID. Solo permitido para el propio usuario o un Administrador.")
+    @Operation(summary = "Obtener usuario por ID",
+            description = "? PROTEGIDO (Dueño o Admin): Obtiene un usuario específico por su ID.")
     public ResponseEntity<?> obtenerPorId(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -114,8 +111,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/email/{email}")
-    @Operation(summary = "Obtener usuario por email (Dueño o Admin)",
-            description = "Obtiene un usuario específico por su correo electrónico. Protegido contra fuga de información.")
+    @Operation(summary = "Obtener usuario por email",
+            description = "? PROTEGIDO (Dueño o Admin): Obtiene un usuario específico por su correo electrónico.")
     public ResponseEntity<?> obtenerPorEmail(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -138,8 +135,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/rol/{rolId}")
-    @Operation(summary = "Obtener usuarios por rol (Solo Admin)",
-            description = "Obtiene todos los usuarios con un rol específico.")
+    @Operation(summary = "Obtener usuarios por rol",
+            description = "? BLINDADO (Solo Admin): Obtiene todos los usuarios con un rol específico.")
     public ResponseEntity<?> obtenerPorRol(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -158,8 +155,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/vip")
-    @Operation(summary = "Obtener usuarios DUOC VIP (Solo Admin)",
-            description = "Obtiene todos los usuarios con beneficio DUOC.")
+    @Operation(summary = "Obtener usuarios DUOC VIP",
+            description = "? BLINDADO (Solo Admin): Obtiene todos los usuarios con beneficio DUOC.")
     public ResponseEntity<?> obtenerUsuariosVIP(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -177,8 +174,8 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar usuario (Solo Admin)",
-            description = "Actualiza los datos de un usuario. Permite cambiar nombre, email, teléfono, rol y estado.")
+    @Operation(summary = "Actualizar usuario",
+            description = "? BLINDADO (Solo Admin): Actualiza los datos de un usuario. Permite cambiar nombre, email, teléfono, rol y estado.")
     public ResponseEntity<?> actualizarUsuario(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -197,8 +194,8 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/rol")
-    @Operation(summary = "Cambiar rol de usuario (Solo Admin)",
-            description = "Cambia el rol asignado a un usuario.")
+    @Operation(summary = "Cambiar rol de usuario",
+            description = "? BLINDADO (Solo Admin): Cambia el rol asignado a un usuario.")
     public ResponseEntity<?> cambiarRol(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -217,8 +214,8 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/estado")
-    @Operation(summary = "Cambiar estado de usuario (Solo Admin)",
-            description = "Cambia el estado de un usuario (1=ACTIVO, 2=INACTIVO, 3=SUSPENDIDO)")
+    @Operation(summary = "Cambiar estado de usuario",
+            description = "? BLINDADO (Solo Admin): Cambia el estado de un usuario (1=ACTIVO, 2=INACTIVO, 3=SUSPENDIDO)")
     public ResponseEntity<?> cambiarEstado(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -237,8 +234,8 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/puntos")
-    @Operation(summary = "Agregar puntos RentifyPoints (Solo Admin / Interno)",
-            description = "Agrega puntos al programa de fidelización del usuario.")
+    @Operation(summary = "Agregar puntos RentifyPoints",
+            description = "? BLINDADO (Solo Admin): Agrega puntos al programa de fidelización del usuario.")
     public ResponseEntity<?> agregarPuntos(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -257,8 +254,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}/exists")
-    @Operation(summary = "Verificar si usuario existe (Cualquier usuario autenticado)",
-            description = "Permite a los demás microservicios de la red interna comprobar la existencia de un usuario mediante Feign.")
+    @Operation(summary = "Verificar si usuario existe",
+            description = "? PROTEGIDO (Cualquier usuario autenticado): Permite a los demás microservicios comprobar la existencia de un usuario mediante Feign.")
     public ResponseEntity<?> existeUsuario(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,
@@ -268,13 +265,12 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Cualquier usuario autenticado en el ecosistema (pasó por el gateway) puede gatillar esta verificación
         return ResponseEntity.ok(Boolean.valueOf(usuarioService.existeUsuario(id)));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar usuario físicamente (Solo Admin)",
-            description = "Elimina de forma permanente a un usuario del sistema utilizando su ID.")
+    @Operation(summary = "Eliminar usuario físicamente",
+            description = "? BLINDADO (Solo Admin): Elimina de forma permanente a un usuario del sistema.")
     public ResponseEntity<?> eliminarUsuario(
             @RequestHeader(value = HEADER_USER, required = false) Long usuarioIdHeader,
             @RequestHeader(value = HEADER_ROLE, required = false) Long rolIdHeader,

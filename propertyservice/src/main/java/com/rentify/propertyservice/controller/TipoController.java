@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller REST para gestión de tipos de propiedades.
- * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
+ * Endpoints de lectura públicos. Modificaciones protegidas solo para Administradores.
  */
 @RestController
 @RequestMapping("/api/tipos")
@@ -36,10 +36,10 @@ public class TipoController {
 
     /**
      * Crea un nuevo tipo.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PostMapping
-    @Operation(summary = "Crear tipo", description = "Crea un nuevo tipo de propiedad (Solo Administradores)")
+    @Operation(summary = "Crear tipo", description = "Crea un nuevo tipo de propiedad (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> crear(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -67,18 +67,11 @@ public class TipoController {
 
     /**
      * Lista todos los tipos.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para cargar los selectores y filtros en la web.
      */
     @GetMapping
-    @Operation(summary = "Listar tipos", description = "Obtiene todos los tipos disponibles")
-    public ResponseEntity<?> listar(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/tipos");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    @Operation(summary = "Listar tipos", description = "Obtiene todos los tipos disponibles. Endpoint público.")
+    public ResponseEntity<?> listar() {
 
         log.debug("Listando todos los tipos");
 
@@ -91,20 +84,13 @@ public class TipoController {
 
     /**
      * Obtiene tipo por ID.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para detalles en la web.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener tipo por ID")
+    @Operation(summary = "Obtener tipo por ID", description = "Obtiene los detalles de un tipo. Endpoint público.")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/tipos/{}", id);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Obteniendo tipo con ID: {}", id);
 
@@ -115,10 +101,10 @@ public class TipoController {
 
     /**
      * Actualiza un tipo.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar tipo", description = "Actualiza el nombre de un tipo (Solo Administradores)")
+    @Operation(summary = "Actualizar tipo", description = "Actualiza el nombre de un tipo (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> actualizar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -150,10 +136,10 @@ public class TipoController {
 
     /**
      * Elimina un tipo.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar tipo", description = "Elimina un tipo del sistema (Solo Administradores)")
+    @Operation(summary = "Eliminar tipo", description = "Elimina un tipo del sistema (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> eliminar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,

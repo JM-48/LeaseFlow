@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller REST para gestión de comunas.
- * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
+ * Endpoints de lectura públicos. Modificaciones protegidas solo para Administradores.
  */
 @RestController
 @RequestMapping("/api/comunas")
@@ -41,10 +41,10 @@ public class ComunaController {
 
     /**
      * Crea una nueva comuna.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PostMapping
-    @Operation(summary = "Crear comuna", description = "Crea una nueva comuna (Solo Administradores)")
+    @Operation(summary = "Crear comuna", description = "Crea una nueva comuna (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> crear(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -78,18 +78,11 @@ public class ComunaController {
 
     /**
      * Lista todas las comunas.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para cargar los selectores en la web.
      */
     @GetMapping
-    @Operation(summary = "Listar comunas", description = "Obtiene todas las comunas disponibles")
-    public ResponseEntity<?> listar(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/comunas");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    @Operation(summary = "Listar comunas", description = "Obtiene todas las comunas disponibles. Endpoint público.")
+    public ResponseEntity<?> listar() {
 
         log.debug("Listando todas las comunas");
 
@@ -100,20 +93,13 @@ public class ComunaController {
 
     /**
      * Obtiene una comuna por ID.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para detalles y lecturas en la web.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener comuna por ID")
+    @Operation(summary = "Obtener comuna por ID", description = "Obtiene los detalles de una comuna. Endpoint público.")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la comuna", example = "1")
             @PathVariable Long id) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/comunas/{}", id);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Obteniendo comuna con ID: {}", id);
 
@@ -124,20 +110,13 @@ public class ComunaController {
 
     /**
      * Obtiene comunas por ID de Región.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Esencial para los selectores en cascada (eliges región -> se cargan sus comunas).
      */
     @GetMapping("/region/{regionId}")
-    @Operation(summary = "Obtener comunas por región")
+    @Operation(summary = "Obtener comunas por región", description = "Obtiene las comunas asociadas a una región específica. Endpoint público.")
     public ResponseEntity<?> obtenerPorRegion(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la región", example = "1")
             @PathVariable Long regionId) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/comunas/region/{}", regionId);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Obteniendo comunas de la región: {}", regionId);
 
@@ -150,10 +129,10 @@ public class ComunaController {
 
     /**
      * Actualiza una comuna.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar comuna", description = "Actualiza los datos de una comuna (Solo Administradores)")
+    @Operation(summary = "Actualizar comuna", description = "Actualiza los datos de una comuna (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> actualizar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -190,10 +169,10 @@ public class ComunaController {
 
     /**
      * Elimina una comuna.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar comuna", description = "Elimina una comuna del sistema (Solo Administradores)")
+    @Operation(summary = "Eliminar comuna", description = "Elimina una comuna del sistema (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> eliminar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,

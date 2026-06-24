@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller REST para gestión de categorías de propiedades.
- * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
+ * Endpoints de lectura públicos. Modificaciones protegidas solo para Administradores.
  */
 @RestController
 @RequestMapping("/api/categorias")
@@ -36,10 +36,10 @@ public class CategoriaController {
 
     /**
      * Crea una nueva categoría.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PostMapping
-    @Operation(summary = "Crear categoría", description = "Crea una nueva categoría de propiedad (Solo Administradores)")
+    @Operation(summary = "Crear categoría", description = "Crea una nueva categoría de propiedad (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> crear(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -67,18 +67,11 @@ public class CategoriaController {
 
     /**
      * Lista todas las categorías.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para cargar los selectores y filtros en la web.
      */
     @GetMapping
-    @Operation(summary = "Listar categorías", description = "Obtiene todas las categorías disponibles")
-    public ResponseEntity<?> listar(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/categorias");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    @Operation(summary = "Listar categorías", description = "Obtiene todas las categorías disponibles. Endpoint público.")
+    public ResponseEntity<?> listar() {
 
         log.debug("Listando todas las categorías");
 
@@ -91,20 +84,13 @@ public class CategoriaController {
 
     /**
      * Obtiene categoría por ID.
-     * Acceso: Cualquier usuario autenticado.
+     * 🟢 PÚBLICO: Para lectura de detalles en la web.
      */
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener categoría por ID")
+    @Operation(summary = "Obtener categoría por ID", description = "Obtiene los detalles de una categoría. Endpoint público.")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
-            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id) {
-
-        if (usuarioIdHeader == null || rolIdHeader == null) {
-            log.warn("Intento de acceso no autorizado a GET /api/categorias/{}", id);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         log.debug("Obteniendo categoría con ID: {}", id);
 
@@ -115,10 +101,10 @@ public class CategoriaController {
 
     /**
      * Actualiza una categoría.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar categoría", description = "Actualiza el nombre de una categoría (Solo Administradores)")
+    @Operation(summary = "Actualizar categoría", description = "Actualiza el nombre de una categoría (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> actualizar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
@@ -150,10 +136,10 @@ public class CategoriaController {
 
     /**
      * Elimina una categoría.
-     * BLINDADO: Solo Administradores.
+     * 🔴 BLINDADO: Solo Administradores.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar categoría", description = "Elimina una categoría del sistema (Solo Administradores)")
+    @Operation(summary = "Eliminar categoría", description = "Elimina una categoría del sistema (Solo Administradores). Requiere cabeceras.")
     public ResponseEntity<?> eliminar(
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,

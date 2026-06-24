@@ -1935,3 +1935,924 @@ This generated password is for development use only. Your security configuration
     drop table if exists tipo_doc
 2026-06-24 03:32:32 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Shutdown initiated...
 2026-06-24 03:32:32 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Shutdown completed.
+2026-06-24 16:35:29 [main] INFO  c.r.d.c.DocumentoServiceIntegrationTest - Starting DocumentoServiceIntegrationTest using Java 17.0.19 with PID 3980 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\documentService)
+2026-06-24 16:35:29 [main] DEBUG c.r.d.c.DocumentoServiceIntegrationTest - Running with Spring Boot v3.5.6, Spring v6.2.11
+2026-06-24 16:35:29 [main] INFO  c.r.d.c.DocumentoServiceIntegrationTest - The following 1 profile is active: "test"
+2026-06-24 16:35:29 [main] DEBUG o.s.w.c.s.GenericWebApplicationContext - Refreshing org.springframework.web.context.support.GenericWebApplicationContext@6e28bb87
+2026-06-24 16:35:34 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-24 16:35:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 475 ms. Found 3 JPA repository interfaces.
+2026-06-24 16:35:39 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-24 16:35:39 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.29.Final
+2026-06-24 16:35:39 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-06-24 16:35:40 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-24 16:35:40 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-06-24 16:35:40 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-06-24 16:35:40 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-06-24 16:35:41 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-24 16:35:41 [main] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-06-24 16:35:41 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-24 16:35:43 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-24 16:35:43 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists documentos
+2026-06-24 16:35:43 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists estado
+2026-06-24 16:35:43 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists tipo_doc
+2026-06-24 16:35:43 [main] DEBUG org.hibernate.SQL - 
+    create table documentos (
+        estado_id bigint not null,
+        f_actualizacion datetime(6),
+        f_subido datetime(6) not null,
+        id bigint not null auto_increment,
+        revisado_por bigint,
+        tipo_doc_id bigint not null,
+        usuarios_id bigint not null,
+        nombre varchar(60) not null,
+        observaciones varchar(500),
+        primary key (id)
+    ) engine=InnoDB
+2026-06-24 16:35:43 [main] DEBUG org.hibernate.SQL - 
+    create table estado (
+        id bigint not null auto_increment,
+        nombre varchar(20) not null,
+        primary key (id)
+    ) engine=InnoDB
+2026-06-24 16:35:43 [main] DEBUG org.hibernate.SQL - 
+    create table tipo_doc (
+        id bigint not null auto_increment,
+        nombre varchar(60) not null,
+        primary key (id)
+    ) engine=InnoDB
+2026-06-24 16:35:43 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-24 16:35:44 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-24 16:35:46 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-24 16:35:47 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 25 mappings in 'requestMappingHandlerMapping'
+2026-06-24 16:35:47 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-06-24 16:35:47 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 0 endpoints beneath base path '/actuator'
+2026-06-24 16:35:47 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 235f4d87-5796-4fe8-8f3a-3ba770bc80a0
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-06-24 16:35:47 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-24 16:35:48 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-06-24 16:35:48 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-06-24 16:35:49 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-06-24 16:35:49 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-06-24 16:35:49 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoServiceIntegrationTest - Started DocumentoServiceIntegrationTest in 22.105 seconds (process running for 33.529)
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - INICIANDO POBLADO DE DATOS MAESTROS - DOCUMENT SERVICE
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Verificando estados de documentos...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        estado e1_0
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Estados ya existen (4 registros). Saltando inicializacion.
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Verificando tipos de documentos...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        tipo_doc td1_0
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Tipos de documento ya existen (6 registros). Saltando inicializacion.
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - INICIALIZACION COMPLETADA - DOCUMENT SERVICE
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Resumen de datos:
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        estado e1_0
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig -   - Estados: 4 registros
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        tipo_doc td1_0
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig -   - Tipos de Documento: 6 registros
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Document Service listo para recibir peticiones
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Puerto: 8083
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - Swagger UI: http://localhost:8083/swagger-ui/index.html
+2026-06-24 16:35:50 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - VERIFICANDO DOCUMENTOS DE PRUEBA - DOCUMENT SERVICE
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        documentos d1_0
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        estado e1_0
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        tipo_doc td1_0
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos de prueba...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        e1_0.id,
+        e1_0.nombre 
+    from
+        estado e1_0 
+    where
+        e1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        e1_0.id,
+        e1_0.nombre 
+    from
+        estado e1_0 
+    where
+        e1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        e1_0.id,
+        e1_0.nombre 
+    from
+        estado e1_0 
+    where
+        e1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 1 (ADMIN)...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Diego_Olaver.pdf (Usuario: 1, Estado: 2, Tipo: 1)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Liquidacion_Sueldo_Octubre_2025.pdf (Usuario: 1, Estado: 2, Tipo: 3)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Antecedentes_2025.pdf (Usuario: 1, Estado: 2, Tipo: 4)
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 2 (PROPIETARIO)...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Fabian_Gonzalez.pdf (Usuario: 2, Estado: 2, Tipo: 1)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Propiedad_Casa_Maipu.pdf (Usuario: 2, Estado: 2, Tipo: 6)
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 3 (ARRIENDATARIO)...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Juan_Perez.pdf (Usuario: 3, Estado: 2, Tipo: 1)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Liquidacion_Sueldo_Noviembre_2025.pdf (Usuario: 3, Estado: 2, Tipo: 3)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_AFP_2025.pdf (Usuario: 3, Estado: 1, Tipo: 5)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Contrato_Trabajo_Empresa_XYZ.pdf (Usuario: 3, Estado: 4, Tipo: 6)
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 4 (ARRIENDATARIO)...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Maria_Lopez.pdf (Usuario: 4, Estado: 2, Tipo: 1)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Liquidacion_Sueldo_Octubre_2025.pdf (Usuario: 4, Estado: 2, Tipo: 3)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Antecedentes_Maria.pdf (Usuario: 4, Estado: 2, Tipo: 4)
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 5 (PROPIETARIO)...
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Pedro_Ramirez.pdf (Usuario: 5, Estado: 2, Tipo: 1)
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:35:50 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Antecedentes_Pedro.pdf (Usuario: 5, Estado: 1, Tipo: 4)
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - DOCUMENTOS DE PRUEBA CREADOS EXITOSAMENTE
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        documentos d1_0
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - Total documentos creados: 14
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 1: 3 documentos
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 2: 2 documentos
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 3: 4 documentos
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 4: 3 documentos
+2026-06-24 16:35:50 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 5: 2 documentos
+2026-06-24 16:35:50 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.TipoDocumentoController#crear(TipoDocumentoDTO, Long, Long)
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.TipoDocumentoDTO@633f8efd]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/octet-stream', given [*/*] and supported [*/*]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#crearDocumento(DocumentoDTO, Long, Long)
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.DocumentoDTO@47fd0905]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Using @ExceptionHandler com.rentify.documentService.exception.GlobalExceptionHandler#handleValidationErrors(MethodArgumentNotValidException)
+2026-06-24 16:35:51 [main] ERROR c.r.d.e.GlobalExceptionHandler - Errores de validaciÃ³n: {estadoId=El ID del estado es obligatorio, tipoDocId=El ID del tipo de documento es obligatorio, nombre=El nombre del documento es obligatorio, usuarioId=El ID del usuario es obligatorio}
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.exception.ErrorResponse@1912297c]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<?> com.rentify.documentService.controller.DocumentoController.crearDocumento(com.rentify.documentService.dto.DocumentoDTO,java.lang.Long,java.lang.Long) with 4 errors: [Field error in object 'documentoDTO' on field 'nombre': rejected value [null]; codes [NotBlank.documentoDTO.nombre,NotBlank.nombre,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.nombre,nombre]; arguments []; default message [nombre]]; default message [El nombre del documento es obligatorio]] [Field error in object 'documentoDTO' on field 'tipoDocId': rejected value [null]; codes [NotNull.documentoDTO.tipoDocId,NotNull.tipoDocId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.tipoDocId,tipoDocId]; arguments []; default message [tipoDocId]]; default message [El ID del tipo de documento es obligatorio]] [Field error in object 'documentoDTO' on field 'usuarioId': rejected value [null]; codes [NotNull.documentoDTO.usuarioId,NotNull.usuarioId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.usuarioId,usuarioId]; arguments []; default message [usuarioId]]; default message [El ID del usuario es obligatorio]] [Field error in object 'documentoDTO' on field 'estadoId': rejected value [null]; codes [NotNull.documentoDTO.estadoId,NotNull.estadoId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.estadoId,estadoId]; arguments []; default message [estadoId]]; default message [El ID del estado es obligatorio]] ]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.TipoDocumentoController#crear(TipoDocumentoDTO, Long, Long)
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.TipoDocumentoDTO@2b04b7dd]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/octet-stream', given [*/*] and supported [*/*]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.TipoDocumentoController#crear(TipoDocumentoDTO, Long, Long)
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.TipoDocumentoDTO@22d2d248]
+2026-06-24 16:35:51 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/octet-stream', given [*/*] and supported [*/*]
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] DEBUG o.s.w.c.s.GenericWebApplicationContext - Closing org.springframework.web.context.support.GenericWebApplicationContext@6e28bb87, started on Wed Jun 24 16:35:29 GMT-04:00 2026
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists documentos
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists estado
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists tipo_doc
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-06-24 16:35:51 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-06-24 16:40:07 [main] INFO  c.r.d.c.DocumentoServiceIntegrationTest - Starting DocumentoServiceIntegrationTest using Java 17.0.19 with PID 8008 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\documentService)
+2026-06-24 16:40:07 [main] DEBUG c.r.d.c.DocumentoServiceIntegrationTest - Running with Spring Boot v3.5.6, Spring v6.2.11
+2026-06-24 16:40:07 [main] INFO  c.r.d.c.DocumentoServiceIntegrationTest - The following 1 profile is active: "test"
+2026-06-24 16:40:07 [main] DEBUG o.s.w.c.s.GenericWebApplicationContext - Refreshing org.springframework.web.context.support.GenericWebApplicationContext@5ec77191
+2026-06-24 16:40:09 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-24 16:40:09 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 311 ms. Found 3 JPA repository interfaces.
+2026-06-24 16:40:12 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-24 16:40:12 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.29.Final
+2026-06-24 16:40:12 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-06-24 16:40:12 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-24 16:40:12 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-06-24 16:40:13 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-06-24 16:40:13 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-06-24 16:40:13 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-24 16:40:13 [main] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-06-24 16:40:13 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-24 16:40:14 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-24 16:40:14 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists documentos
+2026-06-24 16:40:14 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists estado
+2026-06-24 16:40:14 [main] DEBUG org.hibernate.SQL - 
+    drop table if exists tipo_doc
+2026-06-24 16:40:14 [main] DEBUG org.hibernate.SQL - 
+    create table documentos (
+        estado_id bigint not null,
+        f_actualizacion datetime(6),
+        f_subido datetime(6) not null,
+        id bigint not null auto_increment,
+        revisado_por bigint,
+        tipo_doc_id bigint not null,
+        usuarios_id bigint not null,
+        nombre varchar(60) not null,
+        observaciones varchar(500),
+        primary key (id)
+    ) engine=InnoDB
+2026-06-24 16:40:14 [main] DEBUG org.hibernate.SQL - 
+    create table estado (
+        id bigint not null auto_increment,
+        nombre varchar(20) not null,
+        primary key (id)
+    ) engine=InnoDB
+2026-06-24 16:40:14 [main] DEBUG org.hibernate.SQL - 
+    create table tipo_doc (
+        id bigint not null auto_increment,
+        nombre varchar(60) not null,
+        primary key (id)
+    ) engine=InnoDB
+2026-06-24 16:40:14 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-24 16:40:15 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-24 16:40:17 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-24 16:40:17 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 25 mappings in 'requestMappingHandlerMapping'
+2026-06-24 16:40:17 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-06-24 16:40:17 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 0 endpoints beneath base path '/actuator'
+2026-06-24 16:40:17 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 5053624a-1fa7-4b55-b68f-20f488ff50df
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-06-24 16:40:17 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-24 16:40:18 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-06-24 16:40:18 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-06-24 16:40:19 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-06-24 16:40:19 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-06-24 16:40:19 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
+2026-06-24 16:40:19 [main] INFO  c.r.d.c.DocumentoServiceIntegrationTest - Started DocumentoServiceIntegrationTest in 13.264 seconds (process running for 15.882)
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - INICIANDO POBLADO DE DATOS MAESTROS - DOCUMENT SERVICE
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Verificando estados de documentos...
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        estado e1_0
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Estados ya existen (4 registros). Saltando inicializacion.
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Verificando tipos de documentos...
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        tipo_doc td1_0
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Tipos de documento ya existen (6 registros). Saltando inicializacion.
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - INICIALIZACION COMPLETADA - DOCUMENT SERVICE
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Resumen de datos:
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        estado e1_0
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig -   - Estados: 4 registros
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        tipo_doc td1_0
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig -   - Tipos de Documento: 6 registros
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Document Service listo para recibir peticiones
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Puerto: 8083
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - Swagger UI: http://localhost:8083/swagger-ui/index.html
+2026-06-24 16:40:19 [main] INFO  c.r.d.config.DataInitializerConfig - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:40:19 [main] INFO  c.r.d.c.DocumentoDataInitializer - VERIFICANDO DOCUMENTOS DE PRUEBA - DOCUMENT SERVICE
+2026-06-24 16:40:19 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        documentos d1_0
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        estado e1_0
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        tipo_doc td1_0
+2026-06-24 16:40:19 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos de prueba...
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        e1_0.id,
+        e1_0.nombre 
+    from
+        estado e1_0 
+    where
+        e1_0.nombre=?
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        e1_0.id,
+        e1_0.nombre 
+    from
+        estado e1_0 
+    where
+        e1_0.nombre=?
+2026-06-24 16:40:19 [main] DEBUG org.hibernate.SQL - 
+    select
+        e1_0.id,
+        e1_0.nombre 
+    from
+        estado e1_0 
+    where
+        e1_0.nombre=?
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        td1_0.id,
+        td1_0.nombre 
+    from
+        tipo_doc td1_0 
+    where
+        td1_0.nombre=?
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 1 (ADMIN)...
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Diego_Olaver.pdf (Usuario: 1, Estado: 2, Tipo: 1)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Liquidacion_Sueldo_Octubre_2025.pdf (Usuario: 1, Estado: 2, Tipo: 3)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Antecedentes_2025.pdf (Usuario: 1, Estado: 2, Tipo: 4)
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 2 (PROPIETARIO)...
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Fabian_Gonzalez.pdf (Usuario: 2, Estado: 2, Tipo: 1)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Propiedad_Casa_Maipu.pdf (Usuario: 2, Estado: 2, Tipo: 6)
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 3 (ARRIENDATARIO)...
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Juan_Perez.pdf (Usuario: 3, Estado: 2, Tipo: 1)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Liquidacion_Sueldo_Noviembre_2025.pdf (Usuario: 3, Estado: 2, Tipo: 3)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_AFP_2025.pdf (Usuario: 3, Estado: 1, Tipo: 5)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Contrato_Trabajo_Empresa_XYZ.pdf (Usuario: 3, Estado: 4, Tipo: 6)
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 4 (ARRIENDATARIO)...
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Maria_Lopez.pdf (Usuario: 4, Estado: 2, Tipo: 1)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Liquidacion_Sueldo_Octubre_2025.pdf (Usuario: 4, Estado: 2, Tipo: 3)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Antecedentes_Maria.pdf (Usuario: 4, Estado: 2, Tipo: 4)
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - Creando documentos para Usuario 5 (PROPIETARIO)...
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: DNI_Pedro_Ramirez.pdf (Usuario: 5, Estado: 2, Tipo: 1)
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:20 [main] DEBUG c.r.d.c.DocumentoDataInitializer -   - Creado: Certificado_Antecedentes_Pedro.pdf (Usuario: 5, Estado: 1, Tipo: 4)
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - DOCUMENTOS DE PRUEBA CREADOS EXITOSAMENTE
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(*) 
+    from
+        documentos d1_0
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - Total documentos creados: 14
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 1: 3 documentos
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 2: 2 documentos
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 3: 4 documentos
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 4: 3 documentos
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer -   - Usuario 5: 2 documentos
+2026-06-24 16:40:20 [main] INFO  c.r.d.c.DocumentoDataInitializer - ========================================================
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.TipoDocumentoController#crear(TipoDocumentoDTO, Long, Long)
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.TipoDocumentoDTO@747ef51d]
+2026-06-24 16:40:20 [main] INFO  c.r.d.service.TipoDocumentoService - Creando nuevo tipo de documento: CERTIFICADO_AFP
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        tipo_doc
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.TipoDocumentoDTO@2b3d662e]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.EstadoController#crear(EstadoDTO, Long, Long)
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.EstadoDTO@5e23d0db]
+2026-06-24 16:40:20 [main] INFO  c.r.d.service.EstadoService - Creando nuevo estado: PENDIENTE
+2026-06-24 16:40:20 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        estado
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.EstadoDTO@2edd66c9]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#crearDocumento(DocumentoDTO, Long, Long)
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.DocumentoDTO@2169e311]
+2026-06-24 16:40:20 [main] INFO  c.r.d.service.DocumentoService - Creando nuevo documento para usuario 99 de tipo 7
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Using @ExceptionHandler com.rentify.documentService.exception.GlobalExceptionHandler#handleBusinessValidation(BusinessValidationException)
+2026-06-24 16:40:20 [main] ERROR c.r.d.e.GlobalExceptionHandler - Error de validaciÃ³n de negocio: El usuario con ID 99 no existe
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.exception.ErrorResponse@5df01ff5]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [com.rentify.documentService.exception.BusinessValidationException: El usuario con ID 99 no existe]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#crearDocumento(DocumentoDTO, Long, Long)
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.DocumentoDTO@557f969e]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Using @ExceptionHandler com.rentify.documentService.exception.GlobalExceptionHandler#handleValidationErrors(MethodArgumentNotValidException)
+2026-06-24 16:40:20 [main] ERROR c.r.d.e.GlobalExceptionHandler - Errores de validaciÃ³n: {estadoId=El ID del estado es obligatorio, tipoDocId=El ID del tipo de documento es obligatorio, nombre=El nombre del documento es obligatorio, usuarioId=El ID del usuario es obligatorio}
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.exception.ErrorResponse@67775d80]
+2026-06-24 16:40:20 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<?> com.rentify.documentService.controller.DocumentoController.crearDocumento(com.rentify.documentService.dto.DocumentoDTO,java.lang.Long,java.lang.Long) with 4 errors: [Field error in object 'documentoDTO' on field 'estadoId': rejected value [null]; codes [NotNull.documentoDTO.estadoId,NotNull.estadoId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.estadoId,estadoId]; arguments []; default message [estadoId]]; default message [El ID del estado es obligatorio]] [Field error in object 'documentoDTO' on field 'nombre': rejected value [null]; codes [NotBlank.documentoDTO.nombre,NotBlank.nombre,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.nombre,nombre]; arguments []; default message [nombre]]; default message [El nombre del documento es obligatorio]] [Field error in object 'documentoDTO' on field 'usuarioId': rejected value [null]; codes [NotNull.documentoDTO.usuarioId,NotNull.usuarioId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.usuarioId,usuarioId]; arguments []; default message [usuarioId]]; default message [El ID del usuario es obligatorio]] [Field error in object 'documentoDTO' on field 'tipoDocId': rejected value [null]; codes [NotNull.documentoDTO.tipoDocId,NotNull.tipoDocId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [documentoDTO.tipoDocId,tipoDocId]; arguments []; default message [tipoDocId]]; default message [El ID del tipo de documento es obligatorio]] ]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.TipoDocumentoController#crear(TipoDocumentoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.TipoDocumentoDTO@77652fc6]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.TipoDocumentoService - Creando nuevo tipo de documento: DNI
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        tipo_doc
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.TipoDocumentoDTO@4a8b4dd0]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.EstadoController#crear(EstadoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.EstadoDTO@25215e78]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.EstadoService - Creando nuevo estado: PENDIENTE
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        estado
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.EstadoDTO@568675ff]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.EstadoController#crear(EstadoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.EstadoDTO@67573db5]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.EstadoService - Creando nuevo estado: APROBADO
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        estado
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.EstadoDTO@385376c]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#crearDocumento(DocumentoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.DocumentoDTO@774e5726]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.DocumentoService - Creando nuevo documento para usuario 1 de tipo 8
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.DocumentoService - Documento creado exitosamente con ID: 15
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.DocumentoDTO@7b95469]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#actualizarEstadoConObservaciones(Long, Long, Long, ActualizarEstadoRequest)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.ActualizarEstadoRequest@43918bef]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'text/plain', given [*/*] and supported [text/plain, */*, application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing ["Acceso denegado: Solo los administradores pueden evaluar documentos."]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.TipoDocumentoController#crear(TipoDocumentoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.TipoDocumentoDTO@12b485d8]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.TipoDocumentoService - Creando nuevo tipo de documento: DNI
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        tipo_doc
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.TipoDocumentoDTO@78ead218]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.EstadoController#crear(EstadoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.EstadoDTO@10117005]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.EstadoService - Creando nuevo estado: PENDIENTE
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        estado
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.EstadoDTO@23bc053c]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.EstadoController#crear(EstadoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.EstadoDTO@5d947961]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.EstadoService - Creando nuevo estado: RECHAZADO
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        estado
+        (nombre) 
+    values
+        (?)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.EstadoDTO@65bc66bb]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#crearDocumento(DocumentoDTO, Long, Long)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.DocumentoDTO@3de64145]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.DocumentoService - Creando nuevo documento para usuario 1 de tipo 9
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    select
+        count(d1_0.id) 
+    from
+        documentos d1_0 
+    where
+        d1_0.usuarios_id=?
+2026-06-24 16:40:21 [main] DEBUG org.hibernate.SQL - 
+    insert 
+    into
+        documentos
+        (estado_id, f_actualizacion, f_subido, nombre, observaciones, revisado_por, tipo_doc_id, usuarios_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?)
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.DocumentoService - Documento creado exitosamente con ID: 16
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.DocumentoDTO@1a738139]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.rentify.documentService.controller.DocumentoController#actualizarEstadoConObservaciones(Long, Long, Long, ActualizarEstadoRequest)
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json" to [com.rentify.documentService.dto.ActualizarEstadoRequest@482f1b64]
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.DocumentoService - Actualizando estado de documento 16 a estado 9 con observaciones
+2026-06-24 16:40:21 [main] INFO  c.r.d.service.DocumentoService - Documento 16 actualizado a estado RECHAZADO con observaciones: 'La imagen esta borrosa, por favor suba una foto co'
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-24 16:40:21 [main] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.rentify.documentService.dto.DocumentoDTO@42ac84a9]
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] DEBUG o.s.w.c.s.GenericWebApplicationContext - Closing org.springframework.web.context.support.GenericWebApplicationContext@5ec77191, started on Wed Jun 24 16:40:07 GMT-04:00 2026
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists documentos
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists estado
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] DEBUG org.hibernate.SQL - 
+    drop table if exists tipo_doc
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-06-24 16:40:21 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

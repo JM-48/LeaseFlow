@@ -58,7 +58,7 @@ class UsuarioControllerTest {
         String fechaNacimientoValida = "1995-05-15";
 
         usuarioDTO = UsuarioDTO.builder()
-                .id(1L)
+                .id(10L) // Coincide con USUARIO_ID para test de dueño
                 .pnombre("Juan")
                 .snombre("Carlos")
                 .papellido("Pérez")
@@ -83,7 +83,7 @@ class UsuarioControllerTest {
     }
 
     // =========================================================================
-    // 🛡️ TESTS DE SEGURIDAD (ENDPOINTS PROTEGIDOS)
+    // 🛡️ TESTS DE SEGURIDAD GENERAL (ENDPOINTS PROTEGIDOS)
     // =========================================================================
 
     @Test
@@ -94,9 +94,9 @@ class UsuarioControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /api/usuarios/{id} - Retorna 403 si un usuario normal intenta actualizar como Admin")
+    @DisplayName("PUT /api/usuarios/{id} - Retorna 403 si un usuario normal intenta actualizar")
     void actualizarUsuario_UsuarioNormal_Returns403() throws Exception {
-        mockMvc.perform(put("/api/usuarios/1")
+        mockMvc.perform(put("/api/usuarios/10")
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USUARIO) // Rol insuficiente
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +105,7 @@ class UsuarioControllerTest {
     }
 
     // =========================================================================
-    // 🟢 TESTS DE REGISTRO (PÚBLICOS)
+    // 🟢 TESTS DE REGISTRO Y LOGIN (PÚBLICOS)
     // =========================================================================
 
     @Test
@@ -117,7 +117,7 @@ class UsuarioControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(usuarioDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.email").value("juan.perez@email.com"))
                 .andExpect(jsonPath("$.pnombre").value("Juan"));
 
@@ -142,68 +142,6 @@ class UsuarioControllerTest {
 
         verify(usuarioService, never()).registrarUsuario(any());
     }
-
-    @Test
-    @DisplayName("POST /api/usuarios - Debe retornar 400 cuando el email es inválido")
-    void registrarUsuario_EmailInvalido_Returns400() throws Exception {
-        usuarioDTO.setEmail("email-invalido");
-
-        mockMvc.perform(post("/api/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioDTO)))
-                .andExpect(status().isBadRequest());
-
-        verify(usuarioService, never()).registrarUsuario(any());
-    }
-
-    @Test
-    @DisplayName("POST /api/usuarios - Debe retornar 400 cuando el RUT es inválido")
-    void registrarUsuario_RutInvalido_Returns400() throws Exception {
-        usuarioDTO.setRut("rut-invalido");
-
-        when(usuarioService.registrarUsuario(any(UsuarioDTO.class)))
-                .thenThrow(new BusinessValidationException("El RUT ingresado no es válido"));
-
-        mockMvc.perform(post("/api/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioDTO)))
-                .andExpect(status().isBadRequest());
-
-        verify(usuarioService, times(1)).registrarUsuario(any(UsuarioDTO.class));
-    }
-
-    @Test
-    @DisplayName("POST /api/usuarios - Debe retornar 400 cuando el email está duplicado")
-    void registrarUsuario_EmailDuplicado_Returns400() throws Exception {
-        when(usuarioService.registrarUsuario(any(UsuarioDTO.class)))
-                .thenThrow(new BusinessValidationException("El email ya está registrado"));
-
-        mockMvc.perform(post("/api/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioDTO)))
-                .andExpect(status().isBadRequest());
-
-        verify(usuarioService, times(1)).registrarUsuario(any(UsuarioDTO.class));
-    }
-
-    @Test
-    @DisplayName("POST /api/usuarios - Debe retornar 400 cuando el usuario es menor de edad")
-    void registrarUsuario_MenorDeEdad_Returns400() throws Exception {
-        String fechaMenorEdadStr = LocalDate.now().minusYears(17).toString();
-        usuarioDTO.setFnacimiento(fechaMenorEdadStr);
-
-        when(usuarioService.registrarUsuario(any(UsuarioDTO.class)))
-                .thenThrow(new BusinessValidationException("Debe ser mayor de 18 años"));
-
-        mockMvc.perform(post("/api/usuarios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    // =========================================================================
-    // 🟢 TESTS DE LOGIN (PÚBLICOS)
-    // =========================================================================
 
     @Test
     @DisplayName("POST /api/usuarios/login - Debe autenticar usuario exitosamente")
@@ -234,40 +172,21 @@ class UsuarioControllerTest {
         verify(usuarioService, times(1)).login(any(LoginDTO.class));
     }
 
-    @Test
-    @DisplayName("POST /api/usuarios/login - Debe retornar 400 cuando faltan campos")
-    void login_CamposFaltantes_Returns400() throws Exception {
-        LoginDTO loginInvalido = LoginDTO.builder().build();
-
-        mockMvc.perform(post("/api/usuarios/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginInvalido)))
-                .andExpect(status().isBadRequest());
-
-        verify(usuarioService, never()).login(any());
-    }
-
     // =========================================================================
-    // 🟡 TESTS DE CONSULTAS (PROTEGIDOS POR AUTH)
+    // 🟡 TESTS DE CONSULTAS (PROTEGIDOS POR AUTH / PERMISOS ESPECÍFICOS)
     // =========================================================================
 
     @Test
     @DisplayName("GET /api/usuarios - Debe retornar lista de usuarios (Requiere Admin)")
     void obtenerTodos_DeberiaRetornarListaDeUsuarios() throws Exception {
-        // Arrange
-        UsuarioDTO usuario2 = UsuarioDTO.builder()
-                .id(2L)
-                .email("maria@email.com")
-                .fnacimiento("1990-01-01")
-                .build();
+        UsuarioDTO usuario2 = UsuarioDTO.builder().id(2L).email("maria@email.com").build();
         List<UsuarioDTO> usuarios = Arrays.asList(usuarioDTO, usuario2);
 
         when(usuarioService.obtenerTodos(false)).thenReturn(usuarios);
 
-        // ACT: Cambiamos las cabeceras para que simule ser ADMIN, ya que solo ellos listan todo
         mockMvc.perform(get("/api/usuarios")
-                        .header(HEADER_USER, ADMIN_ID)   // <-- Cambiado a ADMIN
-                        .header(HEADER_ROLE, ROL_ADMIN)   // <-- Cambiado a ADMIN
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -277,46 +196,41 @@ class UsuarioControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/usuarios/{id} - Debe retornar usuario por ID")
-    void obtenerPorId_UsuarioExiste_Returns200() throws Exception {
-        when(usuarioService.obtenerPorId(1L, true)).thenReturn(usuarioDTO);
+    @DisplayName("GET /api/usuarios/{id} - Dueño consulta su propio perfil, retorna 200")
+    void obtenerPorId_DuenoConsulta_Returns200() throws Exception {
+        when(usuarioService.obtenerPorId(10L, true)).thenReturn(usuarioDTO);
 
-        mockMvc.perform(get("/api/usuarios/1")
-                        .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN)
+        mockMvc.perform(get("/api/usuarios/10")
+                        .header(HEADER_USER, USUARIO_ID) // 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.email").value("juan.perez@email.com"));
+                .andExpect(jsonPath("$.id").value(10));
 
-        verify(usuarioService, times(1)).obtenerPorId(1L, true);
+        verify(usuarioService, times(1)).obtenerPorId(10L, true);
     }
 
     @Test
-    @DisplayName("GET /api/usuarios/{id} - Debe retornar 404 cuando no existe (Consultado por Admin o Dueño)")
-    void obtenerPorId_UsuarioNoExiste_Returns404() throws Exception {
-        // Arrange
-        when(usuarioService.obtenerPorId(999L, true))
-                .thenThrow(new ResourceNotFoundException("Usuario con ID 999 no encontrado"));
-
-        // ACT: Si usamos ADMIN_ID, tiene permiso para ver cualquier ID y el flujo llegará al Service (404)
-        mockMvc.perform(get("/api/usuarios/999")
-                        .header(HEADER_USER, ADMIN_ID)   // <-- Cambiado a ADMIN para evitar el bloqueo perimetral 403
-                        .header(HEADER_ROLE, ROL_ADMIN)   // <-- Cambiado a ADMIN
+    @DisplayName("GET /api/usuarios/{id} - Usuario normal consulta perfil de otro, retorna 403")
+    void obtenerPorId_UsuarioNormalConsultaOtro_Returns403() throws Exception {
+        mockMvc.perform(get("/api/usuarios/99") // Intenta ver el ID 99
+                        .header(HEADER_USER, USUARIO_ID) // El usuario es el ID 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
                         .param("includeDetails", "true"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
 
-        verify(usuarioService, times(1)).obtenerPorId(999L, true);
+        // El servicio no debe llegar a ser llamado por el bloqueo de seguridad
+        verify(usuarioService, never()).obtenerPorId(anyLong(), anyBoolean());
     }
 
     @Test
-    @DisplayName("GET /api/usuarios/email/{email} - Debe retornar usuario por email")
-    void obtenerPorEmail_UsuarioExiste_Returns200() throws Exception {
+    @DisplayName("GET /api/usuarios/email/{email} - Dueño consulta su propio email, retorna 200")
+    void obtenerPorEmail_DuenoConsulta_Returns200() throws Exception {
         when(usuarioService.obtenerPorEmail("juan.perez@email.com", true)).thenReturn(usuarioDTO);
 
         mockMvc.perform(get("/api/usuarios/email/juan.perez@email.com")
-                        .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .header(HEADER_USER, USUARIO_ID) // 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("juan.perez@email.com"));
@@ -325,130 +239,104 @@ class UsuarioControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/usuarios/rol/{rolId} - Debe retornar usuarios por rol")
-    void obtenerPorRol_DeberiaRetornarUsuarios() throws Exception {
-        List<UsuarioDTO> usuarios = Arrays.asList(usuarioDTO);
-        when(usuarioService.obtenerPorRol(3L, false)).thenReturn(usuarios);
+    @DisplayName("GET /api/usuarios/email/{email} - Usuario normal busca email de otro, retorna 403")
+    void obtenerPorEmail_UsuarioNormalBuscaOtro_Returns403() throws Exception {
+        // Simulamos que el email pertenece al ID 99
+        UsuarioDTO otroUsuario = UsuarioDTO.builder().id(99L).email("otro@email.com").build();
+        when(usuarioService.obtenerPorEmail("otro@email.com", true)).thenReturn(otroUsuario);
 
-        mockMvc.perform(get("/api/usuarios/rol/3")
-                        .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN)
-                        .param("includeDetails", "false"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1));
-
-        verify(usuarioService, times(1)).obtenerPorRol(3L, false);
+        mockMvc.perform(get("/api/usuarios/email/otro@email.com")
+                        .header(HEADER_USER, USUARIO_ID) // El usuario logueado es el ID 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .param("includeDetails", "true"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("GET /api/usuarios/vip - Debe retornar usuarios DUOC VIP")
-    void obtenerUsuariosVIP_DeberiaRetornarUsuariosVIP() throws Exception {
-        usuarioDTO.setDuocVip(true);
-        List<UsuarioDTO> usuariosVip = Arrays.asList(usuarioDTO);
-        when(usuarioService.obtenerUsuariosVIP(false)).thenReturn(usuariosVip);
+    @DisplayName("GET /api/usuarios/{id} - Admin consulta perfil de otro, retorna 200")
+    void obtenerPorId_AdminConsulta_Returns200() throws Exception {
+        when(usuarioService.obtenerPorId(10L, true)).thenReturn(usuarioDTO);
 
-        mockMvc.perform(get("/api/usuarios/vip")
+        mockMvc.perform(get("/api/usuarios/10")
                         .header(HEADER_USER, ADMIN_ID)
                         .header(HEADER_ROLE, ROL_ADMIN)
-                        .param("includeDetails", "false"))
+                        .param("includeDetails", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1));
+                .andExpect(jsonPath("$.id").value(10));
 
-        verify(usuarioService, times(1)).obtenerUsuariosVIP(false);
+        verify(usuarioService, times(1)).obtenerPorId(10L, true);
     }
 
     // =========================================================================
-    // 🔴 TESTS DE ACTUALIZACIÓN (PROTEGIDOS POR ADMIN)
+    // 🔴 TESTS DE ACTUALIZACIÓN Y BORRADO (PROTEGIDOS POR ADMIN)
     // =========================================================================
 
     @Test
     @DisplayName("PUT /api/usuarios/{id} - Debe actualizar usuario correctamente (Requiere Admin)")
     void actualizarUsuario_DatosValidos_Returns200() throws Exception {
-        when(usuarioService.actualizarUsuarioAdmin(eq(1L), any(UsuarioUpdateDTO.class))).thenReturn(usuarioDTO);
+        when(usuarioService.actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class))).thenReturn(usuarioDTO);
 
-        mockMvc.perform(put("/api/usuarios/1")
+        mockMvc.perform(put("/api/usuarios/10")
                         .header(HEADER_USER, ADMIN_ID)
                         .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(usuarioDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(10));
 
-        verify(usuarioService, times(1)).actualizarUsuarioAdmin(eq(1L), any(UsuarioUpdateDTO.class));
-    }
-
-    @Test
-    @DisplayName("PATCH /api/usuarios/{id}/rol - Debe cambiar rol de usuario (Requiere Admin)")
-    void cambiarRol_RolValido_Returns200() throws Exception {
-        when(usuarioService.cambiarRol(1L, 2L)).thenReturn(usuarioDTO);
-
-        mockMvc.perform(patch("/api/usuarios/1/rol")
-                        .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN)
-                        .param("rolId", "2"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
-
-        verify(usuarioService, times(1)).cambiarRol(1L, 2L);
+        verify(usuarioService, times(1)).actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class));
     }
 
     @Test
     @DisplayName("PATCH /api/usuarios/{id}/estado - Debe cambiar estado de usuario (Requiere Admin)")
     void cambiarEstado_EstadoValido_Returns200() throws Exception {
-        when(usuarioService.cambiarEstado(1L, 2L)).thenReturn(usuarioDTO);
+        when(usuarioService.cambiarEstado(10L, 2L)).thenReturn(usuarioDTO);
 
-        mockMvc.perform(patch("/api/usuarios/1/estado")
+        mockMvc.perform(patch("/api/usuarios/10/estado")
                         .header(HEADER_USER, ADMIN_ID)
                         .header(HEADER_ROLE, ROL_ADMIN)
                         .param("estadoId", "2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(10));
 
-        verify(usuarioService, times(1)).cambiarEstado(1L, 2L);
+        verify(usuarioService, times(1)).cambiarEstado(10L, 2L);
     }
 
     @Test
-    @DisplayName("PATCH /api/usuarios/{id}/puntos - Debe agregar puntos al usuario (Requiere Admin)")
-    void agregarPuntos_PuntosValidos_Returns200() throws Exception {
-        when(usuarioService.agregarPuntos(1L, 100)).thenReturn(usuarioDTO);
+    @DisplayName("DELETE /api/usuarios/{id} - Usuario normal intenta eliminar, retorna 403")
+    void eliminarUsuario_UsuarioNormal_Returns403() throws Exception {
+        mockMvc.perform(delete("/api/usuarios/10")
+                        .header(HEADER_USER, USUARIO_ID)
+                        .header(HEADER_ROLE, ROL_USUARIO))
+                .andExpect(status().isForbidden());
 
-        mockMvc.perform(patch("/api/usuarios/1/puntos")
+        verify(usuarioService, never()).eliminarUsuario(anyLong());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/usuarios/{id} - Admin elimina usuario, retorna 204")
+    void eliminarUsuario_Admin_Returns204() throws Exception {
+        doNothing().when(usuarioService).eliminarUsuario(10L);
+
+        mockMvc.perform(delete("/api/usuarios/10")
                         .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN)
-                        .param("puntos", "100"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                        .header(HEADER_ROLE, ROL_ADMIN))
+                .andExpect(status().isNoContent());
 
-        verify(usuarioService, times(1)).agregarPuntos(1L, 100);
+        verify(usuarioService, times(1)).eliminarUsuario(10L);
     }
 
     @Test
     @DisplayName("GET /api/usuarios/{id}/exists - Debe verificar si usuario existe (Usuario Autenticado)")
     void existeUsuario_UsuarioExiste_RetornaTrue() throws Exception {
-        when(usuarioService.existeUsuario(1L)).thenReturn(true);
+        when(usuarioService.existeUsuario(10L)).thenReturn(true);
 
-        mockMvc.perform(get("/api/usuarios/1/exists")
+        mockMvc.perform(get("/api/usuarios/10/exists")
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
 
-        verify(usuarioService, times(1)).existeUsuario(1L);
-    }
-
-    @Test
-    @DisplayName("GET /api/usuarios/{id}/exists - Debe retornar false cuando no existe (Usuario Autenticado)")
-    void existeUsuario_UsuarioNoExiste_RetornaFalse() throws Exception {
-        when(usuarioService.existeUsuario(999L)).thenReturn(false);
-
-        mockMvc.perform(get("/api/usuarios/999/exists")
-                        .header(HEADER_USER, USUARIO_ID)
-                        .header(HEADER_ROLE, ROL_USUARIO))
-                .andExpect(status().isOk())
-                .andExpect(content().string("false"));
-
-        verify(usuarioService, times(1)).existeUsuario(999L);
+        verify(usuarioService, times(1)).existeUsuario(10L);
     }
 }

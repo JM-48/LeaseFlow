@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false) // Mantenemos los filtros de Spring Security apagados
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @Transactional
 @DisplayName("Tests de Integración - DocumentoService (Robustos)")
@@ -37,12 +37,13 @@ class DocumentoServiceIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private UserServiceClient userServiceClient;
 
     private static final Long USUARIO_ID = 1L;
+    private static final Long ROL_USUARIO_ID = 3L; // Arrendatario
     private static final Long ADMIN_ID = 5L;
-    private static final Long ROL_ADMIN_ID = 1L; // ID del rol Admin
+    private static final Long ROL_ADMIN_ID = 1L;   // Admin
 
     @BeforeEach
     void setUpMocks() {
@@ -50,7 +51,7 @@ class DocumentoServiceIntegrationTest {
         UsuarioDTO normalUser = new UsuarioDTO();
         normalUser.setId(USUARIO_ID);
         normalUser.setEmail("usuario@rentify.com");
-        UsuarioDTO.RolDTO rolUsuario = new UsuarioDTO.RolDTO(3L, "ARRIENDATARIO");
+        UsuarioDTO.RolDTO rolUsuario = new UsuarioDTO.RolDTO(ROL_USUARIO_ID, "ARRIENDATARIO");
         normalUser.setRol(rolUsuario);
 
         when(userServiceClient.existsUser(USUARIO_ID)).thenReturn(true);
@@ -76,7 +77,8 @@ class DocumentoServiceIntegrationTest {
     private Long crearTipoDocumento(String nombre) throws Exception {
         TipoDocumentoDTO tipo = new TipoDocumentoDTO(null, nombre);
         MvcResult result = mockMvc.perform(post("/api/tipos-documentos")
-                        .header("X-Rol-Id", ROL_ADMIN_ID) // <--- Simulamos ser Admin
+                        .header("X-Usuario-Id", ADMIN_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tipo)))
                 .andExpect(status().isCreated())
@@ -87,7 +89,8 @@ class DocumentoServiceIntegrationTest {
     private Long crearEstado(String nombre) throws Exception {
         EstadoDTO estado = new EstadoDTO(null, nombre);
         MvcResult result = mockMvc.perform(post("/api/estados")
-                        .header("X-Rol-Id", ROL_ADMIN_ID) // <--- Simulamos ser Admin
+                        .header("X-Usuario-Id", ADMIN_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estado)))
                 .andExpect(status().isCreated())
@@ -102,12 +105,10 @@ class DocumentoServiceIntegrationTest {
     @Test
     @DisplayName("Flujo Completo: Subir documento y luego rechazarlo con observaciones (ADMIN)")
     void flujoCompleto_SubirYRechazarDocumento() throws Exception {
-        // 1. Preparar dependencias usando helpers
         Long tipoId = crearTipoDocumento("DNI");
         Long estadoPendienteId = crearEstado("PENDIENTE");
         Long estadoRechazadoId = crearEstado("RECHAZADO");
 
-        // 2. Subir el documento
         DocumentoDTO nuevoDoc = new DocumentoDTO();
         nuevoDoc.setNombre("carnet_identidad_frente.pdf");
         nuevoDoc.setUsuarioId(USUARIO_ID);
@@ -115,7 +116,8 @@ class DocumentoServiceIntegrationTest {
         nuevoDoc.setTipoDocId(tipoId);
 
         MvcResult resultDoc = mockMvc.perform(post("/api/documentos")
-                        .header("X-Usuario-Id", USUARIO_ID) // <--- Agregamos Header obligatorio
+                        .header("X-Usuario-Id", USUARIO_ID)
+                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isCreated())
@@ -124,14 +126,14 @@ class DocumentoServiceIntegrationTest {
 
         Long documentoId = objectMapper.readValue(resultDoc.getResponse().getContentAsString(), DocumentoDTO.class).getId();
 
-        // 3. Administrador rechaza el documento
         ActualizarEstadoRequest requestRechazo = new ActualizarEstadoRequest();
         requestRechazo.setEstadoId(estadoRechazadoId);
         requestRechazo.setObservaciones("La imagen esta borrosa, por favor suba una foto con mejor iluminacion.");
         requestRechazo.setRevisadoPor(ADMIN_ID);
 
         mockMvc.perform(patch("/api/documentos/{id}/estado", documentoId)
-                        .header("X-Rol-Id", ROL_ADMIN_ID) // <--- Debe ser Admin
+                        .header("X-Usuario-Id", ADMIN_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestRechazo)))
                 .andExpect(status().isOk())
@@ -147,10 +149,10 @@ class DocumentoServiceIntegrationTest {
     @DisplayName("POST /api/documentos - Falla con 400 si faltan datos obligatorios")
     void crearDocumento_DatosInvalidos_Retorna400() throws Exception {
         DocumentoDTO docInvalido = new DocumentoDTO();
-        // Faltan todos los campos obligatorios
 
         mockMvc.perform(post("/api/documentos")
-                        .header("X-Usuario-Id", USUARIO_ID) // Mantenemos el header para pasar el SecurityConfig
+                        .header("X-Usuario-Id", USUARIO_ID)
+                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(docInvalido)))
                 .andExpect(status().isBadRequest());
@@ -159,7 +161,6 @@ class DocumentoServiceIntegrationTest {
     @Test
     @DisplayName("POST /api/documentos - Falla con 400 si el usuario no existe en UserService")
     void crearDocumento_UsuarioNoExiste_RetornaError() throws Exception {
-        // Forzamos a que el usuario 99L no exista
         when(userServiceClient.existsUser(99L)).thenReturn(false);
         when(userServiceClient.getUserById(99L)).thenReturn(null);
 
@@ -174,6 +175,7 @@ class DocumentoServiceIntegrationTest {
 
         mockMvc.perform(post("/api/documentos")
                         .header("X-Usuario-Id", 99L)
+                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isBadRequest());
@@ -186,7 +188,6 @@ class DocumentoServiceIntegrationTest {
         Long estadoPendienteId = crearEstado("PENDIENTE");
         Long estadoAprobadoId = crearEstado("APROBADO");
 
-        // Creamos el documento primero
         DocumentoDTO nuevoDoc = new DocumentoDTO();
         nuevoDoc.setNombre("carnet.pdf");
         nuevoDoc.setUsuarioId(USUARIO_ID);
@@ -195,6 +196,7 @@ class DocumentoServiceIntegrationTest {
 
         MvcResult resultDoc = mockMvc.perform(post("/api/documentos")
                         .header("X-Usuario-Id", USUARIO_ID)
+                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isCreated())
@@ -202,14 +204,13 @@ class DocumentoServiceIntegrationTest {
 
         Long documentoId = objectMapper.readValue(resultDoc.getResponse().getContentAsString(), DocumentoDTO.class).getId();
 
-        // El arrendatario intenta aprobar su propio documento
         ActualizarEstadoRequest requestTramposo = new ActualizarEstadoRequest();
         requestTramposo.setEstadoId(estadoAprobadoId);
         requestTramposo.setRevisadoPor(USUARIO_ID);
 
-        // En lugar de 400, ahora debe fallar en el controlador con 403 (FORBIDDEN) porque no es ADMIN
         mockMvc.perform(patch("/api/documentos/{id}/estado", documentoId)
-                        .header("X-Rol-Id", 3L) // <--- Rol Arrendatario
+                        .header("X-Usuario-Id", USUARIO_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTramposo)))
                 .andExpect(status().isForbidden());

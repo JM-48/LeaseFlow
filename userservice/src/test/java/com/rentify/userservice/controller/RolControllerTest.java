@@ -91,8 +91,22 @@ class RolControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    @DisplayName("GET /api/roles/{id} - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerPorId_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/roles/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("GET /api/roles/nombre/{nombre} - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerPorNombre_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/roles/nombre/ADMIN"))
+                .andExpect(status().isUnauthorized());
+    }
+
     // =========================================================================
-    // ✅ TESTS FUNCIONALES (CON CABECERAS VÁLIDAS)
+    // 🔴 TESTS DE ESCRITURA (BLINDADOS)
     // =========================================================================
 
     @Test
@@ -154,6 +168,10 @@ class RolControllerTest {
 
         verify(rolService, times(1)).crearRol(any(RolDTO.class));
     }
+
+    // =========================================================================
+    // 🟡 TESTS DE LECTURA (PROTEGIDOS)
+    // =========================================================================
 
     @Test
     @DisplayName("GET /api/roles - Debe retornar lista de roles (Usuario Autenticado)")
