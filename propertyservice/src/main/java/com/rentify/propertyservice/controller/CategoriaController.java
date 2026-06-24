@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller REST para gestión de categorías de propiedades.
+ * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
  */
 @RestController
 @RequestMapping("/api/categorias")
@@ -31,23 +32,28 @@ public class CategoriaController {
     private final CategoriaRepository categoriaRepository;
     private final ModelMapper modelMapper;
 
-    /**
-     * Valida de forma sencilla si el request trae un token Bearer.
-     * Al entrar desde un navegador, esto será nulo.
-     */
-    private boolean isNoAutorizado(String token) {
-        return token == null || token.trim().isEmpty() || !token.startsWith("Bearer ");
-    }
+    private static final Long ROL_ADMIN = 1L;
 
+    /**
+     * Crea una nueva categoría.
+     * BLINDADO: Solo Administradores.
+     */
     @PostMapping
-    @Operation(summary = "Crear categoría", description = "Crea una nueva categoría de propiedad")
+    @Operation(summary = "Crear categoría", description = "Crea una nueva categoría de propiedad (Solo Administradores)")
     public ResponseEntity<?> crear(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Valid @RequestBody CategoriaDTO categoriaDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a POST /api/categorias");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autorizado: Faltan cabeceras de identidad.");
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó crear una categoría sin ser administrador", usuarioIdHeader);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden crear categorías.");
         }
 
         log.info("Creando nueva categoría: {}", categoriaDTO.getNombre());
@@ -59,12 +65,17 @@ public class CategoriaController {
                 .body(modelMapper.map(saved, CategoriaDTO.class));
     }
 
+    /**
+     * Lista todas las categorías.
+     * Acceso: Cualquier usuario autenticado.
+     */
     @GetMapping
     @Operation(summary = "Listar categorías", description = "Obtiene todas las categorías disponibles")
     public ResponseEntity<?> listar(
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/categorias");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -78,14 +89,19 @@ public class CategoriaController {
         return ResponseEntity.ok(categorias);
     }
 
+    /**
+     * Obtiene categoría por ID.
+     * Acceso: Cualquier usuario autenticado.
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener categoría por ID")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/categorias/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -97,17 +113,28 @@ public class CategoriaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Actualiza una categoría.
+     * BLINDADO: Solo Administradores.
+     */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar categoría")
+    @Operation(summary = "Actualizar categoría", description = "Actualiza el nombre de una categoría (Solo Administradores)")
     public ResponseEntity<?> actualizar(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody CategoriaDTO categoriaDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a PUT /api/categorias/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó modificar la categoría {} sin ser administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden modificar categorías.");
         }
 
         log.info("Actualizando categoría con ID: {}", id);
@@ -121,16 +148,27 @@ public class CategoriaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Elimina una categoría.
+     * BLINDADO: Solo Administradores.
+     */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar categoría")
+    @Operation(summary = "Eliminar categoría", description = "Elimina una categoría del sistema (Solo Administradores)")
     public ResponseEntity<?> eliminar(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID de la categoría", example = "1")
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a DELETE /api/categorias/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó eliminar la categoría {} sin ser administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden eliminar categorías.");
         }
 
         log.info("Eliminando categoría con ID: {}", id);

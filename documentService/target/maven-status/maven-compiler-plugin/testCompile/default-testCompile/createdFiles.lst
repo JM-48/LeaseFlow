@@ -1,0 +1,8 @@
+com\rentify\documentService\DocumentServiceApplicationTests.class
+com\rentify\documentService\service\DocumentoServiceTest.class
+com\rentify\documentService\repository\EstadoRepositoryTest.class
+com\rentify\documentService\repository\DocumentoRepositoryTest.class
+com\rentify\documentService\controller\DocumentoControllerTest.class
+com\rentify\documentService\repository\TipoDocumentoRepositoryTest.class
+com\rentify\documentService\client\UserServiceClientTest.class
+com\rentify\documentService\controller\DocumentoServiceIntegrationTest.class

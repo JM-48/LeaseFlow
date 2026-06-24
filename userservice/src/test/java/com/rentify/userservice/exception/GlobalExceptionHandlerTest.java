@@ -39,12 +39,13 @@ class GlobalExceptionHandlerTest {
     @DisplayName("Debe manejar ResourceNotFoundException y retornar 404")
     void handleResourceNotFoundException_Returns404() throws Exception {
         // Arrange
-        // Cambiado any(Boolean.class) por anyBoolean() para evitar NullPointerException al desempaquetar el primitivo
         when(usuarioService.obtenerPorId(anyLong(), anyBoolean()))
                 .thenThrow(new ResourceNotFoundException("Usuario con ID 999 no encontrado"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/usuarios/999"))
+        mockMvc.perform(get("/api/usuarios/999")
+                        .header("X-Usuario-Id", "1") // 🟢 AGREGADA CABECERA DE SEGURIDAD
+                        .header("X-Rol-Id", "1"))    // 🟢 AGREGADA CABECERA DE SEGURIDAD
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"))
@@ -59,7 +60,6 @@ class GlobalExceptionHandlerTest {
         when(usuarioService.registrarUsuario(any(UsuarioDTO.class)))
                 .thenThrow(new BusinessValidationException("El email ya está registrado"));
 
-        // CORRECCIÓN: La fecha de nacimiento debe ser un String
         String fechaNacimientoValida = "1995-05-15";
 
         UsuarioDTO usuarioDTO = UsuarioDTO.builder()
@@ -77,7 +77,7 @@ class GlobalExceptionHandlerTest {
                 .factualizacion(LocalDate.now().toString())
                 .build();
 
-        // Act & Assert
+        // Act & Assert (Endpoint público, no requiere cabeceras)
         mockMvc.perform(post("/api/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pnombre\":\"Juan\",\"snombre\":\"Carlos\",\"papellido\":\"Pérez\",\"fnacimiento\":\"1995-05-15\",\"email\":\"juan.perez@email.com\",\"rut\":\"12345678-9\",\"ntelefono\":\"987654321\",\"clave\":\"password123\",\"estadoId\":1,\"rolId\":3}"))
@@ -94,7 +94,7 @@ class GlobalExceptionHandlerTest {
         when(usuarioService.login(any()))
                 .thenThrow(new AuthenticationException("Email o contraseña incorrectos"));
 
-        // Act & Assert
+        // Act & Assert (Endpoint público, no requiere cabeceras)
         mockMvc.perform(post("/api/usuarios/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"test@email.com\",\"clave\":\"wrongpass\"}"))
@@ -109,7 +109,7 @@ class GlobalExceptionHandlerTest {
     void handleMethodArgumentNotValidException_Returns400WithDetails() throws Exception {
         // Arrange - Enviar usuario sin campos requeridos
 
-        // Act & Assert
+        // Act & Assert (Endpoint público, no requiere cabeceras)
         mockMvc.perform(post("/api/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"invalido\"}"))
@@ -124,12 +124,13 @@ class GlobalExceptionHandlerTest {
     @DisplayName("Debe manejar Exception genérica y retornar 500")
     void handleGenericException_Returns500() throws Exception {
         // Arrange
-        // Cambiado any(Boolean.class) por anyBoolean()
         when(usuarioService.obtenerPorId(anyLong(), anyBoolean()))
                 .thenThrow(new RuntimeException("Error inesperado"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/usuarios/1"))
+        mockMvc.perform(get("/api/usuarios/1")
+                        .header("X-Usuario-Id", "1") // 🟢 AGREGADA CABECERA DE SEGURIDAD
+                        .header("X-Rol-Id", "1"))    // 🟢 AGREGADA CABECERA DE SEGURIDAD
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("Internal Server Error"))

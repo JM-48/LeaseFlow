@@ -1,0 +1,12 @@
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\ApplicationServiceApplicationTests.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\client\DocumentServiceClientTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\client\PropertyServiceClientTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\RegistroControllerIntegrationTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\RegistroControllerTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\SolicitudControllerIntegrationTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\SolicitudControllerTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\exception\GlobalExceptionHandlerTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\repository\RegistroArriendoRepositoryTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\repository\SolicitudArriendoRepositoryTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\service\RegistroArriendoServiceTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\service\SolicitudArriendoServiceTest.java

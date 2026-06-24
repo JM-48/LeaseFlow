@@ -40,6 +40,13 @@ class EstadoControllerTest {
 
     private EstadoDTO estadoDTO;
 
+    // Constantes para simular el API Gateway
+    private static final String HEADER_USER = "X-Usuario-Id";
+    private static final String HEADER_ROLE = "X-Rol-Id";
+    private static final String ADMIN_ID = "1";
+    private static final String ROL_ADMIN = "1";
+    private static final String ROL_USUARIO = "3"; // Simulamos un Arriendatario normal
+
     @BeforeEach
     void setUp() {
         estadoDTO = EstadoDTO.builder()
@@ -48,14 +55,55 @@ class EstadoControllerTest {
                 .build();
     }
 
+    // =========================================================================
+    // TESTS DE SEGURIDAD (RBAC Y HEADERS)
+    // =========================================================================
+
     @Test
-    @DisplayName("POST /api/estados - Debe crear estado y retornar 201")
+    @DisplayName("POST /api/estados - Retorna 401 si no hay cabeceras de identidad")
+    void crearEstado_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(post("/api/estados")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(estadoDTO)))
+                .andExpect(status().isUnauthorized());
+
+        verify(estadoService, never()).crearEstado(any());
+    }
+
+    @Test
+    @DisplayName("POST /api/estados - Retorna 403 si el usuario no es ADMIN")
+    void crearEstado_UsuarioNormal_Returns403() throws Exception {
+        mockMvc.perform(post("/api/estados")
+                        .header(HEADER_USER, "5")
+                        .header(HEADER_ROLE, ROL_USUARIO) // Rol no autorizado
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(estadoDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(estadoService, never()).crearEstado(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/estados - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerTodos_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/estados"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // =========================================================================
+    // TESTS FUNCIONALES (CON CABECERAS VÁLIDAS)
+    // =========================================================================
+
+    @Test
+    @DisplayName("POST /api/estados - Debe crear estado y retornar 201 (Siendo Admin)")
     void crearEstado_DatosValidos_Returns201() throws Exception {
         // Arrange
         when(estadoService.crearEstado(any(EstadoDTO.class))).thenReturn(estadoDTO);
 
         // Act & Assert
         mockMvc.perform(post("/api/estados")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN) // Simula ser Admin
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estadoDTO)))
                 .andExpect(status().isCreated())
@@ -66,7 +114,7 @@ class EstadoControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/estados - Debe retornar 400 cuando el nombre está vacío")
+    @DisplayName("POST /api/estados - Debe retornar 400 cuando el nombre está vacío (Siendo Admin)")
     void crearEstado_NombreVacio_Returns400() throws Exception {
         // Arrange
         EstadoDTO estadoInvalido = EstadoDTO.builder()
@@ -75,6 +123,8 @@ class EstadoControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/estados")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estadoInvalido)))
                 .andExpect(status().isBadRequest());
@@ -83,7 +133,7 @@ class EstadoControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/estados - Debe retornar lista de estados")
+    @DisplayName("GET /api/estados - Debe retornar lista de estados (Usuario Autenticado)")
     void obtenerTodos_DeberiaRetornarListaDeEstados() throws Exception {
         // Arrange
         EstadoDTO estado2 = EstadoDTO.builder().id(2L).nombre("INACTIVO").build();
@@ -92,7 +142,9 @@ class EstadoControllerTest {
         when(estadoService.obtenerTodos()).thenReturn(estados);
 
         // Act & Assert
-        mockMvc.perform(get("/api/estados"))
+        mockMvc.perform(get("/api/estados")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO)) // Cualquier rol autenticado puede ver
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -103,13 +155,15 @@ class EstadoControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/estados/{id} - Debe retornar estado por ID")
+    @DisplayName("GET /api/estados/{id} - Debe retornar estado por ID (Usuario Autenticado)")
     void obtenerPorId_EstadoExiste_Returns200() throws Exception {
         // Arrange
         when(estadoService.obtenerPorId(1L)).thenReturn(estadoDTO);
 
         // Act & Assert
-        mockMvc.perform(get("/api/estados/1"))
+        mockMvc.perform(get("/api/estados/1")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombre").value("ACTIVO"));
@@ -118,27 +172,31 @@ class EstadoControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/estados/{id} - Debe retornar 404 cuando no existe")
+    @DisplayName("GET /api/estados/{id} - Debe retornar 404 cuando no existe (Usuario Autenticado)")
     void obtenerPorId_EstadoNoExiste_Returns404() throws Exception {
         // Arrange
         when(estadoService.obtenerPorId(999L))
                 .thenThrow(new ResourceNotFoundException("Estado con ID 999 no encontrado"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/estados/999"))
+        mockMvc.perform(get("/api/estados/999")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isNotFound());
 
         verify(estadoService, times(1)).obtenerPorId(999L);
     }
 
     @Test
-    @DisplayName("GET /api/estados/nombre/{nombre} - Debe retornar estado por nombre")
+    @DisplayName("GET /api/estados/nombre/{nombre} - Debe retornar estado por nombre (Usuario Autenticado)")
     void obtenerPorNombre_EstadoExiste_Returns200() throws Exception {
         // Arrange
         when(estadoService.obtenerPorNombre("ACTIVO")).thenReturn(estadoDTO);
 
         // Act & Assert
-        mockMvc.perform(get("/api/estados/nombre/ACTIVO"))
+        mockMvc.perform(get("/api/estados/nombre/ACTIVO")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("ACTIVO"));
 
@@ -146,14 +204,16 @@ class EstadoControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/estados/nombre/{nombre} - Debe retornar 404 cuando no existe")
+    @DisplayName("GET /api/estados/nombre/{nombre} - Debe retornar 404 cuando no existe (Usuario Autenticado)")
     void obtenerPorNombre_EstadoNoExiste_Returns404() throws Exception {
         // Arrange
         when(estadoService.obtenerPorNombre("NO_EXISTE"))
                 .thenThrow(new ResourceNotFoundException("Estado NO_EXISTE no encontrado"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/estados/nombre/NO_EXISTE"))
+        mockMvc.perform(get("/api/estados/nombre/NO_EXISTE")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isNotFound());
 
         verify(estadoService, times(1)).obtenerPorNombre("NO_EXISTE");

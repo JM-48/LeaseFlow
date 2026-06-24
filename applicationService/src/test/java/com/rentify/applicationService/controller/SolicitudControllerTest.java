@@ -9,7 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
@@ -28,8 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests de integración para SolicitudController
  * Valida las respuestas HTTP y el comportamiento del endpoint
  */
-@WebMvcTest(SolicitudController.class)
-@AutoConfigureMockMvc(addFilters = false) // Ignora filtros de Spring Security para testear solo la lógica del controlador
+// 🟢 SOLUCIÓN: Excluir la seguridad por defecto de Spring Security
+@WebMvcTest(
+        controllers = SolicitudController.class,
+        excludeAutoConfiguration = {
+                SecurityAutoConfiguration.class,
+                SecurityFilterAutoConfiguration.class
+        }
+)
 @DisplayName("Tests de SolicitudController")
 class SolicitudControllerTest {
 

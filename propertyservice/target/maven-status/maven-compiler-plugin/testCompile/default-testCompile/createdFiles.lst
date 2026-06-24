@@ -1,0 +1,7 @@
+com\rentify\propertyservice\service\FotoServiceTest.class
+com\rentify\propertyservice\controller\PropertyControllerTest.class
+com\rentify\propertyservice\controller\FotoControllerTest.class
+com\rentify\propertyservice\repository\PropertyRepositoryTest.class
+com\rentify\propertyservice\PropertyserviceApplicationTests.class
+com\rentify\propertyservice\controller\PropertyServiceIntegrationTest.class
+com\rentify\propertyservice\service\PropertyServiceTest.class

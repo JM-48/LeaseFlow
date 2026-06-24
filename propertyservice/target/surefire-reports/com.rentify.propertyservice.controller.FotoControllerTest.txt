@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.rentify.propertyservice.controller.FotoControllerTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.430 s -- in com.rentify.propertyservice.controller.FotoControllerTest

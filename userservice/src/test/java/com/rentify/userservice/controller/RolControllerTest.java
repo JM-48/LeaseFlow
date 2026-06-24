@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(RolController.class)
 @ActiveProfiles("test")
-@AutoConfigureMockMvc(addFilters = false) // <-- Desactivamos Spring Security para el test unitario
+@AutoConfigureMockMvc(addFilters = false) // <-- Desactivamos Spring Security para aislar la prueba del controlador
 @DisplayName("Tests de RolController")
 class RolControllerTest {
 
@@ -41,6 +41,13 @@ class RolControllerTest {
 
     private RolDTO rolDTO;
 
+    // Constantes para simular las cabeceras del API Gateway
+    private static final String HEADER_USER = "X-Usuario-Id";
+    private static final String HEADER_ROLE = "X-Rol-Id";
+    private static final String ADMIN_ID = "1";
+    private static final String ROL_ADMIN = "1";
+    private static final String ROL_USUARIO = "3"; // Simulamos un usuario normal (ej: Arriendatario)
+
     @BeforeEach
     void setUp() {
         rolDTO = RolDTO.builder()
@@ -49,14 +56,55 @@ class RolControllerTest {
                 .build();
     }
 
+    // =========================================================================
+    // 🛡️ TESTS DE SEGURIDAD (RBAC Y HEADERS)
+    // =========================================================================
+
     @Test
-    @DisplayName("POST /api/roles - Debe crear rol y retornar 201")
+    @DisplayName("POST /api/roles - Retorna 401 si no hay cabeceras de identidad")
+    void crearRol_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(post("/api/roles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rolDTO)))
+                .andExpect(status().isUnauthorized());
+
+        verify(rolService, never()).crearRol(any());
+    }
+
+    @Test
+    @DisplayName("POST /api/roles - Retorna 403 si el usuario no es ADMIN")
+    void crearRol_UsuarioNormal_Returns403() throws Exception {
+        mockMvc.perform(post("/api/roles")
+                        .header(HEADER_USER, "5")
+                        .header(HEADER_ROLE, ROL_USUARIO) // Intento con rol no autorizado
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rolDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(rolService, never()).crearRol(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/roles - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerTodos_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(get("/api/roles"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // =========================================================================
+    // ✅ TESTS FUNCIONALES (CON CABECERAS VÁLIDAS)
+    // =========================================================================
+
+    @Test
+    @DisplayName("POST /api/roles - Debe crear rol y retornar 201 (Siendo Admin)")
     void crearRol_DatosValidos_Returns201() throws Exception {
         // Arrange
         when(rolService.crearRol(any(RolDTO.class))).thenReturn(rolDTO);
 
         // Act & Assert
         mockMvc.perform(post("/api/roles")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rolDTO)))
                 .andExpect(status().isCreated())
@@ -67,7 +115,7 @@ class RolControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/roles - Debe retornar 400 cuando el nombre está vacío")
+    @DisplayName("POST /api/roles - Debe retornar 400 cuando el nombre está vacío (Siendo Admin)")
     void crearRol_NombreVacio_Returns400() throws Exception {
         // Arrange
         RolDTO rolInvalido = RolDTO.builder()
@@ -76,6 +124,8 @@ class RolControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/roles")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rolInvalido)))
                 .andExpect(status().isBadRequest());
@@ -84,7 +134,7 @@ class RolControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/roles - Debe retornar 400 cuando el rol es inválido")
+    @DisplayName("POST /api/roles - Debe retornar 400 cuando el rol es inválido (Siendo Admin)")
     void crearRol_RolInvalido_Returns400() throws Exception {
         // Arrange
         RolDTO rolInvalido = RolDTO.builder()
@@ -96,6 +146,8 @@ class RolControllerTest {
 
         // Act & Assert
         mockMvc.perform(post("/api/roles")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rolInvalido)))
                 .andExpect(status().isBadRequest());
@@ -104,7 +156,7 @@ class RolControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/roles - Debe retornar lista de roles")
+    @DisplayName("GET /api/roles - Debe retornar lista de roles (Usuario Autenticado)")
     void obtenerTodos_DeberiaRetornarListaDeRoles() throws Exception {
         // Arrange
         RolDTO rol2 = RolDTO.builder().id(2L).nombre("PROPIETARIO").build();
@@ -114,7 +166,9 @@ class RolControllerTest {
         when(rolService.obtenerTodos()).thenReturn(roles);
 
         // Act & Assert
-        mockMvc.perform(get("/api/roles"))
+        mockMvc.perform(get("/api/roles")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(3))
@@ -126,13 +180,15 @@ class RolControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/roles/{id} - Debe retornar rol por ID")
+    @DisplayName("GET /api/roles/{id} - Debe retornar rol por ID (Usuario Autenticado)")
     void obtenerPorId_RolExiste_Returns200() throws Exception {
         // Arrange
         when(rolService.obtenerPorId(1L)).thenReturn(rolDTO);
 
         // Act & Assert
-        mockMvc.perform(get("/api/roles/1"))
+        mockMvc.perform(get("/api/roles/1")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nombre").value("ADMIN"));
@@ -141,27 +197,31 @@ class RolControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/roles/{id} - Debe retornar 404 cuando no existe")
+    @DisplayName("GET /api/roles/{id} - Debe retornar 404 cuando no existe (Usuario Autenticado)")
     void obtenerPorId_RolNoExiste_Returns404() throws Exception {
         // Arrange
         when(rolService.obtenerPorId(999L))
                 .thenThrow(new ResourceNotFoundException("Rol con ID 999 no encontrado"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/roles/999"))
+        mockMvc.perform(get("/api/roles/999")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isNotFound());
 
         verify(rolService, times(1)).obtenerPorId(999L);
     }
 
     @Test
-    @DisplayName("GET /api/roles/nombre/{nombre} - Debe retornar rol por nombre")
+    @DisplayName("GET /api/roles/nombre/{nombre} - Debe retornar rol por nombre (Usuario Autenticado)")
     void obtenerPorNombre_RolExiste_Returns200() throws Exception {
         // Arrange
         when(rolService.obtenerPorNombre("ADMIN")).thenReturn(rolDTO);
 
         // Act & Assert
-        mockMvc.perform(get("/api/roles/nombre/ADMIN"))
+        mockMvc.perform(get("/api/roles/nombre/ADMIN")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("ADMIN"));
 
@@ -169,14 +229,16 @@ class RolControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/roles/nombre/{nombre} - Debe retornar 404 cuando no existe")
+    @DisplayName("GET /api/roles/nombre/{nombre} - Debe retornar 404 cuando no existe (Usuario Autenticado)")
     void obtenerPorNombre_RolNoExiste_Returns404() throws Exception {
         // Arrange
         when(rolService.obtenerPorNombre("NO_EXISTE"))
                 .thenThrow(new ResourceNotFoundException("Rol NO_EXISTE no encontrado"));
 
         // Act & Assert
-        mockMvc.perform(get("/api/roles/nombre/NO_EXISTE"))
+        mockMvc.perform(get("/api/roles/nombre/NO_EXISTE")
+                        .header(HEADER_USER, "10")
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isNotFound());
 
         verify(rolService, times(1)).obtenerPorNombre("NO_EXISTE");

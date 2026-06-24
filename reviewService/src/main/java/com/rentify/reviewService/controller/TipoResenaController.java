@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controlador REST para la gestión de tipos de reseña.
- * Incluye validación manual de tokens para asegurar el ecosistema.
+ * Protegido mediante las cabeceras de identidad inyectadas por el API Gateway.
  */
 @Slf4j
 @RestController
@@ -30,20 +30,16 @@ public class TipoResenaController {
     private final TipoResenaRepository tipoResenaRepository;
     private final ModelMapper modelMapper;
 
-    /**
-     * Valida si el token es nulo, vacío o no cumple con el formato Bearer.
-     */
-    private boolean isNoAutorizado(String token) {
-        return token == null || token.isBlank() || !token.startsWith("Bearer ");
-    }
+    private static final Long ROL_ADMIN = 1L;
 
     @GetMapping
     @Operation(summary = "Listar todos los tipos de reseña",
             description = "Obtiene todos los tipos de reseña disponibles en el sistema")
-    public ResponseEntity<List<TipoResenaDTO>> getAll(
-            @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<?> getAll(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/tipo-resenas");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -57,11 +53,12 @@ public class TipoResenaController {
     @GetMapping("/{id}")
     @Operation(summary = "Obtener tipo de reseña por ID",
             description = "Obtiene los detalles de un tipo de reseña específico")
-    public ResponseEntity<TipoResenaDTO> getById(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> getById(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/tipo-resenas/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -73,15 +70,22 @@ public class TipoResenaController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear nuevo tipo de reseña",
+    @Operation(summary = "Crear nuevo tipo de reseña (Solo Admin)",
             description = "Crea un nuevo tipo de reseña en el sistema")
-    public ResponseEntity<TipoResenaDTO> create(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> create(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Valid @RequestBody TipoResenaDTO tipoResenaDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a POST /api/tipo-resenas");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó crear un TipoResena sin privilegios de administrador", usuarioIdHeader);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden crear nuevos tipos de reseña.");
         }
 
         TipoResena tipoResena = modelMapper.map(tipoResenaDTO, TipoResena.class);
@@ -91,16 +95,23 @@ public class TipoResenaController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar tipo de reseña",
+    @Operation(summary = "Actualizar tipo de reseña (Solo Admin)",
             description = "Actualiza la información de un tipo de reseña existente")
-    public ResponseEntity<TipoResenaDTO> update(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> update(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id,
             @Valid @RequestBody TipoResenaDTO tipoResenaDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a PUT /api/tipo-resenas/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó editar el TipoResena {} sin privilegios de administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden actualizar tipos de reseña.");
         }
 
         return tipoResenaRepository.findById(id)
@@ -114,15 +125,22 @@ public class TipoResenaController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar tipo de reseña",
+    @Operation(summary = "Eliminar tipo de reseña (Solo Admin)",
             description = "Elimina un tipo de reseña del sistema")
-    public ResponseEntity<Void> delete(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> delete(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a DELETE /api/tipo-resenas/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó eliminar el TipoResena {} sin privilegios de administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden eliminar tipos de reseña.");
         }
 
         if (tipoResenaRepository.existsById(id)) {

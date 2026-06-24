@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Controlador REST para la gestión de reseñas y valoraciones.
- * Incluye validación manual de tokens para el ecosistema Rentify.
+ * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
  */
 @Slf4j
 @RestController
@@ -27,23 +27,26 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    /**
-     * Valida si el token es nulo, vacío o no cumple con el formato Bearer.
-     */
-    private boolean isNoAutorizado(String token) {
-        return token == null || token.isBlank() || !token.startsWith("Bearer ");
-    }
+    private static final Long ROL_ADMIN = 1L;
 
     @PostMapping
     @Operation(summary = "Crear nueva reseña",
-            description = "Crea una nueva reseña con validaciones de negocio. Puede ser para una propiedad o para un usuario.")
-    public ResponseEntity<ReviewDTO> crearResena(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            description = "Crea una nueva reseña. El usuario debe coincidir con el emisor de la cabecera.")
+    public ResponseEntity<?> crearResena(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Valid @RequestBody ReviewDTO reviewDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a POST /api/reviews");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autorizado: Faltan cabeceras de identidad.");
+        }
+
+        // Evitar suplantación de identidad (Impersonation)
+        if (!ROL_ADMIN.equals(rolIdHeader) && !usuarioIdHeader.equals(reviewDTO.getUsuarioId())) {
+            log.warn("Usuario {} intentó crear una reseña a nombre del usuario {}", usuarioIdHeader, reviewDTO.getUsuarioId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: No puedes crear una reseña usando la identidad de otro usuario.");
         }
 
         ReviewDTO created = reviewService.crearResena(reviewDTO);
@@ -51,16 +54,23 @@ public class ReviewController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todas las reseñas",
-            description = "Obtiene todas las reseñas del sistema")
-    public ResponseEntity<List<ReviewDTO>> listarTodas(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    @Operation(summary = "Listar todas las reseñas (Solo Admin)",
+            description = "Obtiene todas las reseñas del sistema de manera global.")
+    public ResponseEntity<?> listarTodas(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "Incluir detalles de usuario y propiedad")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó listar todas las reseñas sin ser administrador", usuarioIdHeader);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden listar la totalidad de las reseñas.");
         }
 
         return ResponseEntity.ok(reviewService.listarTodas(includeDetails));
@@ -69,13 +79,14 @@ public class ReviewController {
     @GetMapping("/{id}")
     @Operation(summary = "Obtener reseña por ID",
             description = "Obtiene los detalles de una reseña específica")
-    public ResponseEntity<ReviewDTO> obtenerPorId(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> obtenerPorId(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id,
             @Parameter(description = "Incluir detalles de usuario y propiedad")
             @RequestParam(defaultValue = "true") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -86,13 +97,14 @@ public class ReviewController {
     @GetMapping("/usuario/{usuarioId}")
     @Operation(summary = "Obtener reseñas por usuario",
             description = "Obtiene todas las reseñas creadas por un usuario específico")
-    public ResponseEntity<List<ReviewDTO>> obtenerPorUsuario(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> obtenerPorUsuario(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long usuarioId,
             @Parameter(description = "Incluir detalles de usuario y propiedad")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews/usuario/{}", usuarioId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -103,13 +115,14 @@ public class ReviewController {
     @GetMapping("/propiedad/{propiedadId}")
     @Operation(summary = "Obtener reseñas por propiedad",
             description = "Obtiene todas las reseñas de una propiedad específica")
-    public ResponseEntity<List<ReviewDTO>> obtenerPorPropiedad(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> obtenerPorPropiedad(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long propiedadId,
             @Parameter(description = "Incluir detalles de usuario y propiedad")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews/propiedad/{}", propiedadId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -120,13 +133,14 @@ public class ReviewController {
     @GetMapping("/usuario-resenado/{usuarioResenadoId}")
     @Operation(summary = "Obtener reseñas sobre un usuario",
             description = "Obtiene todas las reseñas que han escrito sobre un usuario específico")
-    public ResponseEntity<List<ReviewDTO>> obtenerPorUsuarioResenado(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> obtenerPorUsuarioResenado(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long usuarioResenadoId,
             @Parameter(description = "Incluir detalles de usuario y propiedad")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews/usuario-resenado/{}", usuarioResenadoId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -137,11 +151,12 @@ public class ReviewController {
     @GetMapping("/propiedad/{propiedadId}/promedio")
     @Operation(summary = "Calcular promedio de reseñas de propiedad",
             description = "Calcula el promedio de puntaje de todas las reseñas de una propiedad")
-    public ResponseEntity<Double> calcularPromedioPorPropiedad(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> calcularPromedioPorPropiedad(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long propiedadId) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews/propiedad/{}/promedio", propiedadId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -152,11 +167,12 @@ public class ReviewController {
     @GetMapping("/usuario-resenado/{usuarioResenadoId}/promedio")
     @Operation(summary = "Calcular promedio de reseñas de usuario",
             description = "Calcula el promedio de puntaje de todas las reseñas sobre un usuario")
-    public ResponseEntity<Double> calcularPromedioPorUsuario(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> calcularPromedioPorUsuario(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long usuarioResenadoId) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/reviews/usuario-resenado/{}/promedio", usuarioResenadoId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -165,32 +181,49 @@ public class ReviewController {
     }
 
     @PatchMapping("/{id}/estado")
-    @Operation(summary = "Actualizar estado de reseña",
+    @Operation(summary = "Actualizar estado de reseña (Solo Admin)",
             description = "Actualiza el estado de una reseña (ACTIVA, BANEADA, OCULTA)")
-    public ResponseEntity<ReviewDTO> actualizarEstado(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> actualizarEstado(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id,
             @Parameter(description = "Nuevo estado (ACTIVA, BANEADA, OCULTA)")
             @RequestParam String estado) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a PATCH /api/reviews/{}/estado", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó moderar la reseña {} sin privilegios de administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden moderar estados de reseñas.");
         }
 
         return ResponseEntity.ok(reviewService.actualizarEstado(id, estado));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar reseña",
+    @Operation(summary = "Eliminar reseña (Dueño o Admin)",
             description = "Elimina una reseña del sistema de forma permanente")
-    public ResponseEntity<Void> eliminarResena(
-            @RequestHeader(value = "Authorization", required = false) String token,
+    public ResponseEntity<?> eliminarResena(
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a DELETE /api/reviews/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Recuperamos la reseña para verificar la autoría
+        ReviewDTO review = reviewService.obtenerPorId(id, false);
+
+        if (!ROL_ADMIN.equals(rolIdHeader) && !review.getUsuarioId().equals(usuarioIdHeader)) {
+            log.warn("Usuario {} intentó eliminar la reseña {} perteneciente al usuario {}", usuarioIdHeader, id, review.getUsuarioId());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: No tienes permisos para eliminar esta reseña.");
         }
 
         reviewService.eliminarResena(id);

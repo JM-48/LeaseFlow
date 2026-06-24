@@ -34,11 +34,18 @@ class PropertyServiceIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Token simulado para pasar la validación personalizada del controlador
-    private static final String VALID_TOKEN = "Bearer token-de-prueba-integracion-valido";
+    // Headers de seguridad inyectados por el Gateway
+    private static final String HEADER_USER = "X-Usuario-Id";
+    private static final String HEADER_ROLE = "X-Rol-Id";
+
+    // Roles y Usuarios simulados para la integración
+    private static final String ROL_ADMIN = "1";
+    private static final String ROL_USER = "2";
+    private static final String ADMIN_ID = "999";
+    private static final String PROPIETARIO_ID = "99";
 
     // ==========================================
-    // 🛠️ MÉTODOS AUXILIARES (DRY)
+    // 🛠️ MÉTODOS AUXILIARES (DRY) - Ejecutados por ADMIN
     // ==========================================
 
     private Long crearRegion(String nombre) throws Exception {
@@ -46,7 +53,8 @@ class PropertyServiceIntegrationTest {
         regionDTO.setNombre(nombre);
 
         MvcResult result = mockMvc.perform(post("/api/regiones")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN) // BLINDADO: Solo Admin puede crear
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(regionDTO)))
                 .andExpect(status().isCreated())
@@ -60,7 +68,8 @@ class PropertyServiceIntegrationTest {
         comunaDTO.setRegionId(regionId);
 
         MvcResult result = mockMvc.perform(post("/api/comunas")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN) // BLINDADO: Solo Admin puede crear
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(comunaDTO)))
                 .andExpect(status().isCreated())
@@ -73,7 +82,8 @@ class PropertyServiceIntegrationTest {
         tipoDTO.setNombre(nombre);
 
         MvcResult result = mockMvc.perform(post("/api/tipos")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN) // BLINDADO: Solo Admin puede crear
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tipoDTO)))
                 .andExpect(status().isCreated())
@@ -88,12 +98,12 @@ class PropertyServiceIntegrationTest {
     @Test
     @DisplayName("Flujo Maestro: Crear Región -> Comuna -> Tipo -> Propiedad -> Búsqueda")
     void flujoCompleto_CrearPropiedadYBuscar() throws Exception {
-        // Los helpers ya llevan el token incorporado internamente
+        // Los helpers ya llevan los headers de ADMIN incorporados
         Long regionId = crearRegion("Región Metropolitana");
         Long comunaId = crearComuna("Providencia", regionId);
         Long tipoId = crearTipo("Departamento");
 
-        // 4. Crear la Propiedad
+        // 4. Crear la Propiedad (Lo hace el usuario Propietario)
         PropertyDTO propiedadDTO = PropertyDTO.builder()
                 .codigo("DP001")
                 .titulo("Hermoso depto en arriendo")
@@ -106,11 +116,12 @@ class PropertyServiceIntegrationTest {
                 .direccion("Av. Providencia 1234")
                 .tipoId(tipoId)
                 .comunaId(comunaId)
-                .propietarioId(99L)
+                .propietarioId(Long.valueOf(PROPIETARIO_ID)) // Match con el header
                 .build();
 
         MvcResult resultPropiedad = mockMvc.perform(post("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, PROPIETARIO_ID)
+                        .header(HEADER_ROLE, ROL_USER) // Un usuario normal crea su propiedad
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadDTO)))
                 .andExpect(status().isCreated())
@@ -120,9 +131,10 @@ class PropertyServiceIntegrationTest {
 
         Long propiedadId = objectMapper.readValue(resultPropiedad.getResponse().getContentAsString(), PropertyDTO.class).getId();
 
-        // 5. Probar el endpoint de Búsqueda
+        // 5. Probar el endpoint de Búsqueda (Cualquier usuario puede buscar)
         mockMvc.perform(get("/api/propiedades/buscar")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, "123") // Usuario random buscando
+                        .header(HEADER_ROLE, ROL_USER)
                         .param("comunaId", comunaId.toString())
                         .param("petFriendly", "true")
                         .param("minPrecio", "600000")
@@ -148,10 +160,12 @@ class PropertyServiceIntegrationTest {
                 .m2(new BigDecimal("0.5"))
                 .nHabit(-1)
                 .nBanos(30)
+                .propietarioId(Long.valueOf(PROPIETARIO_ID))
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, PROPIETARIO_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
                 .andExpect(status().isBadRequest())
@@ -161,7 +175,7 @@ class PropertyServiceIntegrationTest {
     @Test
     @DisplayName("POST /api/propiedades - Falla si la Comuna no existe en BD")
     void crearPropiedad_ComunaInexistente_RetornaError() throws Exception {
-        Long tipoId = crearTipo("Casa");
+        Long tipoId = crearTipo("Casa"); // Esto lo hace el ADMIN internamente
 
         PropertyDTO propiedadInvalida = PropertyDTO.builder()
                 .codigo("CS001")
@@ -174,12 +188,13 @@ class PropertyServiceIntegrationTest {
                 .petFriendly(false)
                 .direccion("Calle Falsa 123")
                 .tipoId(tipoId)
-                .comunaId(99999L)
-                .propietarioId(1L)
+                .comunaId(99999L) // Comuna inexistente
+                .propietarioId(Long.valueOf(PROPIETARIO_ID))
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, PROPIETARIO_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
                 .andExpect(status().is4xxClientError());
@@ -201,13 +216,14 @@ class PropertyServiceIntegrationTest {
                 .nBanos(2)
                 .petFriendly(false)
                 .direccion("Av. Libertad 456")
-                .tipoId(99999L)
+                .tipoId(99999L) // Tipo inexistente
                 .comunaId(comunaId)
-                .propietarioId(1L)
+                .propietarioId(Long.valueOf(PROPIETARIO_ID))
                 .build();
 
         mockMvc.perform(post("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, PROPIETARIO_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(propiedadInvalida)))
                 .andExpect(status().is4xxClientError());

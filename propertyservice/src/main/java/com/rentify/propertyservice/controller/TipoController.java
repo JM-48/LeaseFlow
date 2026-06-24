@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * Controller REST para gestión de tipos de propiedades.
+ * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
  */
 @RestController
 @RequestMapping("/api/tipos")
@@ -31,22 +32,28 @@ public class TipoController {
     private final TipoRepository tipoRepository;
     private final ModelMapper modelMapper;
 
-    /**
-     * Valida de forma sencilla si el request trae un token Bearer.
-     */
-    private boolean isNoAutorizado(String token) {
-        return token == null || token.trim().isEmpty() || !token.startsWith("Bearer ");
-    }
+    private static final Long ROL_ADMIN = 1L;
 
+    /**
+     * Crea un nuevo tipo.
+     * BLINDADO: Solo Administradores.
+     */
     @PostMapping
-    @Operation(summary = "Crear tipo", description = "Crea un nuevo tipo de propiedad")
+    @Operation(summary = "Crear tipo", description = "Crea un nuevo tipo de propiedad (Solo Administradores)")
     public ResponseEntity<?> crear(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Valid @RequestBody TipoDTO tipoDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a POST /api/tipos");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autorizado: Faltan cabeceras de identidad.");
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó crear un tipo sin ser administrador", usuarioIdHeader);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden crear tipos de propiedades.");
         }
 
         log.info("Creando nuevo tipo: {}", tipoDTO.getNombre());
@@ -58,12 +65,17 @@ public class TipoController {
                 .body(modelMapper.map(saved, TipoDTO.class));
     }
 
+    /**
+     * Lista todos los tipos.
+     * Acceso: Cualquier usuario autenticado.
+     */
     @GetMapping
     @Operation(summary = "Listar tipos", description = "Obtiene todos los tipos disponibles")
     public ResponseEntity<?> listar(
-            @RequestHeader(value = "Authorization", required = false) String token) {
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/tipos");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -77,14 +89,19 @@ public class TipoController {
         return ResponseEntity.ok(tipos);
     }
 
+    /**
+     * Obtiene tipo por ID.
+     * Acceso: Cualquier usuario autenticado.
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener tipo por ID")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a GET /api/tipos/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -96,17 +113,28 @@ public class TipoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Actualiza un tipo.
+     * BLINDADO: Solo Administradores.
+     */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar tipo")
+    @Operation(summary = "Actualizar tipo", description = "Actualiza el nombre de un tipo (Solo Administradores)")
     public ResponseEntity<?> actualizar(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id,
             @Valid @RequestBody TipoDTO tipoDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a PUT /api/tipos/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó modificar el tipo {} sin ser administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden modificar tipos de propiedades.");
         }
 
         log.info("Actualizando tipo con ID: {}", id);
@@ -120,16 +148,27 @@ public class TipoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Elimina un tipo.
+     * BLINDADO: Solo Administradores.
+     */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar tipo")
+    @Operation(summary = "Eliminar tipo", description = "Elimina un tipo del sistema (Solo Administradores)")
     public ResponseEntity<?> eliminar(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Parameter(description = "ID del tipo", example = "1")
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a DELETE /api/tipos/{}", id);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            log.warn("Usuario {} intentó eliminar el tipo {} sin ser administrador", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: Solo los administradores pueden eliminar tipos de propiedades.");
         }
 
         log.info("Eliminando tipo con ID: {}", id);

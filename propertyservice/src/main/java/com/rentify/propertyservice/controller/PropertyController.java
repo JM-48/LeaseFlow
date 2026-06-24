@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * Controller REST para gestión de propiedades.
  * Expone endpoints CRUD y búsqueda avanzada de propiedades.
+ * Protegido mediante validación de cabeceras inyectadas por el API Gateway.
  */
 @RestController
 @RequestMapping("/api/propiedades")
@@ -28,37 +29,31 @@ import java.util.List;
 public class PropertyController {
 
     private final PropertyService propertyService;
-
-    /**
-     * Valida de forma sencilla si el request trae un token Bearer.
-     */
-    private boolean isNoAutorizado(String token) {
-        return token == null || token.trim().isEmpty() || !token.startsWith("Bearer ");
-    }
+    private static final Long ROL_ADMIN = 1L;
 
     /**
      * Crea una nueva propiedad.
-     *
-     * @param token Header de autorización
-     * @param propertyDTO Datos de la propiedad a crear
-     * @return Propiedad creada con código 201 CREATED
+     * BLINDADO: Si no es admin, se fuerza a que el creador sea el usuario logueado.
      */
     @PostMapping
-    @Operation(
-            summary = "Crear nueva propiedad",
-            description = "Crea una nueva propiedad con validaciones de negocio"
-    )
+    @Operation(summary = "Crear nueva propiedad", description = "Crea una nueva propiedad con validaciones de negocio")
     public ResponseEntity<?> crear(
-            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @Valid @RequestBody PropertyDTO propertyDTO) {
 
-        if (isNoAutorizado(token)) {
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             log.warn("Intento de acceso no autorizado a POST /api/propiedades");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autorizado: Faltan cabeceras de identidad.");
+        }
+
+        // Medida Anti-Fraude: Si el usuario no es Admin (1L), forzamos que el propietario
+        // sea él mismo, evitando que un usuario común cree propiedades a nombre de otros.
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            propertyDTO.setPropietarioId(usuarioIdHeader);
         }
 
         log.info("Endpoint POST /api/propiedades - Crear propiedad con código: {}", propertyDTO.getCodigo());
-
         PropertyDTO created = propertyService.crearProperty(propertyDTO);
 
         return ResponseEntity
@@ -67,40 +62,23 @@ public class PropertyController {
     }
 
     /**
-     * Obtiene todas las propiedades (CON PAGINACIÓN para no asfixiar a Azure).
-     *
-     * @param token Header de autorización
-     * @param page Número de la página (comienza en 0)
-     * @param size Cantidad de propiedades por página
-     * @param includeDetails Incluir detalles de relaciones
-     * @return Página de propiedades
+     * Obtiene todas las propiedades (CON PAGINACIÓN).
      */
     @GetMapping
-    @Operation(
-            summary = "Listar todas las propiedades",
-            description = "Retorna las propiedades registradas en el sistema divididas en páginas"
-    )
+    @Operation(summary = "Listar todas las propiedades", description = "Retorna las propiedades registradas en el sistema divididas en páginas")
     public ResponseEntity<?> listar(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "Número de página (empieza en 0)")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @RequestParam(defaultValue = "0") int page,
-
-            @Parameter(description = "Cantidad de elementos por página")
             @RequestParam(defaultValue = "10") int size,
-
-            @Parameter(description = "Incluir detalles de relaciones (tipo, comuna, fotos, categorías)")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades");
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         log.debug("Endpoint GET /api/propiedades - Listar todas paginadas (includeDetails: {})", includeDetails);
-
         org.springframework.data.domain.Pageable paginacion = org.springframework.data.domain.PageRequest.of(page, size);
-
         org.springframework.data.domain.Page<PropertyDTO> propiedades = propertyService.listarTodas(paginacion, includeDetails);
 
         return ResponseEntity.ok(propiedades);
@@ -108,33 +86,20 @@ public class PropertyController {
 
     /**
      * Obtiene una propiedad por su ID.
-     *
-     * @param token Header de autorización
-     * @param id ID de la propiedad
-     * @param includeDetails Incluir detalles de relaciones
-     * @return Propiedad encontrada
      */
     @GetMapping("/{id}")
-    @Operation(
-            summary = "Obtener propiedad por ID",
-            description = "Retorna los detalles de una propiedad específica"
-    )
+    @Operation(summary = "Obtener propiedad por ID", description = "Retorna los detalles de una propiedad específica")
     public ResponseEntity<?> obtenerPorId(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "ID de la propiedad", example = "1")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id,
-
-            @Parameter(description = "Incluir detalles de relaciones")
             @RequestParam(defaultValue = "true") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades/{}", id);
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         log.debug("Endpoint GET /api/propiedades/{} - Obtener por ID (includeDetails: {})", id, includeDetails);
-
         PropertyDTO propiedad = propertyService.obtenerPorId(id, includeDetails);
 
         return ResponseEntity.ok(propiedad);
@@ -142,33 +107,20 @@ public class PropertyController {
 
     /**
      * Obtiene todas las propiedades publicadas por un usuario/propietario específico.
-     *
-     * @param token Header de autorización
-     * @param usuarioId ID del usuario propietario
-     * @param includeDetails Incluir detalles de relaciones
-     * @return Lista de propiedades del propietario
      */
     @GetMapping("/usuario/{usuarioId}")
-    @Operation(
-            summary = "Listar propiedades por ID de usuario",
-            description = "Retorna todas las propiedades que pertenecen a un propietario específico"
-    )
+    @Operation(summary = "Listar propiedades por ID de usuario", description = "Retorna todas las propiedades que pertenecen a un propietario específico")
     public ResponseEntity<?> listarPorUsuario(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "ID del usuario propietario", example = "2")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long usuarioId,
-
-            @Parameter(description = "Incluir detalles de relaciones")
             @RequestParam(defaultValue = "true") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades/usuario/{}", usuarioId);
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.info("Endpoint GET /api/propiedades/usuario/{} - Listar por usuario (includeDetails: {})", usuarioId, includeDetails);
-
+        log.info("Endpoint GET /api/propiedades/usuario/{} - Listar por usuario", usuarioId);
         List<PropertyDTO> propiedades = propertyService.listarPorUsuario(usuarioId, includeDetails);
 
         return ResponseEntity.ok(propiedades);
@@ -176,33 +128,20 @@ public class PropertyController {
 
     /**
      * Obtiene una propiedad por su código único.
-     *
-     * @param token Header de autorización
-     * @param codigo Código de la propiedad
-     * @param includeDetails Incluir detalles de relaciones
-     * @return Propiedad encontrada
      */
     @GetMapping("/codigo/{codigo}")
-    @Operation(
-            summary = "Obtener propiedad por código",
-            description = "Retorna una propiedad específica usando su código único"
-    )
+    @Operation(summary = "Obtener propiedad por código", description = "Retorna una propiedad específica usando su código único")
     public ResponseEntity<?> obtenerPorCodigo(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "Código único de la propiedad", example = "DP001")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable String codigo,
-
-            @Parameter(description = "Incluir detalles de relaciones")
             @RequestParam(defaultValue = "true") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades/codigo/{}", codigo);
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.debug("Endpoint GET /api/propiedades/codigo/{} - Obtener por código (includeDetails: {})", codigo, includeDetails);
-
+        log.debug("Endpoint GET /api/propiedades/codigo/{} - Obtener por código", codigo);
         PropertyDTO propiedad = propertyService.obtenerPorCodigo(codigo, includeDetails);
 
         return ResponseEntity.ok(propiedad);
@@ -210,31 +149,36 @@ public class PropertyController {
 
     /**
      * Actualiza una propiedad existente.
-     *
-     * @param token Header de autorización
-     * @param id ID de la propiedad a actualizar
-     * @param propertyDTO Datos actualizados
-     * @return Propiedad actualizada
+     * BLINDADO: Solo el administrador o el dueño de la propiedad pueden actualizarla.
      */
     @PutMapping("/{id}")
-    @Operation(
-            summary = "Actualizar propiedad",
-            description = "Actualiza los datos de una propiedad existente"
-    )
+    @Operation(summary = "Actualizar propiedad", description = "Actualiza los datos de una propiedad existente")
     public ResponseEntity<?> actualizar(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "ID de la propiedad", example = "1")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id,
             @Valid @RequestBody PropertyDTO propertyDTO) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a PUT /api/propiedades/{}", id);
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.info("Endpoint PUT /api/propiedades/{} - Actualizar propiedad", id);
+        // Buscamos la propiedad actual para saber a quién le pertenece
+        PropertyDTO propiedadActual = propertyService.obtenerPorId(id, false);
 
+        // Seguridad estricta: Si no es Admin, validamos que la propiedad le pertenezca
+        if (!ROL_ADMIN.equals(rolIdHeader) && !propiedadActual.getPropietarioId().equals(usuarioIdHeader)) {
+            log.warn("Usuario {} intentó modificar propiedad {} que no le pertenece", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: No puedes modificar propiedades que no te pertenecen.");
+        }
+
+        // Evitar que un usuario cambie de dueño la propiedad durante la actualización
+        if (!ROL_ADMIN.equals(rolIdHeader)) {
+            propertyDTO.setPropietarioId(usuarioIdHeader);
+        }
+
+        log.info("Endpoint PUT /api/propiedades/{} - Actualizar propiedad", id);
         PropertyDTO actualizado = propertyService.actualizar(id, propertyDTO);
 
         return ResponseEntity.ok(actualizado);
@@ -242,29 +186,30 @@ public class PropertyController {
 
     /**
      * Elimina una propiedad.
-     *
-     * @param token Header de autorización
-     * @param id ID de la propiedad a eliminar
-     * @return Respuesta sin contenido (204 NO_CONTENT)
+     * BLINDADO: Solo el administrador o el dueño de la propiedad pueden eliminarla.
      */
     @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Eliminar propiedad",
-            description = "Elimina una propiedad del sistema"
-    )
+    @Operation(summary = "Eliminar propiedad", description = "Elimina una propiedad del sistema")
     public ResponseEntity<?> eliminar(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "ID de la propiedad", example = "1")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a DELETE /api/propiedades/{}", id);
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        log.info("Endpoint DELETE /api/propiedades/{} - Eliminar propiedad", id);
+        // Buscamos la propiedad actual para saber a quién le pertenece
+        PropertyDTO propiedadActual = propertyService.obtenerPorId(id, false);
 
+        // Seguridad estricta: Si no es Admin, validamos que la propiedad le pertenezca
+        if (!ROL_ADMIN.equals(rolIdHeader) && !propiedadActual.getPropietarioId().equals(usuarioIdHeader)) {
+            log.warn("Usuario {} intentó eliminar propiedad {} que no le pertenece", usuarioIdHeader, id);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Acceso denegado: No puedes eliminar propiedades que no te pertenecen.");
+        }
+
+        log.info("Endpoint DELETE /api/propiedades/{} - Eliminar propiedad", id);
         propertyService.eliminar(id);
 
         return ResponseEntity.noContent().build();
@@ -272,57 +217,26 @@ public class PropertyController {
 
     /**
      * Busca propiedades con filtros avanzados.
-     *
-     * @param token Header de autorización
-     * @param comunaId Filtro por ID de comuna
-     * @param tipoId Filtro por ID de tipo
-     * @param minPrecio Precio mínimo
-     * @param maxPrecio Precio máximo
-     * @param nHabit Número de habitaciones
-     * @param nBanos Número de baños
-     * @param petFriendly Acepta mascotas
-     * @param includeDetails Incluir detalles
-     * @return Lista de propiedades que cumplen los filtros
      */
     @GetMapping("/buscar")
-    @Operation(
-            summary = "Buscar propiedades con filtros",
-            description = "Busca propiedades aplicando múltiples filtros opcionales"
-    )
+    @Operation(summary = "Buscar propiedades con filtros", description = "Busca propiedades aplicando múltiples filtros opcionales")
     public ResponseEntity<?> buscarConFiltros(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "ID de la comuna (opcional)")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @RequestParam(required = false) Long comunaId,
-
-            @Parameter(description = "ID del tipo de propiedad (opcional)")
             @RequestParam(required = false) Long tipoId,
-
-            @Parameter(description = "Precio mínimo mensual (opcional)")
             @RequestParam(required = false) BigDecimal minPrecio,
-
-            @Parameter(description = "Precio máximo mensual (opcional)")
             @RequestParam(required = false) BigDecimal maxPrecio,
-
-            @Parameter(description = "Número de habitaciones (opcional)")
             @RequestParam(required = false) Integer nHabit,
-
-            @Parameter(description = "Número de baños (opcional)")
             @RequestParam(required = false) Integer nBanos,
-
-            @Parameter(description = "Acepta mascotas (opcional)")
             @RequestParam(required = false) Boolean petFriendly,
-
-            @Parameter(description = "Incluir detalles de relaciones")
             @RequestParam(defaultValue = "false") boolean includeDetails) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades/buscar");
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         log.debug("Endpoint GET /api/propiedades/buscar - Búsqueda con filtros");
-
         List<PropertyDTO> propiedades = propertyService.buscarConFiltros(
                 tipoId, comunaId, minPrecio, maxPrecio, nHabit, nBanos, petFriendly, includeDetails
         );
@@ -332,29 +246,19 @@ public class PropertyController {
 
     /**
      * Verifica si existe una propiedad.
-     *
-     * @param token Header de autorización
-     * @param id ID de la propiedad
-     * @return true si existe, false en caso contrario
      */
     @GetMapping("/{id}/existe")
-    @Operation(
-            summary = "Verificar existencia de propiedad",
-            description = "Verifica si una propiedad existe en el sistema"
-    )
+    @Operation(summary = "Verificar existencia de propiedad", description = "Verifica si una propiedad existe en el sistema")
     public ResponseEntity<?> existe(
-            @RequestHeader(value = "Authorization", required = false) String token,
-
-            @Parameter(description = "ID de la propiedad", example = "1")
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolIdHeader,
             @PathVariable Long id) {
 
-        if (isNoAutorizado(token)) {
-            log.warn("Intento de acceso no autorizado a GET /api/propiedades/{}/existe", id);
+        if (usuarioIdHeader == null || rolIdHeader == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         log.debug("Endpoint GET /api/propiedades/{}/existe - Verificar existencia", id);
-
         boolean existe = propertyService.existsProperty(id);
 
         return ResponseEntity.ok(existe);

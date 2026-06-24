@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -27,10 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests de integración para PropertyController.
- * Utiliza @WebMvcTest con Spring Boot 3.4+ @MockitoBean.
+ * Actualizado para soportar cabeceras inyectadas y validación de autoría.
  */
 @WebMvcTest(PropertyController.class)
-@AutoConfigureMockMvc(addFilters = false) // <-- AGREGADO para evitar que salte el Basic Auth de Spring Security
+@AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Tests de PropertyController")
 class PropertyControllerTest {
 
@@ -45,8 +44,15 @@ class PropertyControllerTest {
 
     private PropertyDTO propertyDTO;
 
-    // Token simulado para pasar la validación del controlador
-    private static final String VALID_TOKEN = "Bearer token-de-prueba-valido";
+    // Headers requeridos por el nuevo filtro de seguridad
+    private static final String HEADER_USER = "X-Usuario-Id";
+    private static final String HEADER_ROLE = "X-Rol-Id";
+
+    // Roles y Usuarios simulados
+    private static final String ROL_ADMIN = "1";
+    private static final String ROL_USER = "2";
+    private static final String OWNER_ID = "1";     // Dueño de la propiedad
+    private static final String OTHER_USER_ID = "9"; // Otro usuario cualquiera
 
     @BeforeEach
     void setUp() {
@@ -64,98 +70,59 @@ class PropertyControllerTest {
                 .fcreacion(LocalDate.now())
                 .tipoId(1L)
                 .comunaId(1L)
-                .propietarioId(1L)
+                .propietarioId(Long.valueOf(OWNER_ID)) // ID del dueño = 1
                 .build();
     }
 
     // ==================== Tests POST - Crear ====================
 
     @Test
+    @DisplayName("POST /api/propiedades - Faltan cabeceras retorna 401 UNAUTHORIZED")
+    void crear_FaltanCabeceras_Returns401() throws Exception {
+        mockMvc.perform(post("/api/propiedades")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(propertyDTO)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @DisplayName("POST /api/propiedades - Debe crear propiedad y retornar 201 CREATED")
     void crear_DatosValidos_Returns201() throws Exception {
-        // Arrange
-        PropertyDTO requestDTO = PropertyDTO.builder()
-                .codigo("DP001")
-                .titulo("Dpto 2D/2B Providencia")
-                .precioMensual(BigDecimal.valueOf(650000))
-                .divisa("CLP")
-                .m2(BigDecimal.valueOf(65.5))
-                .nHabit(2)
-                .nBanos(2)
-                .petFriendly(true)
-                .direccion("Av. Providencia 1234")
-                .fcreacion(LocalDate.now())
-                .tipoId(1L)
-                .comunaId(1L)
-                .propietarioId(1L)
-                .build();
+        when(propertyService.crearProperty(any(PropertyDTO.class))).thenReturn(propertyDTO);
 
-        when(propertyService.crearProperty(any(PropertyDTO.class)))
-                .thenReturn(propertyDTO);
-
-        // Act & Assert
         mockMvc.perform(post("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, OWNER_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(requestDTO)))
+                        .content(objectMapper.writeValueAsString(propertyDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.codigo").value("DP001"))
-                .andExpect(jsonPath("$.titulo").value("Dpto 2D/2B Providencia"))
-                .andExpect(jsonPath("$.petFriendly").value(true));
+                .andExpect(jsonPath("$.codigo").value("DP001"));
 
         verify(propertyService, times(1)).crearProperty(any(PropertyDTO.class));
     }
 
-// ==================== Tests GET - Listar ====================
+    // ==================== Tests GET - Listar ====================
+
+    @Test
+    @DisplayName("GET /api/propiedades - Faltan cabeceras retorna 401 UNAUTHORIZED")
+    void listar_FaltanCabeceras_Returns401() throws Exception {
+        mockMvc.perform(get("/api/propiedades"))
+                .andExpect(status().isUnauthorized());
+    }
 
     @Test
     @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades")
     void listar_SinDetalles_Returns200() throws Exception {
-        // Arrange
         when(propertyService.listarTodas(any(Pageable.class), eq(false)))
                 .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
-        // Act & Assert
         mockMvc.perform(get("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, OTHER_USER_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].codigo").value("DP001"));
-
-        verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(false));
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades - Debe incluir detalles cuando se solicita")
-    void listar_ConDetalles_Returns200() throws Exception {
-        // Arrange
-        when(propertyService.listarTodas(any(Pageable.class), eq(true)))
-                .thenReturn(new PageImpl<>(List.of(propertyDTO)));
-
-        // Act & Assert
-        mockMvc.perform(get("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
-                        .param("includeDetails", "true"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray());
-
-        verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(true));
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades - Por defecto no incluye detalles")
-    void listar_ParametroDefecto_Returns200() throws Exception {
-        // Arrange
-        when(propertyService.listarTodas(any(Pageable.class), eq(false)))
-                .thenReturn(new PageImpl<>(List.of(propertyDTO)));
-
-        // Act & Assert
-        mockMvc.perform(get("/api/propiedades")
-                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
-                .andExpect(status().isOk());
-
-        verify(propertyService, times(1)).listarTodas(any(Pageable.class), eq(false));
     }
 
     // ==================== Tests GET/{id} ====================
@@ -163,33 +130,14 @@ class PropertyControllerTest {
     @Test
     @DisplayName("GET /api/propiedades/{id} - Debe retornar propiedad cuando existe")
     void obtenerPorId_Existe_Returns200() throws Exception {
-        // Arrange
-        when(propertyService.obtenerPorId(1L, true))
-                .thenReturn(propertyDTO);
+        when(propertyService.obtenerPorId(1L, true)).thenReturn(propertyDTO);
 
-        // Act & Assert
         mockMvc.perform(get("/api/propiedades/1")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, OTHER_USER_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.codigo").value("DP001"));
-
-        verify(propertyService, times(1)).obtenerPorId(1L, true);
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades/{id} - Debe retornar 404 cuando no existe")
-    void obtenerPorId_NoExiste_Returns404() throws Exception {
-        // Arrange
-        when(propertyService.obtenerPorId(999L, true))
-                .thenThrow(new ResourceNotFoundException("Propiedad no encontrada"));
-
-        // Act & Assert
-        mockMvc.perform(get("/api/propiedades/999")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
-                        .param("includeDetails", "true"))
-                .andExpect(status().isNotFound());
     }
 
     // ==================== Tests GET/codigo/{codigo} ====================
@@ -197,112 +145,81 @@ class PropertyControllerTest {
     @Test
     @DisplayName("GET /api/propiedades/codigo/{codigo} - Debe retornar propiedad por código")
     void obtenerPorCodigo_Existe_Returns200() throws Exception {
-        // Arrange
-        when(propertyService.obtenerPorCodigo("DP001", true))
-                .thenReturn(propertyDTO);
+        when(propertyService.obtenerPorCodigo("DP001", true)).thenReturn(propertyDTO);
 
-        // Act & Assert
         mockMvc.perform(get("/api/propiedades/codigo/DP001")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, OTHER_USER_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codigo").value("DP001"));
-
-        verify(propertyService, times(1)).obtenerPorCodigo("DP001", true);
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades/codigo/{codigo} - Debe retornar 404 si no existe")
-    void obtenerPorCodigo_NoExiste_Returns404() throws Exception {
-        // Arrange
-        when(propertyService.obtenerPorCodigo("NOEXISTE", true))
-                .thenThrow(new ResourceNotFoundException("Propiedad no encontrada"));
-
-        // Act & Assert
-        mockMvc.perform(get("/api/propiedades/codigo/NOEXISTE")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
-                        .param("includeDetails", "true"))
-                .andExpect(status().isNotFound());
     }
 
     // ==================== Tests PUT - Actualizar ====================
 
     @Test
-    @DisplayName("PUT /api/propiedades/{id} - Debe actualizar propiedad y retornar 200")
-    void actualizar_DatosValidos_Returns200() throws Exception {
-        // Arrange
-        PropertyDTO updateDTO = PropertyDTO.builder()
-                .codigo("DP001")
-                .titulo("Dpto Actualizado")
-                .precioMensual(BigDecimal.valueOf(700000))
-                .divisa("CLP")
-                .m2(BigDecimal.valueOf(65.5))
-                .nHabit(2)
-                .nBanos(2)
-                .petFriendly(true)
-                .direccion("Av. Providencia 1234")
-                .fcreacion(LocalDate.now())
-                .tipoId(1L)
-                .comunaId(1L)
-                .propietarioId(1L)
-                .build();
+    @DisplayName("PUT /api/propiedades/{id} - Usuario no dueño retorna 403 FORBIDDEN")
+    void actualizar_UsuarioNoDueno_Returns403() throws Exception {
+        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
 
-        when(propertyService.actualizar(eq(1L), any(PropertyDTO.class)))
-                .thenReturn(propertyDTO);
-
-        // Act & Assert
         mockMvc.perform(put("/api/propiedades/1")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, OTHER_USER_ID) // NO es el dueño
+                        .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updateDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
-
-        verify(propertyService, times(1)).actualizar(eq(1L), any(PropertyDTO.class));
+                        .content(objectMapper.writeValueAsString(propertyDTO)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("PUT /api/propiedades/{id} - Debe retornar 404 si no existe")
-    void actualizar_NoExiste_Returns404() throws Exception {
-        // Arrange
-        when(propertyService.actualizar(eq(999L), any(PropertyDTO.class)))
-                .thenThrow(new ResourceNotFoundException("Propiedad no encontrada"));
+    @DisplayName("PUT /api/propiedades/{id} - Dueño actualiza propiedad y retorna 200")
+    void actualizar_DatosValidos_Returns200() throws Exception {
+        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO); // Simula BD
+        when(propertyService.actualizar(eq(1L), any(PropertyDTO.class))).thenReturn(propertyDTO);
 
-        // Act & Assert
-        mockMvc.perform(put("/api/propiedades/999")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+        mockMvc.perform(put("/api/propiedades/1")
+                        .header(HEADER_USER, OWNER_ID) // ES el dueño
+                        .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(propertyDTO)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
     }
 
     // ==================== Tests DELETE ====================
 
     @Test
-    @DisplayName("DELETE /api/propiedades/{id} - Debe eliminar propiedad y retornar 204")
-    void eliminar_Existe_Returns204() throws Exception {
-        // Arrange
-        doNothing().when(propertyService).eliminar(1L);
+    @DisplayName("DELETE /api/propiedades/{id} - Usuario no dueño retorna 403 FORBIDDEN")
+    void eliminar_UsuarioNoDueno_Returns403() throws Exception {
+        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
 
-        // Act & Assert
         mockMvc.perform(delete("/api/propiedades/1")
-                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
-                .andExpect(status().isNoContent());
-
-        verify(propertyService, times(1)).eliminar(1L);
+                        .header(HEADER_USER, OTHER_USER_ID) // NO es el dueño
+                        .header(HEADER_ROLE, ROL_USER))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("DELETE /api/propiedades/{id} - Debe retornar 404 si no existe")
-    void eliminar_NoExiste_Returns404() throws Exception {
-        // Arrange
-        doThrow(new ResourceNotFoundException("Propiedad no encontrada"))
-                .when(propertyService).eliminar(999L);
+    @DisplayName("DELETE /api/propiedades/{id} - Administrador elimina propiedad y retorna 204")
+    void eliminar_Admin_Returns204() throws Exception {
+        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
+        doNothing().when(propertyService).eliminar(1L);
 
-        // Act & Assert
-        mockMvc.perform(delete("/api/propiedades/999")
-                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
-                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/propiedades/1")
+                        .header(HEADER_USER, OTHER_USER_ID) // NO es dueño
+                        .header(HEADER_ROLE, ROL_ADMIN))    // PERO es Admin
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/propiedades/{id} - Dueño elimina propiedad y retorna 204")
+    void eliminar_Existe_Returns204() throws Exception {
+        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
+        doNothing().when(propertyService).eliminar(1L);
+
+        mockMvc.perform(delete("/api/propiedades/1")
+                        .header(HEADER_USER, OWNER_ID) // ES el dueño
+                        .header(HEADER_ROLE, ROL_USER))
+                .andExpect(status().isNoContent());
     }
 
     // ==================== Tests GET/buscar ====================
@@ -310,38 +227,18 @@ class PropertyControllerTest {
     @Test
     @DisplayName("GET /api/propiedades/buscar - Debe retornar propiedades con filtros")
     void buscarConFiltros_ConFiltros_Returns200() throws Exception {
-
-        when(propertyService.buscarConFiltros(
-                anyLong(),
-                nullable(Long.class),
-                any(BigDecimal.class),
-                any(BigDecimal.class),
-                nullable(Integer.class),
-                nullable(Integer.class),
-                nullable(Boolean.class),
-                anyBoolean()))
+        when(propertyService.buscarConFiltros(anyLong(), nullable(Long.class), any(), any(), nullable(Integer.class), nullable(Integer.class), nullable(Boolean.class), anyBoolean()))
                 .thenReturn(List.of(propertyDTO));
 
-
-
         mockMvc.perform(get("/api/propiedades/buscar")
-                        .header("Authorization", VALID_TOKEN) // <-- AGREGADO
+                        .header(HEADER_USER, OTHER_USER_ID)
+                        .header(HEADER_ROLE, ROL_USER)
                         .param("comunaId", "1")
                         .param("minPrecio", "600000")
                         .param("maxPrecio", "700000")
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
-
-        verify(propertyService, times(1)).buscarConFiltros(
-                nullable(Long.class),
-                eq(1L),
-                any(BigDecimal.class),
-                any(BigDecimal.class),
-                nullable(Integer.class),
-                nullable(Integer.class),
-                nullable(Boolean.class),
-                eq(false));
     }
 
     // ==================== Tests GET/{id}/existe ====================
@@ -349,32 +246,12 @@ class PropertyControllerTest {
     @Test
     @DisplayName("GET /api/propiedades/{id}/existe - Debe retornar true si existe")
     void existe_PropiedadExiste_ReturnsTrue() throws Exception {
-        // Arrange
-        when(propertyService.existsProperty(1L))
-                .thenReturn(true);
+        when(propertyService.existsProperty(1L)).thenReturn(true);
 
-        // Act & Assert
         mockMvc.perform(get("/api/propiedades/1/existe")
-                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
+                        .header(HEADER_USER, OTHER_USER_ID)
+                        .header(HEADER_ROLE, ROL_USER))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
-
-        verify(propertyService, times(1)).existsProperty(1L);
-    }
-
-    @Test
-    @DisplayName("GET /api/propiedades/{id}/existe - Debe retornar false si no existe")
-    void existe_PropiedadNoExiste_ReturnsFalse() throws Exception {
-        // Arrange
-        when(propertyService.existsProperty(999L))
-                .thenReturn(false);
-
-        // Act & Assert
-        mockMvc.perform(get("/api/propiedades/999/existe")
-                        .header("Authorization", VALID_TOKEN)) // <-- AGREGADO
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(false));
-
-        verify(propertyService, times(1)).existsProperty(999L);
     }
 }

@@ -7,8 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient; // 🔄 Eliminamos el import de BCrypt de aquí
 
 @Configuration
 public class AppConfig {
@@ -21,11 +20,6 @@ public class AppConfig {
                 .setSkipNullEnabled(true)
                 .setAmbiguityIgnored(true);
         return mapper;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
