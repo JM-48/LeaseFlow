@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -26,7 +28,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// 🟢 SOLUCIÓN: Excluir la seguridad por defecto de Spring Security
+// SOLUCIÓN: Excluir la seguridad por defecto de Spring Security
 @WebMvcTest(
         controllers = RegistroController.class,
         excludeAutoConfiguration = {
@@ -34,8 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 SecurityFilterAutoConfiguration.class
         }
 )
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de integración para RegistroController")
 class RegistroControllerTest {
+
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +53,13 @@ class RegistroControllerTest {
     private RegistroArriendoService service;
 
     private RegistroArriendoDTO registroDTO;
+
+    /**
+     * Helper para no repetir el header X-App-Client en cada test.
+     */
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUp() {
@@ -67,7 +80,7 @@ class RegistroControllerTest {
         when(service.crearRegistro(any(RegistroArriendoDTO.class))).thenReturn(registroDTO);
 
         // When & Then
-        mockMvc.perform(post("/api/registros")
+        mockMvc.perform(withAppKey(post("/api/registros"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registroDTO)))
                 .andExpect(status().isCreated())
@@ -89,7 +102,7 @@ class RegistroControllerTest {
                 .build();
 
         // When & Then
-        mockMvc.perform(post("/api/registros")
+        mockMvc.perform(withAppKey(post("/api/registros"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dtoInvalido)))
                 .andExpect(status().isBadRequest());
@@ -103,12 +116,27 @@ class RegistroControllerTest {
                 .thenThrow(new BusinessValidationException("Solo se pueden crear registros para solicitudes aceptadas"));
 
         // When & Then
-        mockMvc.perform(post("/api/registros")
+        mockMvc.perform(withAppKey(post("/api/registros"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registroDTO)))
                 .andExpect(status().isBadRequest());
 
         verify(service, times(1)).crearRegistro(any(RegistroArriendoDTO.class));
+    }
+
+    // ==============================================================================
+    // TESTS DE SEGURIDAD DEL INTERCEPTOR (X-App-Client) - NUEVOS
+    // ==============================================================================
+
+    @Test
+    @DisplayName("POST /api/registros - Debe retornar 403 si falta X-App-Client (acceso directo tipo navegador)")
+    void crearRegistro_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post("/api/registros")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(registroDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).crearRegistro(any(RegistroArriendoDTO.class));
     }
 
     // ==============================================================================
@@ -118,7 +146,7 @@ class RegistroControllerTest {
     @Test
     @DisplayName("GET /api/registros - Debe retornar 401 si faltan headers")
     void listarTodos_SinHeaders_DeberiaRetornar401() throws Exception {
-        mockMvc.perform(get("/api/registros")
+        mockMvc.perform(withAppKey(get("/api/registros"))
                         .param("includeDetails", "false"))
                 .andExpect(status().isUnauthorized());
 
@@ -133,7 +161,7 @@ class RegistroControllerTest {
         when(service.listarTodos(false)).thenReturn(registros);
 
         // When & Then
-        mockMvc.perform(get("/api/registros")
+        mockMvc.perform(withAppKey(get("/api/registros"))
                         .param("includeDetails", "false")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -151,7 +179,7 @@ class RegistroControllerTest {
     @Test
     @DisplayName("GET /api/registros/{id} - Debe retornar 401 si faltan headers")
     void obtenerPorId_SinHeaders_DeberiaRetornar401() throws Exception {
-        mockMvc.perform(get("/api/registros/1")
+        mockMvc.perform(withAppKey(get("/api/registros/1"))
                         .param("includeDetails", "true"))
                 .andExpect(status().isUnauthorized());
 
@@ -165,7 +193,7 @@ class RegistroControllerTest {
         when(service.obtenerPorId(1L, true)).thenReturn(registroDTO);
 
         // When & Then
-        mockMvc.perform(get("/api/registros/1")
+        mockMvc.perform(withAppKey(get("/api/registros/1"))
                         .param("includeDetails", "true")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -184,7 +212,7 @@ class RegistroControllerTest {
                 .thenThrow(new ResourceNotFoundException("Registro no encontrado con ID: 999"));
 
         // When & Then
-        mockMvc.perform(get("/api/registros/999")
+        mockMvc.perform(withAppKey(get("/api/registros/999"))
                         .param("includeDetails", "true")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -200,7 +228,7 @@ class RegistroControllerTest {
     @Test
     @DisplayName("GET /api/registros/solicitud/{solicitudId} - Debe retornar 401 si faltan headers")
     void obtenerPorSolicitud_SinHeaders_DeberiaRetornar401() throws Exception {
-        mockMvc.perform(get("/api/registros/solicitud/1"))
+        mockMvc.perform(withAppKey(get("/api/registros/solicitud/1")))
                 .andExpect(status().isUnauthorized());
 
         verify(service, never()).obtenerPorSolicitud(any());
@@ -214,7 +242,7 @@ class RegistroControllerTest {
         when(service.obtenerPorSolicitud(1L)).thenReturn(registros);
 
         // When & Then
-        mockMvc.perform(get("/api/registros/solicitud/1")
+        mockMvc.perform(withAppKey(get("/api/registros/solicitud/1"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
@@ -230,7 +258,7 @@ class RegistroControllerTest {
     @Test
     @DisplayName("PATCH /api/registros/{id}/finalizar - Debe retornar 401 si faltan headers")
     void finalizarRegistro_SinHeaders_DeberiaRetornar401() throws Exception {
-        mockMvc.perform(patch("/api/registros/1/finalizar"))
+        mockMvc.perform(withAppKey(patch("/api/registros/1/finalizar")))
                 .andExpect(status().isUnauthorized());
 
         verify(service, never()).finalizarRegistro(any());
@@ -244,7 +272,7 @@ class RegistroControllerTest {
         when(service.finalizarRegistro(1L)).thenReturn(registroDTO);
 
         // When & Then
-        mockMvc.perform(patch("/api/registros/1/finalizar")
+        mockMvc.perform(withAppKey(patch("/api/registros/1/finalizar"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
@@ -261,7 +289,7 @@ class RegistroControllerTest {
                 .thenThrow(new BusinessValidationException("El registro ya está inactivo"));
 
         // When & Then
-        mockMvc.perform(patch("/api/registros/1/finalizar")
+        mockMvc.perform(withAppKey(patch("/api/registros/1/finalizar"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
                 .andExpect(status().isBadRequest());
@@ -277,7 +305,7 @@ class RegistroControllerTest {
                 .thenThrow(new ResourceNotFoundException("Registro no encontrado con ID: 999"));
 
         // When & Then
-        mockMvc.perform(patch("/api/registros/999/finalizar")
+        mockMvc.perform(withAppKey(patch("/api/registros/999/finalizar"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
                 .andExpect(status().isNotFound());

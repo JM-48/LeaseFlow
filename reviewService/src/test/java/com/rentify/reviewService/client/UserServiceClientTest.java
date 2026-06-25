@@ -14,9 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests para UserServiceClient usando MockWebServer.
- */
 @DisplayName("Tests de UserServiceClient")
 class UserServiceClientTest {
 
@@ -32,11 +29,14 @@ class UserServiceClientTest {
         WebClient.Builder webClientBuilder = WebClient.builder();
         client = new UserServiceClient(webClientBuilder);
 
-        // Inyectar URL del mock usando reflexión
         try {
-            var field = UserServiceClient.class.getDeclaredField("userServiceUrl");
-            field.setAccessible(true);
-            field.set(client, baseUrl.substring(0, baseUrl.length() - 1));
+            var urlField = UserServiceClient.class.getDeclaredField("userServiceUrl");
+            urlField.setAccessible(true);
+            urlField.set(client, baseUrl.substring(0, baseUrl.length() - 1));
+
+            var keyField = UserServiceClient.class.getDeclaredField("appClientKey");
+            keyField.setAccessible(true);
+            keyField.set(client, "test-key-123");
         } catch (Exception e) {
             throw new RuntimeException("Error configurando test", e);
         }
@@ -54,7 +54,6 @@ class UserServiceClientTest {
     @Test
     @DisplayName("Debe retornar usuario cuando existe")
     void getUserById_UsuarioExiste_ReturnsUsuario() {
-        // Arrange
         String jsonResponse = """
             {
                 "id": 1,
@@ -70,10 +69,8 @@ class UserServiceClientTest {
                 .setBody(jsonResponse)
                 .addHeader("Content-Type", "application/json"));
 
-        // Act
         UsuarioDTO result = client.getUserById(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getPnombre()).isEqualTo("Juan");
@@ -83,50 +80,38 @@ class UserServiceClientTest {
     @Test
     @DisplayName("Debe retornar null cuando hay error 404")
     void getUserById_UsuarioNoExiste_ReturnsNull() {
-        // Arrange
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(404));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
 
-        // Act
         UsuarioDTO result = client.getUserById(999L);
 
-        // Assert
         assertThat(result).isNull();
     }
 
     @Test
     @DisplayName("Debe retornar null cuando hay error 500")
     void getUserById_ErrorServidor_ReturnsNull() {
-        // Arrange
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(500));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(500));
 
-        // Act
         UsuarioDTO result = client.getUserById(1L);
 
-        // Assert
         assertThat(result).isNull();
     }
 
     @Test
     @DisplayName("Debe manejar timeout correctamente")
     void getUserById_Timeout_ReturnsNull() {
-        // Arrange
         mockWebServer.enqueue(new MockResponse()
                 .setBody("{}")
-                .setBodyDelay(6, TimeUnit.SECONDS)); // Mayor al timeout de 5s
+                .setBodyDelay(6, TimeUnit.SECONDS));
 
-        // Act
         UsuarioDTO result = client.getUserById(1L);
 
-        // Assert
         assertThat(result).isNull();
     }
 
     @Test
     @DisplayName("existsUser - Debe retornar true cuando usuario existe")
     void existsUser_UsuarioExiste_ReturnsTrue() {
-        // Arrange
         String jsonResponse = """
             {
                 "id": 1,
@@ -141,31 +126,24 @@ class UserServiceClientTest {
                 .setBody(jsonResponse)
                 .addHeader("Content-Type", "application/json"));
 
-        // Act
         boolean exists = client.existsUser(1L);
 
-        // Assert
         assertThat(exists).isTrue();
     }
 
     @Test
     @DisplayName("existsUser - Debe retornar false cuando usuario no existe")
     void existsUser_UsuarioNoExiste_ReturnsFalse() {
-        // Arrange
-        mockWebServer.enqueue(new MockResponse()
-                .setResponseCode(404));
+        mockWebServer.enqueue(new MockResponse().setResponseCode(404));
 
-        // Act
         boolean exists = client.existsUser(999L);
 
-        // Assert
         assertThat(exists).isFalse();
     }
 
     @Test
     @DisplayName("hasRole - Debe retornar true cuando usuario tiene el rol")
     void hasRole_UsuarioTieneRol_ReturnsTrue() {
-        // Arrange
         String jsonResponse = """
             {
                 "id": 1,
@@ -178,17 +156,14 @@ class UserServiceClientTest {
                 .setBody(jsonResponse)
                 .addHeader("Content-Type", "application/json"));
 
-        // Act
         boolean hasRole = client.hasRole(1L, "ARRIENDATARIO");
 
-        // Assert
         assertThat(hasRole).isTrue();
     }
 
     @Test
     @DisplayName("hasRole - Debe retornar false cuando usuario no tiene el rol")
     void hasRole_UsuarioNoTieneRol_ReturnsFalse() {
-        // Arrange
         String jsonResponse = """
             {
                 "id": 1,
@@ -201,17 +176,14 @@ class UserServiceClientTest {
                 .setBody(jsonResponse)
                 .addHeader("Content-Type", "application/json"));
 
-        // Act
         boolean hasRole = client.hasRole(1L, "ARRIENDATARIO");
 
-        // Assert
         assertThat(hasRole).isFalse();
     }
 
     @Test
     @DisplayName("getUserRole - Debe retornar el rol del usuario")
     void getUserRole_UsuarioExiste_ReturnsRol() {
-        // Arrange
         String jsonResponse = """
             {
                 "id": 1,
@@ -224,10 +196,8 @@ class UserServiceClientTest {
                 .setBody(jsonResponse)
                 .addHeader("Content-Type", "application/json"));
 
-        // Act
         String rol = client.getUserRole(1L);
 
-        // Assert
         assertThat(rol).isEqualTo("ADMIN");
     }
 }

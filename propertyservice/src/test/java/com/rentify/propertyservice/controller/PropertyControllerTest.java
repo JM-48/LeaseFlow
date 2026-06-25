@@ -2,7 +2,6 @@ package com.rentify.propertyservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rentify.propertyservice.dto.PropertyDTO;
-import com.rentify.propertyservice.exception.ResourceNotFoundException;
 import com.rentify.propertyservice.service.PropertyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -24,12 +25,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Tests de integración para PropertyController.
- * Actualizado con endpoints GET públicos y POST/PUT/DELETE protegidos.
- */
 @WebMvcTest(PropertyController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de PropertyController")
 class PropertyControllerTest {
 
@@ -44,15 +42,18 @@ class PropertyControllerTest {
 
     private PropertyDTO propertyDTO;
 
-    // Headers requeridos por los endpoints protegidos
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
     private static final String HEADER_USER = "X-Usuario-Id";
     private static final String HEADER_ROLE = "X-Rol-Id";
-
-    // Roles y Usuarios simulados
     private static final String ROL_ADMIN = "1";
     private static final String ROL_USER = "2";
-    private static final String OWNER_ID = "1";     // Dueño de la propiedad
-    private static final String OTHER_USER_ID = "9"; // Otro usuario cualquiera
+    private static final String OWNER_ID = "1";
+    private static final String OTHER_USER_ID = "9";
+
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUp() {
@@ -70,8 +71,30 @@ class PropertyControllerTest {
                 .fcreacion(LocalDate.now())
                 .tipoId(1L)
                 .comunaId(1L)
-                .propietarioId(Long.valueOf(OWNER_ID)) // ID del dueño = 1
+                .propietarioId(Long.valueOf(OWNER_ID))
                 .build();
+    }
+
+    // ==================== Tests de seguridad del interceptor (X-App-Client) ====================
+
+    @Test
+    @DisplayName("POST /api/propiedades - Retorna 403 si falta X-App-Client")
+    void crear_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post("/api/propiedades")
+                        .header(HEADER_USER, OWNER_ID)
+                        .header(HEADER_ROLE, ROL_USER)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(propertyDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(propertyService, never()).crearProperty(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/propiedades - Retorna 403 si falta X-App-Client (endpoint publico tambien protegido)")
+    void listar_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(get("/api/propiedades"))
+                .andExpect(status().isForbidden());
     }
 
     // ==================== Tests POST - Crear (PROTEGIDO) ====================
@@ -79,7 +102,7 @@ class PropertyControllerTest {
     @Test
     @DisplayName("POST /api/propiedades - Faltan cabeceras retorna 401 UNAUTHORIZED")
     void crear_FaltanCabeceras_Returns401() throws Exception {
-        mockMvc.perform(post("/api/propiedades")
+        mockMvc.perform(withAppKey(post("/api/propiedades"))
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(propertyDTO)))
                 .andExpect(status().isUnauthorized());
@@ -90,7 +113,7 @@ class PropertyControllerTest {
     void crear_DatosValidos_Returns201() throws Exception {
         when(propertyService.crearProperty(any(PropertyDTO.class))).thenReturn(propertyDTO);
 
-        mockMvc.perform(post("/api/propiedades")
+        mockMvc.perform(withAppKey(post("/api/propiedades"))
                         .header(HEADER_USER, OWNER_ID)
                         .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")
@@ -102,15 +125,15 @@ class PropertyControllerTest {
         verify(propertyService, times(1)).crearProperty(any(PropertyDTO.class));
     }
 
-    // ==================== Tests GET - Listar (PÚBLICO) ====================
+    // ==================== Tests GET - Listar (PÚBLICO de negocio, protegido por API key) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades sin requerir headers")
+    @DisplayName("GET /api/propiedades - Debe retornar lista de propiedades (con X-App-Client, sin headers de negocio)")
     void listar_SinDetalles_Returns200() throws Exception {
         when(propertyService.listarTodas(any(Pageable.class), eq(false)))
                 .thenReturn(new PageImpl<>(List.of(propertyDTO)));
 
-        mockMvc.perform(get("/api/propiedades")
+        mockMvc.perform(withAppKey(get("/api/propiedades"))
                         .param("includeDetails", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].codigo").value("DP001"));
@@ -119,11 +142,11 @@ class PropertyControllerTest {
     // ==================== Tests GET/{id} (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/{id} - Debe retornar propiedad sin requerir headers")
+    @DisplayName("GET /api/propiedades/{id} - Debe retornar propiedad")
     void obtenerPorId_Existe_Returns200() throws Exception {
         when(propertyService.obtenerPorId(1L, true)).thenReturn(propertyDTO);
 
-        mockMvc.perform(get("/api/propiedades/1")
+        mockMvc.perform(withAppKey(get("/api/propiedades/1"))
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codigo").value("DP001"));
@@ -132,11 +155,11 @@ class PropertyControllerTest {
     // ==================== Tests GET/codigo/{codigo} (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/codigo/{codigo} - Debe retornar propiedad sin requerir headers")
+    @DisplayName("GET /api/propiedades/codigo/{codigo} - Debe retornar propiedad")
     void obtenerPorCodigo_Existe_Returns200() throws Exception {
         when(propertyService.obtenerPorCodigo("DP001", true)).thenReturn(propertyDTO);
 
-        mockMvc.perform(get("/api/propiedades/codigo/DP001")
+        mockMvc.perform(withAppKey(get("/api/propiedades/codigo/DP001"))
                         .param("includeDetails", "true"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.codigo").value("DP001"));
@@ -149,8 +172,8 @@ class PropertyControllerTest {
     void actualizar_UsuarioNoDueno_Returns403() throws Exception {
         when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
 
-        mockMvc.perform(put("/api/propiedades/1")
-                        .header(HEADER_USER, OTHER_USER_ID) // NO es el dueño
+        mockMvc.perform(withAppKey(put("/api/propiedades/1"))
+                        .header(HEADER_USER, OTHER_USER_ID)
                         .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(propertyDTO)))
@@ -160,11 +183,11 @@ class PropertyControllerTest {
     @Test
     @DisplayName("PUT /api/propiedades/{id} - Dueño actualiza propiedad y retorna 200")
     void actualizar_DatosValidos_Returns200() throws Exception {
-        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO); // Simula BD
+        when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
         when(propertyService.actualizar(eq(1L), any(PropertyDTO.class))).thenReturn(propertyDTO);
 
-        mockMvc.perform(put("/api/propiedades/1")
-                        .header(HEADER_USER, OWNER_ID) // ES el dueño
+        mockMvc.perform(withAppKey(put("/api/propiedades/1"))
+                        .header(HEADER_USER, OWNER_ID)
                         .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(propertyDTO)))
@@ -179,8 +202,8 @@ class PropertyControllerTest {
     void eliminar_UsuarioNoDueno_Returns403() throws Exception {
         when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
 
-        mockMvc.perform(delete("/api/propiedades/1")
-                        .header(HEADER_USER, OTHER_USER_ID) // NO es el dueño
+        mockMvc.perform(withAppKey(delete("/api/propiedades/1"))
+                        .header(HEADER_USER, OTHER_USER_ID)
                         .header(HEADER_ROLE, ROL_USER))
                 .andExpect(status().isForbidden());
     }
@@ -191,9 +214,9 @@ class PropertyControllerTest {
         when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
         doNothing().when(propertyService).eliminar(1L);
 
-        mockMvc.perform(delete("/api/propiedades/1")
-                        .header(HEADER_USER, OTHER_USER_ID) // NO es dueño
-                        .header(HEADER_ROLE, ROL_ADMIN))    // PERO es Admin
+        mockMvc.perform(withAppKey(delete("/api/propiedades/1"))
+                        .header(HEADER_USER, OTHER_USER_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN))
                 .andExpect(status().isNoContent());
     }
 
@@ -203,8 +226,8 @@ class PropertyControllerTest {
         when(propertyService.obtenerPorId(1L, false)).thenReturn(propertyDTO);
         doNothing().when(propertyService).eliminar(1L);
 
-        mockMvc.perform(delete("/api/propiedades/1")
-                        .header(HEADER_USER, OWNER_ID) // ES el dueño
+        mockMvc.perform(withAppKey(delete("/api/propiedades/1"))
+                        .header(HEADER_USER, OWNER_ID)
                         .header(HEADER_ROLE, ROL_USER))
                 .andExpect(status().isNoContent());
     }
@@ -212,12 +235,12 @@ class PropertyControllerTest {
     // ==================== Tests GET/buscar (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/buscar - Debe retornar propiedades sin requerir headers")
+    @DisplayName("GET /api/propiedades/buscar - Debe retornar propiedades")
     void buscarConFiltros_ConFiltros_Returns200() throws Exception {
         when(propertyService.buscarConFiltros(anyLong(), nullable(Long.class), any(), any(), nullable(Integer.class), nullable(Integer.class), nullable(Boolean.class), anyBoolean()))
                 .thenReturn(List.of(propertyDTO));
 
-        mockMvc.perform(get("/api/propiedades/buscar")
+        mockMvc.perform(withAppKey(get("/api/propiedades/buscar"))
                         .param("comunaId", "1")
                         .param("minPrecio", "600000")
                         .param("maxPrecio", "700000")
@@ -229,11 +252,11 @@ class PropertyControllerTest {
     // ==================== Tests GET/{id}/existe (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/{id}/existe - Debe retornar true sin requerir headers")
+    @DisplayName("GET /api/propiedades/{id}/existe - Debe retornar true")
     void existe_PropiedadExiste_ReturnsTrue() throws Exception {
         when(propertyService.existsProperty(1L)).thenReturn(true);
 
-        mockMvc.perform(get("/api/propiedades/1/existe"))
+        mockMvc.perform(withAppKey(get("/api/propiedades/1/existe")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(true));
     }

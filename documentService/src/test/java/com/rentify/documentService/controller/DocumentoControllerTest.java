@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Collections;
 import java.util.Date;
@@ -28,10 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(DocumentoController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de Integración de DocumentoController")
 class DocumentoControllerTest {
 
     private static final String BASE_PATH = "/api/documentos";
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
@@ -47,6 +52,10 @@ class DocumentoControllerTest {
 
     private DocumentoDTO documentoDTO;
 
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
+
     @BeforeEach
     void setUp() {
         documentoDTO = DocumentoDTO.builder()
@@ -60,13 +69,35 @@ class DocumentoControllerTest {
     }
 
     // =========================================================================
-    // 🛡️ TESTS DE SEGURIDAD GLOBALES (MISSING HEADERS)
+    // TESTS DE SEGURIDAD - X-App-Client (ApiKeyInterceptor)
+    // =========================================================================
+
+    @Test
+    @DisplayName("POST /api/documentos - Falla con 403 si falta X-App-Client (acceso directo navegador)")
+    void createDocumento_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post(BASE_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(documentoDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(documentoService, never()).crearDocumento(any());
+    }
+
+    @Test
+    @DisplayName("GET /api/documentos - Falla con 403 si falta X-App-Client")
+    void listarTodos_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(get(BASE_PATH))
+                .andExpect(status().isForbidden());
+    }
+
+    // =========================================================================
+    // TESTS DE SEGURIDAD GLOBALES (MISSING BUSINESS HEADERS)
     // =========================================================================
 
     @Test
     @DisplayName("POST /api/documentos - Falla si faltan cabeceras de identidad (401 Unauthorized)")
     void createDocumento_Fails_Unauthorized() throws Exception {
-        mockMvc.perform(post(BASE_PATH)
+        mockMvc.perform(withAppKey(post(BASE_PATH))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(documentoDTO)))
                 .andExpect(status().isUnauthorized());
@@ -75,18 +106,18 @@ class DocumentoControllerTest {
     @Test
     @DisplayName("GET /api/documentos - Falla si faltan cabeceras de identidad (401 Unauthorized)")
     void listarTodos_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get(BASE_PATH))
+        mockMvc.perform(withAppKey(get(BASE_PATH)))
                 .andExpect(status().isUnauthorized());
     }
 
     // =========================================================================
-    // 🔴 TESTS DE FUNCIONALIDAD ESTRICTA (SOLO ADMIN)
+    // TESTS DE FUNCIONALIDAD ESTRICTA (SOLO ADMIN)
     // =========================================================================
 
     @Test
     @DisplayName("GET /api/documentos - Falla si el rol no es ADMIN (403 Forbidden)")
     void listarTodos_NoAdmin_Returns403() throws Exception {
-        mockMvc.perform(get(BASE_PATH)
+        mockMvc.perform(withAppKey(get(BASE_PATH))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .param("includeDetails", "false"))
@@ -100,7 +131,7 @@ class DocumentoControllerTest {
     void listarTodos_Admin_Returns200() throws Exception {
         when(documentoService.listarTodos(false)).thenReturn(List.of(documentoDTO));
 
-        mockMvc.perform(get(BASE_PATH)
+        mockMvc.perform(withAppKey(get(BASE_PATH))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_ADMIN_ID)
                         .param("includeDetails", "false"))
@@ -117,7 +148,7 @@ class DocumentoControllerTest {
         DocumentoDTO updatedDTO = documentoDTO.toBuilder().estadoId(NUEVO_ESTADO_ID).build();
         when(documentoService.actualizarEstado(eq(DOCUMENTO_ID), eq(NUEVO_ESTADO_ID))).thenReturn(updatedDTO);
 
-        mockMvc.perform(patch(BASE_PATH + "/{id}/estado/{estadoId}", DOCUMENTO_ID, NUEVO_ESTADO_ID)
+        mockMvc.perform(withAppKey(patch(BASE_PATH + "/{id}/estado/{estadoId}", DOCUMENTO_ID, NUEVO_ESTADO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -128,7 +159,7 @@ class DocumentoControllerTest {
     @Test
     @DisplayName("PATCH /api/documentos/{id}/estado/{estadoId} - Falla si no es ADMIN (403 Forbidden)")
     void updateEstado_NoAdmin_Returns403() throws Exception {
-        mockMvc.perform(patch(BASE_PATH + "/{id}/estado/{estadoId}", DOCUMENTO_ID, 2L)
+        mockMvc.perform(withAppKey(patch(BASE_PATH + "/{id}/estado/{estadoId}", DOCUMENTO_ID, 2L))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -144,7 +175,7 @@ class DocumentoControllerTest {
         request.setEstadoId(3L);
         request.setObservaciones("Documento ilegible");
 
-        mockMvc.perform(patch(BASE_PATH + "/{id}/estado", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(patch(BASE_PATH + "/{id}/estado", DOCUMENTO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -171,7 +202,7 @@ class DocumentoControllerTest {
         when(documentoService.actualizarEstadoConObservaciones(eq(DOCUMENTO_ID), any(ActualizarEstadoRequest.class)))
                 .thenReturn(updatedDTO);
 
-        mockMvc.perform(patch(BASE_PATH + "/{id}/estado", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(patch(BASE_PATH + "/{id}/estado", DOCUMENTO_ID))
                         .header(HEADER_USER, adminId)
                         .header(HEADER_ROLE, ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -182,7 +213,7 @@ class DocumentoControllerTest {
     }
 
     // =========================================================================
-    // 🟡 TESTS DE FUNCIONALIDAD COMPARTIDA (ADMIN O DUEÑO)
+    // TESTS DE FUNCIONALIDAD COMPARTIDA (ADMIN O DUEÑO)
     // =========================================================================
 
     @Test
@@ -190,7 +221,7 @@ class DocumentoControllerTest {
     void createDocumento_Success() throws Exception {
         when(documentoService.crearDocumento(any(DocumentoDTO.class))).thenReturn(documentoDTO);
 
-        mockMvc.perform(post(BASE_PATH)
+        mockMvc.perform(withAppKey(post(BASE_PATH))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -204,7 +235,7 @@ class DocumentoControllerTest {
     void getDocumentoById_Success() throws Exception {
         when(documentoService.obtenerPorId(eq(DOCUMENTO_ID), anyBoolean())).thenReturn(documentoDTO);
 
-        mockMvc.perform(get(BASE_PATH + "/{id}", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/{id}", DOCUMENTO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .param("includeDetails", "false")
@@ -218,8 +249,8 @@ class DocumentoControllerTest {
     void getDocumentoById_Fails_Forbidden() throws Exception {
         when(documentoService.obtenerPorId(eq(DOCUMENTO_ID), anyBoolean())).thenReturn(documentoDTO);
 
-        mockMvc.perform(get(BASE_PATH + "/{id}", DOCUMENTO_ID)
-                        .header(HEADER_USER, 99L) // NO es el dueño
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/{id}", DOCUMENTO_ID))
+                        .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .param("includeDetails", "false")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -231,7 +262,7 @@ class DocumentoControllerTest {
     void getDocumentoById_Admin_Returns200() throws Exception {
         when(documentoService.obtenerPorId(eq(DOCUMENTO_ID), anyBoolean())).thenReturn(documentoDTO);
 
-        mockMvc.perform(get(BASE_PATH + "/{id}", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/{id}", DOCUMENTO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_ADMIN_ID)
                         .param("includeDetails", "false")
@@ -245,7 +276,7 @@ class DocumentoControllerTest {
     void getDocumentosByUsuarioId_Success() throws Exception {
         when(documentoService.obtenerPorUsuario(eq(USUARIO_ID), anyBoolean())).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get(BASE_PATH + "/usuario/{usuarioId}", USUARIO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/usuario/{usuarioId}", USUARIO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .param("includeDetails", "false")
@@ -257,7 +288,7 @@ class DocumentoControllerTest {
     @Test
     @DisplayName("GET /api/documentos/usuario/{usuarioId} - Falla si un usuario consulta a otro (403 Forbidden)")
     void getDocumentosByUsuarioId_UsuarioAjeno_Returns403() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/usuario/{usuarioId}", USUARIO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/usuario/{usuarioId}", USUARIO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .param("includeDetails", "false")
@@ -272,7 +303,7 @@ class DocumentoControllerTest {
     void getDocumentosByUsuarioId_Admin_Returns200() throws Exception {
         when(documentoService.obtenerPorUsuario(eq(USUARIO_ID), anyBoolean())).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get(BASE_PATH + "/usuario/{usuarioId}", USUARIO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/usuario/{usuarioId}", USUARIO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_ADMIN_ID)
                         .param("includeDetails", "false")
@@ -285,7 +316,7 @@ class DocumentoControllerTest {
     void verificarDocumentosAprobados_True() throws Exception {
         when(documentoService.hasApprovedDocuments(eq(USUARIO_ID))).thenReturn(true);
 
-        mockMvc.perform(get(BASE_PATH + "/usuario/{usuarioId}/verificar-aprobados", USUARIO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/usuario/{usuarioId}/verificar-aprobados", USUARIO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -296,7 +327,7 @@ class DocumentoControllerTest {
     @Test
     @DisplayName("GET /api/documentos/usuario/{usuarioId}/verificar-aprobados - Falla si consulta a otro usuario (403)")
     void verificarDocumentosAprobados_UsuarioAjeno_Returns403() throws Exception {
-        mockMvc.perform(get(BASE_PATH + "/usuario/{usuarioId}/verificar-aprobados", USUARIO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/usuario/{usuarioId}/verificar-aprobados", USUARIO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -308,7 +339,7 @@ class DocumentoControllerTest {
     void hasApprovedDocumentsDeprecated_Propietario_Returns200() throws Exception {
         when(documentoService.hasApprovedDocuments(eq(USUARIO_ID))).thenReturn(true);
 
-        mockMvc.perform(get(BASE_PATH + "/usuario/{usuarioId}/aprobados", USUARIO_ID)
+        mockMvc.perform(withAppKey(get(BASE_PATH + "/usuario/{usuarioId}/aprobados", USUARIO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -322,7 +353,7 @@ class DocumentoControllerTest {
         when(documentoService.obtenerPorId(eq(DOCUMENTO_ID), eq(false))).thenReturn(documentoDTO);
         doNothing().when(documentoService).eliminarDocumento(DOCUMENTO_ID);
 
-        mockMvc.perform(delete(BASE_PATH + "/{id}", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(delete(BASE_PATH + "/{id}", DOCUMENTO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -334,7 +365,7 @@ class DocumentoControllerTest {
     void deleteDocumento_DocumentoAjeno_Returns403() throws Exception {
         when(documentoService.obtenerPorId(eq(DOCUMENTO_ID), eq(false))).thenReturn(documentoDTO);
 
-        mockMvc.perform(delete(BASE_PATH + "/{id}", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(delete(BASE_PATH + "/{id}", DOCUMENTO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -349,7 +380,7 @@ class DocumentoControllerTest {
         when(documentoService.obtenerPorId(eq(DOCUMENTO_ID), eq(false))).thenReturn(documentoDTO);
         doNothing().when(documentoService).eliminarDocumento(DOCUMENTO_ID);
 
-        mockMvc.perform(delete(BASE_PATH + "/{id}", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(delete(BASE_PATH + "/{id}", DOCUMENTO_ID))
                         .header(HEADER_USER, 99L)
                         .header(HEADER_ROLE, ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -362,7 +393,7 @@ class DocumentoControllerTest {
         doThrow(new ResourceNotFoundException("Documento no encontrado")).when(documentoService)
                 .obtenerPorId(eq(DOCUMENTO_ID), eq(false));
 
-        mockMvc.perform(delete(BASE_PATH + "/{id}", DOCUMENTO_ID)
+        mockMvc.perform(withAppKey(delete(BASE_PATH + "/{id}", DOCUMENTO_ID))
                         .header(HEADER_USER, USUARIO_ID)
                         .header(HEADER_ROLE, ROL_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))

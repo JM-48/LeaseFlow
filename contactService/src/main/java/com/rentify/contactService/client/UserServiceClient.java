@@ -16,16 +16,16 @@ import java.time.Duration;
 @Slf4j
 public class UserServiceClient {
 
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+
     private final WebClient.Builder webClientBuilder;
 
     @Value("${microservices.user-service.url}")
     private String userServiceUrl;
 
-    /**
-     * Obtiene un usuario por su ID desde el User Service
-     * @param userId ID del usuario
-     * @return UsuarioDTO con la información del usuario, o null si no existe
-     */
+    @Value("${app.security.client-key}")
+    private String appClientKey;
+
     public UsuarioDTO getUserById(Long userId) {
         try {
             log.debug("Consultando usuario con ID: {} en {}", userId, userServiceUrl);
@@ -33,6 +33,7 @@ public class UserServiceClient {
             return webClientBuilder.build()
                     .get()
                     .uri(userServiceUrl + "/api/usuarios/" + userId + "?includeDetails=true")
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
                     .timeout(Duration.ofSeconds(15))
@@ -47,11 +48,6 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si un usuario existe
-     * @param userId ID del usuario
-     * @return true si el usuario existe, false en caso contrario
-     */
     public boolean existsUser(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);
@@ -62,19 +58,12 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si un usuario tiene el rol de ADMIN
-     * @param userId ID del usuario
-     * @return true si el usuario es admin, false en caso contrario
-     */
     public boolean isAdmin(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);
             if (user == null) {
                 return false;
             }
-
-            // CAMBIO: Usar el método helper getRolNombre()
             String rolNombre = user.getRolNombre();
             return "ADMIN".equalsIgnoreCase(rolNombre);
         } catch (Exception e) {
@@ -83,15 +72,9 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Obtiene el rol de un usuario
-     * @param userId ID del usuario
-     * @return Rol del usuario, o null si no se pudo obtener
-     */
     public String getUserRole(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);
-            // CAMBIO: Usar el método helper getRolNombre()
             return user != null ? user.getRolNombre() : null;
         } catch (Exception e) {
             log.error("Error al obtener rol del usuario {}: {}", userId, e.getMessage());
@@ -99,19 +82,12 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si un usuario está activo
-     * @param userId ID del usuario
-     * @return true si el usuario está activo, false en caso contrario
-     */
     public boolean isUserActive(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);
             if (user == null) {
                 return false;
             }
-
-            // CAMBIO: Usar el método helper getEstadoNombre()
             String estadoNombre = user.getEstadoNombre();
             return "ACTIVO".equalsIgnoreCase(estadoNombre) ||
                     "Activo".equalsIgnoreCase(estadoNombre);

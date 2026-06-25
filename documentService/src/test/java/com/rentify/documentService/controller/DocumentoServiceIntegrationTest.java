@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.Mockito.when;
@@ -31,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Tests de Integración - DocumentoService (Robustos)")
 class DocumentoServiceIntegrationTest {
 
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -41,13 +45,16 @@ class DocumentoServiceIntegrationTest {
     private UserServiceClient userServiceClient;
 
     private static final Long USUARIO_ID = 1L;
-    private static final Long ROL_USUARIO_ID = 3L; // Arrendatario
+    private static final Long ROL_USUARIO_ID = 3L;
     private static final Long ADMIN_ID = 5L;
-    private static final Long ROL_ADMIN_ID = 1L;   // Admin
+    private static final Long ROL_ADMIN_ID = 1L;
+
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUpMocks() {
-        // --- SETUP USUARIO REGULAR ---
         UsuarioDTO normalUser = new UsuarioDTO();
         normalUser.setId(USUARIO_ID);
         normalUser.setEmail("usuario@rentify.com");
@@ -58,7 +65,6 @@ class DocumentoServiceIntegrationTest {
         when(userServiceClient.getUserById(USUARIO_ID)).thenReturn(normalUser);
         when(userServiceClient.userHasRole(USUARIO_ID, "ADMIN")).thenReturn(false);
 
-        // --- SETUP USUARIO ADMINISTRADOR ---
         UsuarioDTO adminUser = new UsuarioDTO();
         adminUser.setId(ADMIN_ID);
         adminUser.setEmail("admin@rentify.com");
@@ -71,13 +77,13 @@ class DocumentoServiceIntegrationTest {
     }
 
     // ==========================================
-    // 🛠️ MÉTODOS AUXILIARES (DRY)
+    // MÉTODOS AUXILIARES
     // ==========================================
 
     private Long crearTipoDocumento(String nombre) throws Exception {
         TipoDocumentoDTO tipo = new TipoDocumentoDTO(null, nombre);
-        MvcResult result = mockMvc.perform(post("/api/tipos-documentos")
-                        .header("X-Usuario-Id", ADMIN_ID) // <--- Agregado
+        MvcResult result = mockMvc.perform(withAppKey(post("/api/tipos-documentos"))
+                        .header("X-Usuario-Id", ADMIN_ID)
                         .header("X-Rol-Id", ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tipo)))
@@ -88,8 +94,8 @@ class DocumentoServiceIntegrationTest {
 
     private Long crearEstado(String nombre) throws Exception {
         EstadoDTO estado = new EstadoDTO(null, nombre);
-        MvcResult result = mockMvc.perform(post("/api/estados")
-                        .header("X-Usuario-Id", ADMIN_ID) // <--- Agregado
+        MvcResult result = mockMvc.perform(withAppKey(post("/api/estados"))
+                        .header("X-Usuario-Id", ADMIN_ID)
                         .header("X-Rol-Id", ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estado)))
@@ -99,7 +105,25 @@ class DocumentoServiceIntegrationTest {
     }
 
     // ==========================================
-    // 🟢 TESTS DE CAMINO FELIZ
+    // TESTS DE SEGURIDAD - X-App-Client
+    // ==========================================
+
+    @Test
+    @DisplayName("POST /api/documentos - Falla con 403 si falta X-App-Client (acceso directo navegador)")
+    void crearDocumento_SinApiKey_Retorna403() throws Exception {
+        DocumentoDTO doc = new DocumentoDTO();
+        doc.setNombre("test.pdf");
+
+        mockMvc.perform(post("/api/documentos")
+                        .header("X-Usuario-Id", USUARIO_ID)
+                        .header("X-Rol-Id", ROL_USUARIO_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isForbidden());
+    }
+
+    // ==========================================
+    // TESTS DE CAMINO FELIZ
     // ==========================================
 
     @Test
@@ -115,9 +139,9 @@ class DocumentoServiceIntegrationTest {
         nuevoDoc.setEstadoId(estadoPendienteId);
         nuevoDoc.setTipoDocId(tipoId);
 
-        MvcResult resultDoc = mockMvc.perform(post("/api/documentos")
+        MvcResult resultDoc = mockMvc.perform(withAppKey(post("/api/documentos"))
                         .header("X-Usuario-Id", USUARIO_ID)
-                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isCreated())
@@ -131,8 +155,8 @@ class DocumentoServiceIntegrationTest {
         requestRechazo.setObservaciones("La imagen esta borrosa, por favor suba una foto con mejor iluminacion.");
         requestRechazo.setRevisadoPor(ADMIN_ID);
 
-        mockMvc.perform(patch("/api/documentos/{id}/estado", documentoId)
-                        .header("X-Usuario-Id", ADMIN_ID) // <--- Agregado
+        mockMvc.perform(withAppKey(patch("/api/documentos/{id}/estado", documentoId))
+                        .header("X-Usuario-Id", ADMIN_ID)
                         .header("X-Rol-Id", ROL_ADMIN_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestRechazo)))
@@ -142,7 +166,7 @@ class DocumentoServiceIntegrationTest {
     }
 
     // ==========================================
-    // 🔥 TESTS DE REGLAS DE NEGOCIO Y ERRORES
+    // TESTS DE REGLAS DE NEGOCIO Y ERRORES
     // ==========================================
 
     @Test
@@ -150,9 +174,9 @@ class DocumentoServiceIntegrationTest {
     void crearDocumento_DatosInvalidos_Retorna400() throws Exception {
         DocumentoDTO docInvalido = new DocumentoDTO();
 
-        mockMvc.perform(post("/api/documentos")
+        mockMvc.perform(withAppKey(post("/api/documentos"))
                         .header("X-Usuario-Id", USUARIO_ID)
-                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(docInvalido)))
                 .andExpect(status().isBadRequest());
@@ -173,9 +197,9 @@ class DocumentoServiceIntegrationTest {
         nuevoDoc.setEstadoId(estadoPendienteId);
         nuevoDoc.setTipoDocId(tipoId);
 
-        mockMvc.perform(post("/api/documentos")
+        mockMvc.perform(withAppKey(post("/api/documentos"))
                         .header("X-Usuario-Id", 99L)
-                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isBadRequest());
@@ -194,9 +218,9 @@ class DocumentoServiceIntegrationTest {
         nuevoDoc.setEstadoId(estadoPendienteId);
         nuevoDoc.setTipoDocId(tipoId);
 
-        MvcResult resultDoc = mockMvc.perform(post("/api/documentos")
+        MvcResult resultDoc = mockMvc.perform(withAppKey(post("/api/documentos"))
                         .header("X-Usuario-Id", USUARIO_ID)
-                        .header("X-Rol-Id", ROL_USUARIO_ID) // <--- Agregado
+                        .header("X-Rol-Id", ROL_USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoDoc)))
                 .andExpect(status().isCreated())
@@ -208,8 +232,8 @@ class DocumentoServiceIntegrationTest {
         requestTramposo.setEstadoId(estadoAprobadoId);
         requestTramposo.setRevisadoPor(USUARIO_ID);
 
-        mockMvc.perform(patch("/api/documentos/{id}/estado", documentoId)
-                        .header("X-Usuario-Id", USUARIO_ID) // <--- Agregado
+        mockMvc.perform(withAppKey(patch("/api/documentos/{id}/estado", documentoId))
+                        .header("X-Usuario-Id", USUARIO_ID)
                         .header("X-Rol-Id", ROL_USUARIO_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestTramposo)))

@@ -12,8 +12,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(EstadoController.class)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de EstadoController")
 class EstadoControllerTest {
 
@@ -40,12 +43,17 @@ class EstadoControllerTest {
 
     private EstadoDTO estadoDTO;
 
-    // Constantes para simular el API Gateway
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
     private static final String HEADER_USER = "X-Usuario-Id";
     private static final String HEADER_ROLE = "X-Rol-Id";
     private static final String ADMIN_ID = "1";
     private static final String ROL_ADMIN = "1";
-    private static final String ROL_USUARIO = "3"; // Simulamos un Arriendatario normal
+    private static final String ROL_USUARIO = "3";
+
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUp() {
@@ -56,13 +64,30 @@ class EstadoControllerTest {
     }
 
     // =========================================================================
-    // 🛡️ TESTS DE SEGURIDAD (RBAC Y HEADERS)
+    // TESTS DE SEGURIDAD DEL INTERCEPTOR (X-App-Client)
+    // =========================================================================
+
+    @Test
+    @DisplayName("POST /api/estados - Retorna 403 si falta X-App-Client")
+    void crearEstado_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post("/api/estados")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(estadoDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(estadoService, never()).crearEstado(any());
+    }
+
+    // =========================================================================
+    // TESTS DE SEGURIDAD (RBAC Y HEADERS)
     // =========================================================================
 
     @Test
     @DisplayName("POST /api/estados - Retorna 401 si no hay cabeceras de identidad")
     void crearEstado_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(post("/api/estados")
+        mockMvc.perform(withAppKey(post("/api/estados"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estadoDTO)))
                 .andExpect(status().isUnauthorized());
@@ -73,9 +98,9 @@ class EstadoControllerTest {
     @Test
     @DisplayName("POST /api/estados - Retorna 403 si el usuario no es ADMIN")
     void crearEstado_UsuarioNormal_Returns403() throws Exception {
-        mockMvc.perform(post("/api/estados")
+        mockMvc.perform(withAppKey(post("/api/estados"))
                         .header(HEADER_USER, "5")
-                        .header(HEADER_ROLE, ROL_USUARIO) // Rol no autorizado
+                        .header(HEADER_ROLE, ROL_USUARIO)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estadoDTO)))
                 .andExpect(status().isForbidden());
@@ -86,38 +111,36 @@ class EstadoControllerTest {
     @Test
     @DisplayName("GET /api/estados - Retorna 401 si no hay cabeceras de identidad")
     void obtenerTodos_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/estados"))
+        mockMvc.perform(withAppKey(get("/api/estados")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("GET /api/estados/{id} - Retorna 401 si no hay cabeceras de identidad")
     void obtenerPorId_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/estados/1"))
+        mockMvc.perform(withAppKey(get("/api/estados/1")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     @DisplayName("GET /api/estados/nombre/{nombre} - Retorna 401 si no hay cabeceras de identidad")
     void obtenerPorNombre_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/estados/nombre/ACTIVO"))
+        mockMvc.perform(withAppKey(get("/api/estados/nombre/ACTIVO")))
                 .andExpect(status().isUnauthorized());
     }
 
     // =========================================================================
-    // 🔴 TESTS DE ESCRITURA (BLINDADOS)
+    // TESTS DE ESCRITURA (BLINDADOS)
     // =========================================================================
 
     @Test
     @DisplayName("POST /api/estados - Debe crear estado y retornar 201 (Siendo Admin)")
     void crearEstado_DatosValidos_Returns201() throws Exception {
-        // Arrange
         when(estadoService.crearEstado(any(EstadoDTO.class))).thenReturn(estadoDTO);
 
-        // Act & Assert
-        mockMvc.perform(post("/api/estados")
+        mockMvc.perform(withAppKey(post("/api/estados"))
                         .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN) // Simula ser Admin
+                        .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(estadoDTO)))
                 .andExpect(status().isCreated())
@@ -130,13 +153,11 @@ class EstadoControllerTest {
     @Test
     @DisplayName("POST /api/estados - Debe retornar 400 cuando el nombre está vacío (Siendo Admin)")
     void crearEstado_NombreVacio_Returns400() throws Exception {
-        // Arrange
         EstadoDTO estadoInvalido = EstadoDTO.builder()
                 .nombre("")
                 .build();
 
-        // Act & Assert
-        mockMvc.perform(post("/api/estados")
+        mockMvc.perform(withAppKey(post("/api/estados"))
                         .header(HEADER_USER, ADMIN_ID)
                         .header(HEADER_ROLE, ROL_ADMIN)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -147,22 +168,20 @@ class EstadoControllerTest {
     }
 
     // =========================================================================
-    // 🟡 TESTS DE LECTURA (PROTEGIDOS)
+    // TESTS DE LECTURA (PROTEGIDOS)
     // =========================================================================
 
     @Test
     @DisplayName("GET /api/estados - Debe retornar lista de estados (Usuario Autenticado)")
     void obtenerTodos_DeberiaRetornarListaDeEstados() throws Exception {
-        // Arrange
         EstadoDTO estado2 = EstadoDTO.builder().id(2L).nombre("INACTIVO").build();
         List<EstadoDTO> estados = Arrays.asList(estadoDTO, estado2);
 
         when(estadoService.obtenerTodos()).thenReturn(estados);
 
-        // Act & Assert
-        mockMvc.perform(get("/api/estados")
+        mockMvc.perform(withAppKey(get("/api/estados"))
                         .header(HEADER_USER, "10")
-                        .header(HEADER_ROLE, ROL_USUARIO)) // Cualquier rol autenticado puede ver
+                        .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -175,11 +194,9 @@ class EstadoControllerTest {
     @Test
     @DisplayName("GET /api/estados/{id} - Debe retornar estado por ID (Usuario Autenticado)")
     void obtenerPorId_EstadoExiste_Returns200() throws Exception {
-        // Arrange
         when(estadoService.obtenerPorId(1L)).thenReturn(estadoDTO);
 
-        // Act & Assert
-        mockMvc.perform(get("/api/estados/1")
+        mockMvc.perform(withAppKey(get("/api/estados/1"))
                         .header(HEADER_USER, "10")
                         .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
@@ -192,12 +209,10 @@ class EstadoControllerTest {
     @Test
     @DisplayName("GET /api/estados/{id} - Debe retornar 404 cuando no existe (Usuario Autenticado)")
     void obtenerPorId_EstadoNoExiste_Returns404() throws Exception {
-        // Arrange
         when(estadoService.obtenerPorId(999L))
                 .thenThrow(new ResourceNotFoundException("Estado con ID 999 no encontrado"));
 
-        // Act & Assert
-        mockMvc.perform(get("/api/estados/999")
+        mockMvc.perform(withAppKey(get("/api/estados/999"))
                         .header(HEADER_USER, "10")
                         .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isNotFound());
@@ -208,11 +223,9 @@ class EstadoControllerTest {
     @Test
     @DisplayName("GET /api/estados/nombre/{nombre} - Debe retornar estado por nombre (Usuario Autenticado)")
     void obtenerPorNombre_EstadoExiste_Returns200() throws Exception {
-        // Arrange
         when(estadoService.obtenerPorNombre("ACTIVO")).thenReturn(estadoDTO);
 
-        // Act & Assert
-        mockMvc.perform(get("/api/estados/nombre/ACTIVO")
+        mockMvc.perform(withAppKey(get("/api/estados/nombre/ACTIVO"))
                         .header(HEADER_USER, "10")
                         .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isOk())
@@ -224,12 +237,10 @@ class EstadoControllerTest {
     @Test
     @DisplayName("GET /api/estados/nombre/{nombre} - Debe retornar 404 cuando no existe (Usuario Autenticado)")
     void obtenerPorNombre_EstadoNoExiste_Returns404() throws Exception {
-        // Arrange
         when(estadoService.obtenerPorNombre("NO_EXISTE"))
                 .thenThrow(new ResourceNotFoundException("Estado NO_EXISTE no encontrado"));
 
-        // Act & Assert
-        mockMvc.perform(get("/api/estados/nombre/NO_EXISTE")
+        mockMvc.perform(withAppKey(get("/api/estados/nombre/NO_EXISTE"))
                         .header(HEADER_USER, "10")
                         .header(HEADER_ROLE, ROL_USUARIO))
                 .andExpect(status().isNotFound());

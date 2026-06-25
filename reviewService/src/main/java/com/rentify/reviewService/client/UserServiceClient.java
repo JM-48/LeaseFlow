@@ -11,30 +11,27 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-/**
- * Cliente para comunicación con el User Service.
- * Maneja todas las peticiones relacionadas con usuarios.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceClient {
+
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
 
     private final WebClient.Builder webClientBuilder;
 
     @Value("${microservices.user-service.url}")
     private String userServiceUrl;
 
-    /**
-     * Obtiene información completa de un usuario por su ID.
-     * @param userId ID del usuario
-     * @return DTO con información del usuario, o null si no existe
-     */
+    @Value("${app.security.client-key}")
+    private String appClientKey;
+
     public UsuarioDTO getUserById(Long userId) {
         try {
             return webClientBuilder.build()
                     .get()
                     .uri(userServiceUrl + "/api/usuarios/" + userId)
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
                     .timeout(Duration.ofSeconds(15))
@@ -49,11 +46,6 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si existe un usuario con el ID dado.
-     * @param userId ID del usuario
-     * @return true si existe, false en caso contrario
-     */
     public boolean existsUser(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);
@@ -64,12 +56,6 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si un usuario tiene un rol específico.
-     * @param userId ID del usuario
-     * @param rol rol a verificar
-     * @return true si el usuario tiene ese rol, false en caso contrario
-     */
     public boolean hasRole(Long userId, String rol) {
         try {
             UsuarioDTO user = getUserById(userId);
@@ -80,11 +66,6 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Obtiene el rol de un usuario.
-     * @param userId ID del usuario
-     * @return rol del usuario, o null si no se pudo obtener
-     */
     public String getUserRole(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);

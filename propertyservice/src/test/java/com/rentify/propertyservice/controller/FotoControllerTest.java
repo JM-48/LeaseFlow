@@ -3,8 +3,6 @@ package com.rentify.propertyservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rentify.propertyservice.dto.FotoDTO;
 import com.rentify.propertyservice.dto.PropertyDTO;
-import com.rentify.propertyservice.exception.FileStorageException;
-import com.rentify.propertyservice.exception.ResourceNotFoundException;
 import com.rentify.propertyservice.service.FotoService;
 import com.rentify.propertyservice.service.PropertyService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 
 import java.util.List;
 
@@ -25,12 +25,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Tests de integración para FotoController.
- * Actualizado con endpoints GET públicos y POST/PUT/DELETE protegidos.
- */
 @WebMvcTest(FotoController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de FotoController")
 class FotoControllerTest {
 
@@ -44,21 +41,24 @@ class FotoControllerTest {
     private FotoService fotoService;
 
     @MockitoBean
-    private PropertyService propertyService; // Agregado para validaciones de autoría
+    private PropertyService propertyService;
 
     private FotoDTO fotoDTO;
     private PropertyDTO mockPropertyDTO;
 
-    // Headers requeridos por los endpoints protegidos
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
     private static final String HEADER_USER = "X-Usuario-Id";
     private static final String HEADER_ROLE = "X-Rol-Id";
-
-    // Roles y Usuarios simulados
     private static final String ROL_ADMIN = "1";
     private static final String ROL_USER = "2";
-    private static final String OWNER_ID = "5";     // Dueño de la propiedad
-    private static final String OTHER_USER_ID = "9"; // Otro usuario cualquiera
+    private static final String OWNER_ID = "5";
+    private static final String OTHER_USER_ID = "9";
     private static final Long PROPERTY_ID = 1L;
+
+    private MockMultipartHttpServletRequestBuilder withAppKey(MockMultipartHttpServletRequestBuilder builder) {
+        return (MockMultipartHttpServletRequestBuilder) builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUp() {
@@ -70,9 +70,29 @@ class FotoControllerTest {
                 .propiedadId(PROPERTY_ID)
                 .build();
 
-        // Simulamos la propiedad para que los tests pasen la validación de dueño
         mockPropertyDTO = mock(PropertyDTO.class);
         when(mockPropertyDTO.getPropietarioId()).thenReturn(Long.valueOf(OWNER_ID));
+    }
+
+    // ==================== Tests de seguridad del interceptor (X-App-Client) ====================
+
+    @Test
+    @DisplayName("POST /api/propiedades/{id}/fotos - Retorna 403 si falta X-App-Client")
+    void uploadFoto_SinApiKey_Returns403() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "fake".getBytes());
+
+        mockMvc.perform(multipart("/api/propiedades/1/fotos")
+                        .file(file)
+                        .header(HEADER_USER, OWNER_ID)
+                        .header(HEADER_ROLE, ROL_USER))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /api/propiedades/{id}/fotos - Retorna 403 si falta X-App-Client")
+    void listarFotos_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(get("/api/propiedades/1/fotos"))
+                .andExpect(status().isForbidden());
     }
 
     // ==================== Tests POST - Upload (PROTEGIDO) ====================
@@ -82,7 +102,7 @@ class FotoControllerTest {
     void uploadFoto_FaltanCabeceras_Returns401() throws Exception {
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "fake".getBytes());
 
-        mockMvc.perform(multipart("/api/propiedades/1/fotos").file(file))
+        mockMvc.perform(withAppKey(multipart("/api/propiedades/1/fotos")).file(file))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -92,7 +112,7 @@ class FotoControllerTest {
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "fake".getBytes());
         when(propertyService.obtenerPorId(PROPERTY_ID, false)).thenReturn(mockPropertyDTO);
 
-        mockMvc.perform(multipart("/api/propiedades/1/fotos")
+        mockMvc.perform(withAppKey(multipart("/api/propiedades/1/fotos"))
                         .file(file)
                         .header(HEADER_USER, OTHER_USER_ID)
                         .header(HEADER_ROLE, ROL_USER))
@@ -107,9 +127,9 @@ class FotoControllerTest {
         when(propertyService.obtenerPorId(PROPERTY_ID, false)).thenReturn(mockPropertyDTO);
         when(fotoService.guardarFoto(eq(PROPERTY_ID), any())).thenReturn(fotoDTO);
 
-        mockMvc.perform(multipart("/api/propiedades/1/fotos")
+        mockMvc.perform(withAppKey(multipart("/api/propiedades/1/fotos"))
                         .file(file)
-                        .header(HEADER_USER, OWNER_ID) // Es el dueño
+                        .header(HEADER_USER, OWNER_ID)
                         .header(HEADER_ROLE, ROL_USER))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
@@ -118,14 +138,15 @@ class FotoControllerTest {
         verify(fotoService, times(1)).guardarFoto(eq(PROPERTY_ID), any());
     }
 
-    // ==================== Tests GET - Listar Fotos (PÚBLICO) ====================
+    // ==================== Tests GET - Listar Fotos (PÚBLICO de negocio) ====================
 
     @Test
-    @DisplayName("GET /api/propiedades/{id}/fotos - Debe retornar lista de fotos sin requerir headers")
+    @DisplayName("GET /api/propiedades/{id}/fotos - Debe retornar lista de fotos")
     void listarFotos_PropiedadExiste_Returns200() throws Exception {
         when(fotoService.listarFotos(1L)).thenReturn(List.of(fotoDTO));
 
-        mockMvc.perform(get("/api/propiedades/1/fotos"))
+        mockMvc.perform(get("/api/propiedades/1/fotos")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].nombre").value("test.jpg"));
@@ -136,11 +157,12 @@ class FotoControllerTest {
     // ==================== Tests GET/{fotoId} (PÚBLICO) ====================
 
     @Test
-    @DisplayName("GET /api/fotos/{fotoId} - Debe retornar foto sin requerir headers")
+    @DisplayName("GET /api/fotos/{fotoId} - Debe retornar foto")
     void obtenerFoto_FotoExiste_Returns200() throws Exception {
         when(fotoService.obtenerPorId(1L)).thenReturn(fotoDTO);
 
-        mockMvc.perform(get("/api/fotos/1"))
+        mockMvc.perform(get("/api/fotos/1")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
 
@@ -156,7 +178,8 @@ class FotoControllerTest {
         when(propertyService.obtenerPorId(PROPERTY_ID, false)).thenReturn(mockPropertyDTO);
 
         mockMvc.perform(delete("/api/fotos/1")
-                        .header(HEADER_USER, OTHER_USER_ID) // No es el dueño
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
+                        .header(HEADER_USER, OTHER_USER_ID)
                         .header(HEADER_ROLE, ROL_USER))
                 .andExpect(status().isForbidden());
     }
@@ -169,7 +192,8 @@ class FotoControllerTest {
         doNothing().when(fotoService).eliminarFoto(1L);
 
         mockMvc.perform(delete("/api/fotos/1")
-                        .header(HEADER_USER, OWNER_ID) // Es el dueño
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
+                        .header(HEADER_USER, OWNER_ID)
                         .header(HEADER_ROLE, ROL_USER))
                 .andExpect(status().isNoContent());
 
@@ -184,8 +208,9 @@ class FotoControllerTest {
         doNothing().when(fotoService).eliminarFoto(1L);
 
         mockMvc.perform(delete("/api/fotos/1")
-                        .header(HEADER_USER, "999") // No es el dueño
-                        .header(HEADER_ROLE, ROL_ADMIN)) // PERO es Admin
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
+                        .header(HEADER_USER, "999")
+                        .header(HEADER_ROLE, ROL_ADMIN))
                 .andExpect(status().isNoContent());
 
         verify(fotoService, times(1)).eliminarFoto(1L);
@@ -199,6 +224,7 @@ class FotoControllerTest {
         List<Long> fotosIds = List.of(3L, 1L, 2L);
 
         mockMvc.perform(put("/api/propiedades/1/fotos/reordenar")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(fotosIds)))
                 .andExpect(status().isUnauthorized());
@@ -213,6 +239,7 @@ class FotoControllerTest {
         doNothing().when(fotoService).reordenarFotos(PROPERTY_ID, fotosIds);
 
         mockMvc.perform(put("/api/propiedades/1/fotos/reordenar")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
                         .header(HEADER_USER, OWNER_ID)
                         .header(HEADER_ROLE, ROL_USER)
                         .contentType("application/json")

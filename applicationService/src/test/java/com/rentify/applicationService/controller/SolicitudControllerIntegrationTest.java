@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -31,6 +32,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @DisplayName("Tests de Integración - SolicitudController (Robustos)")
 class SolicitudControllerIntegrationTest {
+
+    // Debe coincidir con app.security.client-key definido en application-test.properties
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,6 +53,13 @@ class SolicitudControllerIntegrationTest {
     private DocumentServiceClient documentServiceClient;
 
     private static final String BASE_URL = "/api/solicitudes";
+
+    /**
+     * Helper para no repetir el header X-App-Client en cada test.
+     */
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUpMocks() {
@@ -74,7 +86,7 @@ class SolicitudControllerIntegrationTest {
         nuevaSolicitud.setUsuarioId(1L);
         nuevaSolicitud.setPropiedadId(5L);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevaSolicitud)))
                 .andExpect(status().isCreated())
@@ -84,13 +96,30 @@ class SolicitudControllerIntegrationTest {
     }
 
     // ==========================================
-    // 🔥 NUEVOS TESTS DE REGLAS DE NEGOCIO REALES
+    // TEST DE SEGURIDAD DEL INTERCEPTOR (X-App-Client) - NUEVO
+    // ==========================================
+
+    @Test
+    @DisplayName("POST / - Debe retornar 403 si falta X-App-Client (simula pegar URL en el navegador)")
+    void crearSolicitud_SinApiKey_Retorna403() throws Exception {
+        SolicitudArriendoDTO nuevaSolicitud = new SolicitudArriendoDTO();
+        nuevaSolicitud.setUsuarioId(1L);
+        nuevaSolicitud.setPropiedadId(5L);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nuevaSolicitud)))
+                .andExpect(status().isForbidden());
+    }
+
+    // ==========================================
+    // NUEVOS TESTS DE REGLAS DE NEGOCIO REALES
     // ==========================================
 
     @Test
     @DisplayName("POST / - Lanza 400/404 si el usuario no existe en el microservicio de usuarios")
     void crearSolicitud_UsuarioNoExiste_RetornaError() throws Exception {
-        // 🔥 Forzamos a ambos métodos a decir que el usuario NO existe
+        // Forzamos a ambos métodos a decir que el usuario NO existe
         when(userServiceClient.existsUser(1L)).thenReturn(false);
         when(userServiceClient.getUserById(1L)).thenReturn(null); // <--- Esta es la clave
 
@@ -98,7 +127,7 @@ class SolicitudControllerIntegrationTest {
         nuevaSolicitud.setUsuarioId(1L);
         nuevaSolicitud.setPropiedadId(5L);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevaSolicitud)))
                 .andExpect(status().isBadRequest()); // O isNotFound() según corresponda
@@ -114,7 +143,7 @@ class SolicitudControllerIntegrationTest {
         nuevaSolicitud.setUsuarioId(1L);
         nuevaSolicitud.setPropiedadId(5L);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevaSolicitud)))
                 .andExpect(status().isBadRequest());
@@ -130,7 +159,7 @@ class SolicitudControllerIntegrationTest {
         nuevaSolicitud.setUsuarioId(1L);
         nuevaSolicitud.setPropiedadId(5L);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevaSolicitud)))
                 .andExpect(status().isBadRequest());
@@ -143,7 +172,7 @@ class SolicitudControllerIntegrationTest {
         nueva.setUsuarioId(1L);
         nueva.setPropiedadId(5L);
 
-        MvcResult result = mockMvc.perform(post(BASE_URL)
+        MvcResult result = mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nueva)))
                 .andExpect(status().isCreated())
@@ -151,7 +180,7 @@ class SolicitudControllerIntegrationTest {
 
         Long idGenerado = objectMapper.readValue(result.getResponse().getContentAsString(), SolicitudArriendoDTO.class).getId();
 
-        mockMvc.perform(patch(BASE_URL + "/{id}/estado", idGenerado)
+        mockMvc.perform(withAppKey(patch(BASE_URL + "/{id}/estado", idGenerado))
                         .param("estado", "ACEPTADA"))
                 .andExpect(status().isUnauthorized());
     }
@@ -163,7 +192,7 @@ class SolicitudControllerIntegrationTest {
         nueva.setUsuarioId(1L);
         nueva.setPropiedadId(5L);
 
-        MvcResult result = mockMvc.perform(post(BASE_URL)
+        MvcResult result = mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nueva)))
                 .andExpect(status().isCreated())
@@ -171,7 +200,7 @@ class SolicitudControllerIntegrationTest {
 
         Long idGenerado = objectMapper.readValue(result.getResponse().getContentAsString(), SolicitudArriendoDTO.class).getId();
 
-        mockMvc.perform(patch(BASE_URL + "/{id}/estado", idGenerado)
+        mockMvc.perform(withAppKey(patch(BASE_URL + "/{id}/estado", idGenerado))
                         .param("estado", "ACEPTADA")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))

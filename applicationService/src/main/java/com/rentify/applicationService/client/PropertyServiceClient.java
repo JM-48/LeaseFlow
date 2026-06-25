@@ -16,10 +16,15 @@ import java.time.Duration;
 @Slf4j
 public class PropertyServiceClient {
 
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+
     private final WebClient.Builder webClientBuilder;
 
     @Value("${microservices.property-service.url}")
     private String propertyServiceUrl;
+
+    @Value("${app.security.client-key}")
+    private String appClientKey;
 
     public PropiedadDTO getPropertyById(Long propertyId) {
         try {
@@ -29,6 +34,7 @@ public class PropertyServiceClient {
             PropiedadDTO propiedad = webClientBuilder.build()
                     .get()
                     .uri(propertyServiceUrl + "/api/propiedades/" + propertyId)
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(PropiedadDTO.class)
                     .timeout(Duration.ofSeconds(15))

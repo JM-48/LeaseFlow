@@ -12,26 +12,21 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-/**
- * Cliente WebClient para comunicación con User Service.
- * Proporciona métodos para consultar información de usuarios.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceClient {
+
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
 
     private final WebClient.Builder webClientBuilder;
 
     @Value("${microservices.user-service.url}")
     private String userServiceUrl;
 
-    /**
-     * Obtiene un usuario por su ID desde User Service.
-     *
-     * @param userId ID del usuario a consultar
-     * @return UsuarioDTO con la información del usuario, o null si no existe
-     */
+    @Value("${app.security.client-key}")
+    private String appClientKey;
+
     public UsuarioDTO getUserById(Long userId) {
         try {
             log.debug("Consultando usuario con ID: {} en URL: {}", userId, userServiceUrl);
@@ -39,9 +34,10 @@ public class UserServiceClient {
             UsuarioDTO usuario = webClientBuilder.build()
                     .get()
                     .uri(userServiceUrl + "/api/usuarios/" + userId)
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
-                    .timeout(Duration.ofSeconds(15)) // Aumentado a 10 segundos
+                    .timeout(Duration.ofSeconds(15))
                     .onErrorResume(WebClientResponseException.NotFound.class, error -> {
                         log.warn("Usuario {} no encontrado en User Service (404)", userId);
                         return Mono.empty();
@@ -73,12 +69,6 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si un usuario existe en el sistema.
-     *
-     * @param userId ID del usuario a verificar
-     * @return true si el usuario existe, false en caso contrario
-     */
     public boolean existsUser(Long userId) {
         try {
             log.debug("Verificando existencia del usuario con ID: {}", userId);
@@ -92,13 +82,6 @@ public class UserServiceClient {
         }
     }
 
-    /**
-     * Verifica si un usuario tiene un rol específico.
-     *
-     * @param userId ID del usuario
-     * @param rol Rol a verificar
-     * @return true si el usuario tiene el rol especificado
-     */
     public boolean userHasRole(Long userId, String rol) {
         try {
             log.debug("Verificando si usuario {} tiene rol: {}", userId, rol);

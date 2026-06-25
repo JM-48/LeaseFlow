@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -29,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests de integración para SolicitudController
  * Valida las respuestas HTTP y el comportamiento del endpoint
  */
-// 🟢 SOLUCIÓN: Excluir la seguridad por defecto de Spring Security
+// SOLUCIÓN: Excluir la seguridad por defecto de Spring Security
 @WebMvcTest(
         controllers = SolicitudController.class,
         excludeAutoConfiguration = {
@@ -37,8 +39,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 SecurityFilterAutoConfiguration.class
         }
 )
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de SolicitudController")
 class SolicitudControllerTest {
+
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,6 +56,14 @@ class SolicitudControllerTest {
     private SolicitudArriendoService service;
 
     private SolicitudArriendoDTO solicitudDTO;
+
+    /**
+     * Helper para no repetir el header X-App-Client en cada test.
+     * Todas las peticiones reales (legitimas) deben pasar por este interceptor primero.
+     */
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUp() {
@@ -67,7 +81,7 @@ class SolicitudControllerTest {
     void crearSolicitud_DatosValidos_Returns201() throws Exception {
         when(service.crearSolicitud(any(SolicitudArriendoDTO.class))).thenReturn(solicitudDTO);
 
-        mockMvc.perform(post("/api/solicitudes")
+        mockMvc.perform(withAppKey(post("/api/solicitudes"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitudDTO)))
                 .andExpect(status().isCreated())
@@ -82,7 +96,7 @@ class SolicitudControllerTest {
     void crearSolicitud_SinUsuarioId_Returns400() throws Exception {
         solicitudDTO.setUsuarioId(null);
 
-        mockMvc.perform(post("/api/solicitudes")
+        mockMvc.perform(withAppKey(post("/api/solicitudes"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitudDTO)))
                 .andExpect(status().isBadRequest());
@@ -96,7 +110,7 @@ class SolicitudControllerTest {
         when(service.crearSolicitud(any(SolicitudArriendoDTO.class)))
                 .thenThrow(new BusinessValidationException("El usuario ya tiene 3 solicitudes activas"));
 
-        mockMvc.perform(post("/api/solicitudes")
+        mockMvc.perform(withAppKey(post("/api/solicitudes"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitudDTO)))
                 .andExpect(status().isBadRequest())
@@ -104,13 +118,40 @@ class SolicitudControllerTest {
     }
 
     // ==============================================================================
+    // TESTS DE SEGURIDAD DEL INTERCEPTOR (X-App-Client) - NUEVOS
+    // ==============================================================================
+
+    @Test
+    @DisplayName("POST /api/solicitudes - Debe retornar 403 si falta X-App-Client (acceso directo tipo navegador)")
+    void crearSolicitud_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post("/api/solicitudes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(solicitudDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).crearSolicitud(any(SolicitudArriendoDTO.class));
+    }
+
+    @Test
+    @DisplayName("GET /api/solicitudes/1 - Debe retornar 403 si X-App-Client es incorrecto")
+    void obtenerPorId_ApiKeyIncorrecta_Returns403() throws Exception {
+        mockMvc.perform(get("/api/solicitudes/1")
+                        .header(APP_CLIENT_HEADER, "valor-incorrecto")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 1L))
+                .andExpect(status().isForbidden());
+
+        verify(service, never()).obtenerPorId(any(), anyBoolean());
+    }
+
+    // ==============================================================================
     // TESTS DE SEGURIDAD PARA LISTAR SOLICITUDES (GET /api/solicitudes)
     // ==============================================================================
 
     @Test
-    @DisplayName("GET /api/solicitudes - Debe retornar 401 UNAUTHORIZED si faltan headers")
+    @DisplayName("GET /api/solicitudes - Debe retornar 401 UNAUTHORIZED si faltan headers de usuario")
     void listarSolicitudes_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/solicitudes"))
+        mockMvc.perform(withAppKey(get("/api/solicitudes")))
                 .andExpect(status().isUnauthorized());
 
         // Verificamos que el servicio NUNCA se llame si se rechaza por seguridad
@@ -122,7 +163,7 @@ class SolicitudControllerTest {
     void listarSolicitudesSeguras_ConHeaders_Returns200() throws Exception {
         when(service.listarSolicitudesSeguras(1L, 1L, false)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes")
+        mockMvc.perform(withAppKey(get("/api/solicitudes"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L)
                         .param("includeDetails", "false"))
@@ -138,7 +179,7 @@ class SolicitudControllerTest {
     void listarSolicitudesSeguras_SinParametroIncludeDetails_UsaDefaultFalse() throws Exception {
         when(service.listarSolicitudesSeguras(2L, 3L, false)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes")
+        mockMvc.perform(withAppKey(get("/api/solicitudes"))
                         .header("X-Usuario-Id", 2L)
                         .header("X-Rol-Id", 3L))
                 .andExpect(status().isOk());
@@ -153,7 +194,7 @@ class SolicitudControllerTest {
     @Test
     @DisplayName("GET /api/solicitudes/{id} - Debe retornar 401 si faltan headers")
     void obtenerPorId_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/solicitudes/1")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/1"))
                         .param("includeDetails", "true"))
                 .andExpect(status().isUnauthorized());
 
@@ -165,7 +206,7 @@ class SolicitudControllerTest {
     void obtenerPorId_SolicitudExiste_Returns200() throws Exception {
         when(service.obtenerPorId(1L, true)).thenReturn(solicitudDTO);
 
-        mockMvc.perform(get("/api/solicitudes/1")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/1"))
                         .param("includeDetails", "true")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -181,7 +222,7 @@ class SolicitudControllerTest {
         when(service.obtenerPorId(999L, true))
                 .thenThrow(new ResourceNotFoundException("Solicitud no encontrada con ID: 999"));
 
-        mockMvc.perform(get("/api/solicitudes/999")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/999"))
                         .param("includeDetails", "true")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -195,7 +236,7 @@ class SolicitudControllerTest {
     @Test
     @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Debe retornar 401 si faltan headers")
     void obtenerPorUsuario_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/solicitudes/usuario/1"))
+        mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1")))
                 .andExpect(status().isUnauthorized());
 
         verify(service, never()).obtenerPorUsuario(any());
@@ -204,7 +245,7 @@ class SolicitudControllerTest {
     @Test
     @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Debe retornar 403 si un usuario normal consulta a otro")
     void obtenerPorUsuario_UsuarioDistintoSinSerAdmin_Returns403() throws Exception {
-        mockMvc.perform(get("/api/solicitudes/usuario/1")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1"))
                         .header("X-Usuario-Id", 2L)
                         .header("X-Rol-Id", 3L))
                 .andExpect(status().isForbidden());
@@ -217,7 +258,7 @@ class SolicitudControllerTest {
     void obtenerPorUsuario_Returns200() throws Exception {
         when(service.obtenerPorUsuario(1L)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes/usuario/1")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 3L))
                 .andExpect(status().isOk())
@@ -231,7 +272,7 @@ class SolicitudControllerTest {
     void obtenerPorUsuario_Admin_Returns200() throws Exception {
         when(service.obtenerPorUsuario(1L)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes/usuario/1")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1"))
                         .header("X-Usuario-Id", 99L)
                         .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk())
@@ -247,7 +288,7 @@ class SolicitudControllerTest {
     @Test
     @DisplayName("GET /api/solicitudes/propiedad/{propiedadId} - Debe retornar 401 si faltan headers")
     void obtenerPorPropiedad_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(get("/api/solicitudes/propiedad/1"))
+        mockMvc.perform(withAppKey(get("/api/solicitudes/propiedad/1")))
                 .andExpect(status().isUnauthorized());
 
         verify(service, never()).obtenerPorPropiedad(any());
@@ -258,7 +299,7 @@ class SolicitudControllerTest {
     void obtenerPorPropiedad_Returns200() throws Exception {
         when(service.obtenerPorPropiedad(1L)).thenReturn(Arrays.asList(solicitudDTO));
 
-        mockMvc.perform(get("/api/solicitudes/propiedad/1")
+        mockMvc.perform(withAppKey(get("/api/solicitudes/propiedad/1"))
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
                 .andExpect(status().isOk());
@@ -273,7 +314,7 @@ class SolicitudControllerTest {
     @Test
     @DisplayName("PATCH /api/solicitudes/{id}/estado - Debe retornar 401 si faltan headers")
     void actualizarEstado_SinHeaders_Returns401() throws Exception {
-        mockMvc.perform(patch("/api/solicitudes/1/estado")
+        mockMvc.perform(withAppKey(patch("/api/solicitudes/1/estado"))
                         .param("estado", "ACEPTADA"))
                 .andExpect(status().isUnauthorized());
 
@@ -286,7 +327,7 @@ class SolicitudControllerTest {
         solicitudDTO.setEstado("ACEPTADA");
         when(service.actualizarEstado(1L, "ACEPTADA")).thenReturn(solicitudDTO);
 
-        mockMvc.perform(patch("/api/solicitudes/1/estado")
+        mockMvc.perform(withAppKey(patch("/api/solicitudes/1/estado"))
                         .param("estado", "ACEPTADA")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -302,7 +343,7 @@ class SolicitudControllerTest {
         when(service.actualizarEstado(1L, "INVALIDO"))
                 .thenThrow(new BusinessValidationException("Estado inválido: INVALIDO"));
 
-        mockMvc.perform(patch("/api/solicitudes/1/estado")
+        mockMvc.perform(withAppKey(patch("/api/solicitudes/1/estado"))
                         .param("estado", "INVALIDO")
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))

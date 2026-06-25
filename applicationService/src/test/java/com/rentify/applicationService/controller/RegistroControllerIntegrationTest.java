@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -34,6 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @DisplayName("Tests de Integración - RegistroController (Robustos)")
 class RegistroControllerIntegrationTest {
+
+    // Debe coincidir con app.security.client-key definido en application-test.properties
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,6 +58,13 @@ class RegistroControllerIntegrationTest {
 
     private static final String BASE_URL = "/api/registros";
     private static final String SOLICITUD_URL = "/api/solicitudes";
+
+    /**
+     * Helper para no repetir el header X-App-Client en cada test.
+     */
+    private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
+        return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
+    }
 
     @BeforeEach
     void setUpMocks() {
@@ -77,7 +89,7 @@ class RegistroControllerIntegrationTest {
         solicitud.setUsuarioId(1L);
         solicitud.setPropiedadId(5L);
 
-        MvcResult resultSolicitud = mockMvc.perform(post(SOLICITUD_URL)
+        MvcResult resultSolicitud = mockMvc.perform(withAppKey(post(SOLICITUD_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitud)))
                 .andExpect(status().isCreated())
@@ -88,7 +100,7 @@ class RegistroControllerIntegrationTest {
 
     // Método auxiliar para cambiar el estado de una solicitud, ya con los headers requeridos
     private void cambiarEstadoSolicitud(Long solicitudId, String estado) throws Exception {
-        mockMvc.perform(patch(SOLICITUD_URL + "/{id}/estado", solicitudId)
+        mockMvc.perform(withAppKey(patch(SOLICITUD_URL + "/{id}/estado", solicitudId))
                         .param("estado", estado)
                         .header("X-Usuario-Id", 1L)
                         .header("X-Rol-Id", 1L))
@@ -109,7 +121,7 @@ class RegistroControllerIntegrationTest {
         nuevoRegistro.setFechaInicio(new Date());
         nuevoRegistro.setMontoMensual(500000.0);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoRegistro)))
                 .andExpect(status().isCreated())
@@ -125,7 +137,7 @@ class RegistroControllerIntegrationTest {
         registroInvalido.setFechaInicio(new Date());
         registroInvalido.setMontoMensual(-150000.0);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registroInvalido)))
                 .andExpect(status().isBadRequest())
@@ -133,7 +145,25 @@ class RegistroControllerIntegrationTest {
     }
 
     // ==========================================
-    // 🔥 NUEVOS TESTS DE REGLAS DE NEGOCIO
+    // TEST DE SEGURIDAD DEL INTERCEPTOR (X-App-Client) - NUEVO
+    // ==========================================
+
+    @Test
+    @DisplayName("POST / - Debe retornar 403 si falta X-App-Client (simula pegar URL en el navegador)")
+    void crearRegistro_SinApiKey_Retorna403() throws Exception {
+        RegistroArriendoDTO nuevoRegistro = new RegistroArriendoDTO();
+        nuevoRegistro.setSolicitudId(1L);
+        nuevoRegistro.setFechaInicio(new Date());
+        nuevoRegistro.setMontoMensual(500000.0);
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(nuevoRegistro)))
+                .andExpect(status().isForbidden());
+    }
+
+    // ==========================================
+    // NUEVOS TESTS DE REGLAS DE NEGOCIO
     // ==========================================
 
     @Test
@@ -147,7 +177,7 @@ class RegistroControllerIntegrationTest {
         nuevoRegistro.setFechaInicio(new Date());
         nuevoRegistro.setMontoMensual(500000.0);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoRegistro)))
                 .andExpect(status().isBadRequest())
@@ -167,7 +197,7 @@ class RegistroControllerIntegrationTest {
         nuevoRegistro.setFechaInicio(new Date());
         nuevoRegistro.setMontoMensual(500000.0);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoRegistro)))
                 .andExpect(status().isBadRequest())
@@ -182,7 +212,7 @@ class RegistroControllerIntegrationTest {
         nuevoRegistro.setFechaInicio(new Date());
         nuevoRegistro.setMontoMensual(500000.0);
 
-        mockMvc.perform(post(BASE_URL)
+        mockMvc.perform(withAppKey(post(BASE_URL))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(nuevoRegistro)))
                 .andExpect(status().isNotFound())

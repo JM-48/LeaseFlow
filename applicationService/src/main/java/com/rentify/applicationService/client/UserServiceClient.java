@@ -16,10 +16,15 @@ import java.time.Duration;
 @Slf4j
 public class UserServiceClient {
 
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+
     private final WebClient.Builder webClientBuilder;
 
     @Value("${microservices.user-service.url}")
     private String userServiceUrl;
+
+    @Value("${app.security.client-key}")
+    private String appClientKey;
 
     public UsuarioDTO getUserById(Long userId) {
         try {
@@ -29,6 +34,7 @@ public class UserServiceClient {
             UsuarioDTO usuario = webClientBuilder.build()
                     .get()
                     .uri(userServiceUrl + "/api/usuarios/" + userId)
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
                     .timeout(Duration.ofSeconds(15))

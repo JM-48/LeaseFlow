@@ -18,10 +18,15 @@ import java.time.Duration;
 @Slf4j
 public class DocumentServiceClient {
 
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+
     private final WebClient.Builder webClientBuilder;
 
     @Value("${microservices.document-service.url}")
     private String documentServiceUrl;
+
+    @Value("${app.security.client-key}")
+    private String appClientKey;
 
     /**
      * Verifica si un usuario tiene todos los documentos requeridos aprobados
@@ -36,6 +41,7 @@ public class DocumentServiceClient {
             Boolean hasDocuments = webClientBuilder.build()
                     .get()
                     .uri(documentServiceUrl + "/api/documentos/usuario/" + userId + "/verificar-aprobados")
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(Boolean.class)
                     .timeout(Duration.ofSeconds(15))
@@ -71,6 +77,7 @@ public class DocumentServiceClient {
             Integer count = webClientBuilder.build()
                     .get()
                     .uri(documentServiceUrl + "/api/documentos/usuario/" + userId + "/contar-aprobados")
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(Integer.class)
                     .timeout(Duration.ofSeconds(15))
@@ -100,6 +107,7 @@ public class DocumentServiceClient {
             webClientBuilder.build()
                     .get()
                     .uri(documentServiceUrl + "/actuator/health")
+                    .header(APP_CLIENT_HEADER, appClientKey)
                     .retrieve()
                     .bodyToMono(String.class)
                     .timeout(Duration.ofSeconds(15))
