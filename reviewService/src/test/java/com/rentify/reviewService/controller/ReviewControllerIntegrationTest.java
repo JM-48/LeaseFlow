@@ -71,8 +71,8 @@ class ReviewControllerIntegrationTest {
                 .pnombre("Juan")
                 .papellido("Pérez")
                 .email("juan.perez@email.com")
-                .rol("ARRIENDATARIO")
-                .estado("ACTIVO")
+                .rol(new UsuarioDTO.RolInfo(3L, "ARRIENDATARIO"))
+                .estado(new UsuarioDTO.EstadoInfo(1L, "ACTIVO"))
                 .build();
 
         when(userServiceClient.getUserById(1L)).thenReturn(creadorMock);
