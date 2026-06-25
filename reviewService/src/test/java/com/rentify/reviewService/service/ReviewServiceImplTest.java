@@ -62,8 +62,8 @@ class ReviewServiceImplTest {
                 .id(1L)
                 .pnombre("Juan")
                 .papellido("Pérez")
-                .rol("ARRIENDATARIO")
-                .estado("ACTIVO")
+                .rol(new UsuarioDTO.RolInfo(3L, "ARRIENDATARIO"))
+                .estado(new UsuarioDTO.EstadoInfo(1L, "ACTIVO"))
                 .build();
 
         reviewDTO = ReviewDTO.builder()
@@ -93,7 +93,6 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe crear reseña exitosamente cuando todos los datos son válidos")
     void crearResena_DatosValidos_Success() {
-        // Arrange
         when(userServiceClient.getUserById(1L)).thenReturn(usuarioValido);
         when(tipoResenaRepository.findById(1L)).thenReturn(Optional.of(tipoResena));
         when(propertyServiceClient.existsProperty(1L)).thenReturn(true);
@@ -103,10 +102,8 @@ class ReviewServiceImplTest {
         when(reviewRepository.save(any(Review.class))).thenReturn(reviewEntity);
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(reviewDTO);
 
-        // Act
         ReviewDTO resultado = service.crearResena(reviewDTO);
 
-        // Assert
         assertThat(resultado).isNotNull();
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
@@ -114,10 +111,8 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando el usuario no existe")
     void crearResena_UsuarioNoExiste_ThrowsException() {
-        // Arrange
         when(userServiceClient.getUserById(1L)).thenReturn(null);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.crearResena(reviewDTO))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("usuario con ID 1 no existe");
@@ -128,11 +123,9 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando el usuario no tiene permisos")
     void crearResena_RolInvalido_ThrowsException() {
-        // Arrange
-        usuarioValido.setRol("INVALIDO");
+        usuarioValido.setRol(new UsuarioDTO.RolInfo(99L, "INVALIDO"));
         when(userServiceClient.getUserById(1L)).thenReturn(usuarioValido);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.crearResena(reviewDTO))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("no tiene permisos");
@@ -143,11 +136,9 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando el puntaje es inválido")
     void crearResena_PuntajeInvalido_ThrowsException() {
-        // Arrange
-        reviewDTO.setPuntaje(15); // Puntaje fuera de rango
+        reviewDTO.setPuntaje(15);
         when(userServiceClient.getUserById(1L)).thenReturn(usuarioValido);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.crearResena(reviewDTO))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("puntaje debe estar entre");
@@ -158,12 +149,10 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando la propiedad no existe")
     void crearResena_PropiedadNoExiste_ThrowsException() {
-        // Arrange
         when(userServiceClient.getUserById(1L)).thenReturn(usuarioValido);
         when(tipoResenaRepository.findById(1L)).thenReturn(Optional.of(tipoResena));
         when(propertyServiceClient.existsProperty(1L)).thenReturn(false);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.crearResena(reviewDTO))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("propiedad con ID 1 no existe");
@@ -174,13 +163,11 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando ya existe una reseña duplicada")
     void crearResena_ResenaDuplicada_ThrowsException() {
-        // Arrange
         when(userServiceClient.getUserById(1L)).thenReturn(usuarioValido);
         when(tipoResenaRepository.findById(1L)).thenReturn(Optional.of(tipoResena));
         when(propertyServiceClient.existsProperty(1L)).thenReturn(true);
         when(reviewRepository.existsByUsuarioIdAndPropiedadId(1L, 1L)).thenReturn(true);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.crearResena(reviewDTO))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("ya ha creado una reseña");
@@ -191,14 +178,12 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando el propietario intenta reseñar su propia propiedad")
     void crearResena_PropietarioResenaPropia_ThrowsException() {
-        // Arrange
         when(userServiceClient.getUserById(1L)).thenReturn(usuarioValido);
         when(tipoResenaRepository.findById(1L)).thenReturn(Optional.of(tipoResena));
         when(propertyServiceClient.existsProperty(1L)).thenReturn(true);
         when(reviewRepository.existsByUsuarioIdAndPropiedadId(1L, 1L)).thenReturn(false);
         when(propertyServiceClient.isPropertyOwner(1L, 1L)).thenReturn(true);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.crearResena(reviewDTO))
                 .isInstanceOf(BusinessValidationException.class)
                 .hasMessageContaining("no puede reseñar su propia propiedad");
@@ -209,14 +194,11 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe obtener reseña por ID exitosamente")
     void obtenerPorId_ResenaExiste_Success() {
-        // Arrange
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(reviewEntity));
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(reviewDTO);
 
-        // Act
         ReviewDTO resultado = service.obtenerPorId(1L, false);
 
-        // Assert
         assertThat(resultado).isNotNull();
         verify(reviewRepository, times(1)).findById(1L);
     }
@@ -224,10 +206,8 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe lanzar excepción cuando la reseña no existe")
     void obtenerPorId_ResenaNoExiste_ThrowsException() {
-        // Arrange
         when(reviewRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThatThrownBy(() -> service.obtenerPorId(999L, false))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("reseña con ID 999 no existe");
@@ -236,15 +216,12 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe actualizar estado de reseña exitosamente")
     void actualizarEstado_EstadoValido_Success() {
-        // Arrange
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(reviewEntity));
         when(reviewRepository.save(any(Review.class))).thenReturn(reviewEntity);
         when(modelMapper.map(any(Review.class), eq(ReviewDTO.class))).thenReturn(reviewDTO);
 
-        // Act
         ReviewDTO resultado = service.actualizarEstado(1L, "BANEADA");
 
-        // Assert
         assertThat(resultado).isNotNull();
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
@@ -252,23 +229,18 @@ class ReviewServiceImplTest {
     @Test
     @DisplayName("Debe eliminar reseña exitosamente")
     void eliminarResena_ResenaExiste_Success() {
-        // Arrange
         when(reviewRepository.existsById(1L)).thenReturn(true);
 
-        // Act
         service.eliminarResena(1L);
 
-        // Assert
         verify(reviewRepository, times(1)).deleteById(1L);
     }
 
     @Test
     @DisplayName("Debe lanzar excepción al eliminar reseña que no existe")
     void eliminarResena_ResenaNoExiste_ThrowsException() {
-        // Arrange
         when(reviewRepository.existsById(999L)).thenReturn(false);
 
-        // Act & Assert
         assertThatThrownBy(() -> service.eliminarResena(999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("reseña con ID 999 no existe");

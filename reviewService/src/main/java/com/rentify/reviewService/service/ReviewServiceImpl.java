@@ -55,7 +55,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         // 2. Validar rol del usuario
-        if (!Roles.puedeCrearResena(usuario.getRol())) {
+        if (!Roles.puedeCrearResena(usuario.getRolNombre())) {
             throw new BusinessValidationException(Mensajes.ROL_INVALIDO_RESENA);
         }
 
