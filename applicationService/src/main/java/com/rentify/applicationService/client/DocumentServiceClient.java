@@ -19,6 +19,11 @@ import java.time.Duration;
 public class DocumentServiceClient {
 
     private static final String APP_CLIENT_HEADER = "X-App-Client";
+    // Headers de negocio requeridos por DocumentoController (protege todos sus endpoints)
+    private static final String USUARIO_ID_HEADER = "X-Usuario-Id";
+    private static final String ROL_ID_HEADER = "X-Rol-Id";
+    // Rol ADMIN interno para llamadas server-to-server
+    private static final String INTERNAL_ROL_ID = "1";
 
     private final WebClient.Builder webClientBuilder;
 
@@ -42,6 +47,8 @@ public class DocumentServiceClient {
                     .get()
                     .uri(documentServiceUrl + "/api/documentos/usuario/" + userId + "/verificar-aprobados")
                     .header(APP_CLIENT_HEADER, appClientKey)
+                    .header(USUARIO_ID_HEADER, String.valueOf(userId))
+                    .header(ROL_ID_HEADER, INTERNAL_ROL_ID)
                     .retrieve()
                     .bodyToMono(Boolean.class)
                     .timeout(Duration.ofSeconds(15))
@@ -52,14 +59,12 @@ public class DocumentServiceClient {
                     .block();
 
             boolean result = Boolean.TRUE.equals(hasDocuments);
-            log.debug("Usuario {} tiene documentos aprobados: {}", userId, Boolean.valueOf(result));  // CORREGIDO
+            log.debug("Usuario {} tiene documentos aprobados: {}", userId, Boolean.valueOf(result));
 
             return result;
         } catch (Exception e) {
             log.error("Error crítico al comunicarse con Document Service para usuario {}: {}",
                     userId, e.getMessage());
-            // En producción podrías querer lanzar una excepción aquí
-            // Por ahora retornamos false para ser más permisivos durante desarrollo
             return false;
         }
     }
@@ -78,6 +83,8 @@ public class DocumentServiceClient {
                     .get()
                     .uri(documentServiceUrl + "/api/documentos/usuario/" + userId + "/contar-aprobados")
                     .header(APP_CLIENT_HEADER, appClientKey)
+                    .header(USUARIO_ID_HEADER, String.valueOf(userId))
+                    .header(ROL_ID_HEADER, INTERNAL_ROL_ID)
                     .retrieve()
                     .bodyToMono(Integer.class)
                     .timeout(Duration.ofSeconds(15))
@@ -88,7 +95,7 @@ public class DocumentServiceClient {
                     .block();
 
             int result = count != null ? count : 0;
-            log.debug("Usuario {} tiene {} documentos aprobados", userId, Integer.valueOf(result));  // CORREGIDO
+            log.debug("Usuario {} tiene {} documentos aprobados", userId, Integer.valueOf(result));
 
             return result;
         } catch (Exception e) {
