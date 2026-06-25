@@ -64,7 +64,7 @@ public class UserServiceClient {
     public boolean hasRole(Long userId, String rol) {
         try {
             UsuarioDTO user = getUserById(userId);
-            return user != null && rol.equals(user.getRol());
+            return user != null && rol.equals(user.getRolNombre());
         } catch (Exception e) {
             log.error("Error al verificar rol del usuario {}: {}", userId, e.getMessage());
             return false;
@@ -74,7 +74,7 @@ public class UserServiceClient {
     public String getUserRole(Long userId) {
         try {
             UsuarioDTO user = getUserById(userId);
-            return user != null ? user.getRol() : null;
+            return user != null ? user.getRolNombre() : null;
         } catch (Exception e) {
             log.error("Error al obtener rol del usuario {}: {}", userId, e.getMessage());
             return null;

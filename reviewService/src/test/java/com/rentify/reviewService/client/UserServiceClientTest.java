@@ -60,8 +60,8 @@ class UserServiceClientTest {
                 "pnombre": "Juan",
                 "papellido": "Pérez",
                 "email": "juan@email.com",
-                "rol": "ARRIENDATARIO",
-                "estado": "ACTIVO"
+                "rol": { "id": 3, "nombre": "ARRIENDATARIO" },
+                "estado": { "id": 1, "nombre": "ACTIVO" }
             }
             """;
 
@@ -74,7 +74,7 @@ class UserServiceClientTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getPnombre()).isEqualTo("Juan");
-        assertThat(result.getRol()).isEqualTo("ARRIENDATARIO");
+        assertThat(result.getRolNombre()).isEqualTo("ARRIENDATARIO");
     }
 
     @Test
@@ -118,7 +118,7 @@ class UserServiceClientTest {
                 "pnombre": "Juan",
                 "papellido": "Pérez",
                 "email": "juan@email.com",
-                "rol": "ARRIENDATARIO"
+                "rol": { "id": 3, "nombre": "ARRIENDATARIO" }
             }
             """;
 
@@ -148,7 +148,7 @@ class UserServiceClientTest {
             {
                 "id": 1,
                 "pnombre": "Juan",
-                "rol": "ARRIENDATARIO"
+                "rol": { "id": 3, "nombre": "ARRIENDATARIO" }
             }
             """;
 
@@ -168,7 +168,7 @@ class UserServiceClientTest {
             {
                 "id": 1,
                 "pnombre": "Juan",
-                "rol": "PROPIETARIO"
+                "rol": { "id": 2, "nombre": "PROPIETARIO" }
             }
             """;
 
@@ -188,7 +188,7 @@ class UserServiceClientTest {
             {
                 "id": 1,
                 "pnombre": "Juan",
-                "rol": "ADMIN"
+                "rol": { "id": 1, "nombre": "ADMIN" }
             }
             """;
 
