@@ -9,32 +9,35 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 
 /**
- * Configuración de CORS (Cross-Origin Resource Sharing) para Document Service.
- * Permite que el frontend React (puerto 5173) pueda comunicarse con el backend (puerto 8083).
+ * Configuración de CORS para Property Service.
+ * Permite que el frontend React se comunique con este microservicio.
  *
- * IMPORTANTE: Esta configuración es CRÍTICA para que el frontend pueda hacer peticiones
- * al backend sin errores de CORS.
+ * IMPORTANTE: Este CorsFilter se registra como un Bean de Spring y se ejecuta
+ * ANTES que el ApiKeyInterceptor (que es un HandlerInterceptor de Spring MVC),
+ * garantizando que las peticiones OPTIONS de preflight CORS sean respondidas
+ * correctamente sin ser bloqueadas por el interceptor.
  */
 @Configuration
 public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
         // Permitir credenciales (cookies, headers de autenticación)
         config.setAllowCredentials(true);
 
-        // Orígenes permitidos (frontend React en diferentes configuraciones)
         // Orígenes permitidos (frontend local + producción en Azure)
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://127.0.0.1:5173",
-                "https://leaseflow-web-a3chbkhjcug5bcgc.brazilsouth-01.azurewebsites.net" // <-- AGREGA ESTA LÍNEA
+                "https://leaseflow-web-a3chbkhjcug5bcgc.brazilsouth-01.azurewebsites.net"
         ));
 
-        // Headers permitidos
+        // Headers permitidos — CRÍTICO: incluir X-App-Client para que el preflight
+        // OPTIONS lo apruebe antes de que llegue al ApiKeyInterceptor
         config.setAllowedHeaders(Arrays.asList(
                 "Origin",
                 "Content-Type",
@@ -42,7 +45,9 @@ public class CorsConfig {
                 "Authorization",
                 "Access-Control-Request-Method",
                 "Access-Control-Request-Headers",
-                "X-Requested-With"
+                "X-App-Client",   // ← AGREGADO: requerido por ApiKeyInterceptor
+                "X-Usuario-Id",   // ← AGREGADO: requerido por controladores
+                "X-Rol-Id"        // ← AGREGADO: requerido por controladores
         ));
 
         // Métodos HTTP permitidos
@@ -55,11 +60,17 @@ public class CorsConfig {
                 "OPTIONS"
         ));
 
-        // Tiempo de caché para peticiones preflight (OPTIONS)
+        // Headers que el cliente puede ver en la respuesta
+        config.setExposedHeaders(Arrays.asList(
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials",
+                "Authorization"
+        ));
+
+        // Tiempo de caché para la configuración CORS (1 hora)
         config.setMaxAge(3600L);
 
         // Aplicar configuración a todas las rutas
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);
