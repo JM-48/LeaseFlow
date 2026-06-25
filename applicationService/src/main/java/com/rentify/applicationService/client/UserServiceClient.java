@@ -17,6 +17,9 @@ import java.time.Duration;
 public class UserServiceClient {
 
     private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String HEADER_USUARIO_ID = "X-Usuario-Id";
+    private static final String HEADER_ROL_ID = "X-Rol-Id";
+    private static final String INTERNAL_ROL_ID = "1";
 
     private final WebClient.Builder webClientBuilder;
 
@@ -35,6 +38,8 @@ public class UserServiceClient {
                     .get()
                     .uri(userServiceUrl + "/api/usuarios/" + userId)
                     .header(APP_CLIENT_HEADER, appClientKey)
+                    .header(HEADER_USUARIO_ID, String.valueOf(userId))
+                    .header(HEADER_ROL_ID, INTERNAL_ROL_ID)
                     .retrieve()
                     .bodyToMono(UsuarioDTO.class)
                     .timeout(Duration.ofSeconds(15))
