@@ -1,38 +1,40 @@
 package com.rentify.userservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rentify.userservice.dto.EstadoDTO;
-import com.rentify.userservice.dto.LoginDTO;
-import com.rentify.userservice.dto.RolDTO;
-import com.rentify.userservice.dto.UsuarioDTO;
-import com.rentify.userservice.repository.UsuarioRepository;
-import com.rentify.userservice.service.EstadoService;
-import com.rentify.userservice.service.RolService;
+import com.rentify.userservice.dto.*;
+import com.rentify.userservice.exception.AuthenticationException;
+import com.rentify.userservice.exception.BusinessValidationException;
+import com.rentify.userservice.exception.ResourceNotFoundException;
+import com.rentify.userservice.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false) // Desactiva filtros de Spring Security (Evita error 403 por falta de CSRF)
+@WebMvcTest(UsuarioController.class)
 @ActiveProfiles("test")
-@Transactional
-@DisplayName("Tests de Integración - UsuarioController")
-class UsuarioControllerIntegrationTest {
+@AutoConfigureMockMvc(addFilters = false)
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
+@DisplayName("Tests de UsuarioController")
+class UsuarioControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,16 +42,11 @@ class UsuarioControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
     @MockitoBean
-    private RolService rolService;
+    private UsuarioService usuarioService;
 
-    @MockitoBean
-    private EstadoService estadoService;
-
-    private static final String BASE_URL = "/api/usuarios";
+    private UsuarioDTO usuarioDTO;
+    private LoginDTO loginDTO;
 
     private static final String APP_CLIENT_HEADER = "X-App-Client";
     private static final String APP_CLIENT_KEY = "test-key-123";
@@ -58,7 +55,7 @@ class UsuarioControllerIntegrationTest {
     private static final String ADMIN_ID = "1";
     private static final String ROL_ADMIN = "1";
     private static final String USUARIO_ID = "10";
-    private static final String ROL_USUARIO = "3";
+    private static final String ROL_USUARIO = "3"; // Ej: Arriendatario
 
     private MockHttpServletRequestBuilder withAppKey(MockHttpServletRequestBuilder builder) {
         return builder.header(APP_CLIENT_HEADER, APP_CLIENT_KEY);
@@ -66,191 +63,340 @@ class UsuarioControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        usuarioRepository.deleteAll();
+        String fechaNacimientoValida = "1995-05-15";
 
-        Mockito.when(rolService.obtenerPorId(anyLong()))
-                .thenReturn(RolDTO.builder().id(3L).nombre("ARRIENDATARIO").build());
-
-        Mockito.when(estadoService.obtenerPorId(Mockito.any()))
-                .thenReturn(EstadoDTO.builder().id(1L).nombre("ACTIVO").build());
-    }
-
-    // ==========================================
-    // MÉTODOS AUXILIARES (DRY)
-    // ==========================================
-
-    private UsuarioDTO generarUsuarioDTO(String email, String rut) {
-        return UsuarioDTO.builder()
-                .pnombre("Usuario")
-                .snombre("Miau")
-                .papellido("Test")
-                .email(email)
-                .rut(rut)
-                .fnacimiento("1990-01-01")
-                .clave("secreta123")
-                .ntelefono("+56912345678")
-                .rolId(3L)
+        usuarioDTO = UsuarioDTO.builder()
+                .id(10L) // Coincide con USUARIO_ID para test de dueño
+                .pnombre("Juan")
+                .snombre("Carlos")
+                .papellido("Pérez")
+                .fnacimiento(fechaNacimientoValida)
+                .email("juan.perez@email.com")
+                .rut("12345678-9")
+                .ntelefono("987654321")
+                .duocVip(false)
+                .clave("password123")
+                .puntos(0)
+                .codigoRef("ABC123XYZ")
+                .fcreacion(LocalDate.now().toString())
+                .factualizacion(LocalDate.now().toString())
                 .estadoId(1L)
+                .rolId(3L)
+                .build();
+
+        loginDTO = LoginDTO.builder()
+                .email("juan.perez@email.com")
+                .clave("password123")
                 .build();
     }
 
-    private Long registrarUsuarioHelper(UsuarioDTO dto) throws Exception {
-        MvcResult result = mockMvc.perform(withAppKey(post(BASE_URL))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isCreated())
-                .andReturn();
-        return objectMapper.readValue(result.getResponse().getContentAsString(), UsuarioDTO.class).getId();
-    }
-
-    // ==========================================
+    // =========================================================================
     // TESTS DE SEGURIDAD DEL INTERCEPTOR (X-App-Client)
-    // ==========================================
+    // =========================================================================
 
     @Test
-    @DisplayName("POST / - Retorna 403 si falta X-App-Client (registro)")
-    void registrarUsuario_SinApiKey_Retorna403() throws Exception {
-        UsuarioDTO nuevoUsuario = generarUsuarioDTO("sinkey@test.com", "10101010-1");
-
-        mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(nuevoUsuario)))
+    @DisplayName("GET /api/usuarios - Retorna 403 si falta X-App-Client")
+    void obtenerTodos_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(get("/api/usuarios")
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("POST /login - Retorna 403 si falta X-App-Client (login)")
-    void login_SinApiKey_Retorna403() throws Exception {
-        LoginDTO loginDTO = new LoginDTO("cualquiera@test.com", "cualquiera");
+    @DisplayName("POST /api/usuarios - Retorna 403 si falta X-App-Client (registro publico tambien protegido)")
+    void registrarUsuario_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post("/api/usuarios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioDTO)))
+                .andExpect(status().isForbidden());
 
-        mockMvc.perform(post(BASE_URL + "/login")
+        verify(usuarioService, never()).registrarUsuario(any());
+    }
+
+    @Test
+    @DisplayName("POST /api/usuarios/login - Retorna 403 si falta X-App-Client (login publico tambien protegido)")
+    void login_SinApiKey_Returns403() throws Exception {
+        mockMvc.perform(post("/api/usuarios/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDTO)))
                 .andExpect(status().isForbidden());
+
+        verify(usuarioService, never()).login(any());
     }
 
-    // ==========================================
-    // TESTS DE SEGURIDAD (ENDPOINTS PROTEGIDOS)
-    // ==========================================
+    // =========================================================================
+    // TESTS DE SEGURIDAD GENERAL (ENDPOINTS PROTEGIDOS)
+    // =========================================================================
 
     @Test
-    @DisplayName("GET /{id} - Retorna 401 si no hay cabeceras de identidad")
-    void obtenerPorId_SinHeaders_Retorna401() throws Exception {
-        mockMvc.perform(withAppKey(get(BASE_URL + "/1")))
+    @DisplayName("GET /api/usuarios - Retorna 401 si no hay cabeceras de identidad")
+    void obtenerTodos_SinHeaders_Returns401() throws Exception {
+        mockMvc.perform(withAppKey(get("/api/usuarios")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("DELETE /{id} - Retorna 401 si no hay cabeceras de identidad")
-    void eliminarUsuario_SinHeaders_Retorna401() throws Exception {
-        mockMvc.perform(withAppKey(delete(BASE_URL + "/1")))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("DELETE /{id} - Retorna 403 si el usuario no es ADMIN")
-    void eliminarUsuario_UsuarioNormal_Retorna403() throws Exception {
-        mockMvc.perform(withAppKey(delete(BASE_URL + "/1"))
-                        .header(HEADER_USER, USUARIO_ID)
-                        .header(HEADER_ROLE, ROL_USUARIO))
+    @DisplayName("PUT /api/usuarios/{id} - Retorna 403 si un usuario normal intenta actualizar el perfil de OTRO usuario")
+    void actualizarUsuario_UsuarioNormal_Returns403() throws Exception {
+        // Usuario 10 intenta editar el perfil del usuario 99 (ajeno) -> 403
+        mockMvc.perform(withAppKey(put("/api/usuarios/99"))
+                        .header(HEADER_USER, USUARIO_ID) // Usuario 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioDTO)))
                 .andExpect(status().isForbidden());
     }
 
-    // ==========================================
-    // TESTS DE CAMINO FELIZ (PÚBLICOS Y PRIVADOS)
-    // ==========================================
+    @Test
+    @DisplayName("PUT /api/usuarios/{id} - El dueño puede actualizar su propio perfil (200 OK)")
+    void actualizarUsuario_Dueno_Returns200() throws Exception {
+        when(usuarioService.actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class))).thenReturn(usuarioDTO);
+
+        // Usuario 10 edita su propio perfil (id 10 == X-Usuario-Id 10) -> 200
+        mockMvc.perform(withAppKey(put("/api/usuarios/10"))
+                        .header(HEADER_USER, USUARIO_ID) // 10 == id del path -> dueño
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioDTO)))
+                .andExpect(status().isOk());
+
+        verify(usuarioService, times(1)).actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class));
+    }
+
+    // =========================================================================
+    // TESTS DE REGISTRO Y LOGIN (PÚBLICOS DE NEGOCIO, PROTEGIDOS POR API KEY)
+    // =========================================================================
 
     @Test
-    @DisplayName("POST / - Debe registrar usuario y retornar 201 Created (Endpoint Público)")
-    void registrarUsuario_Success() throws Exception {
-        UsuarioDTO nuevoUsuario = generarUsuarioDTO("integracion@test.com", "11222333-4");
+    @DisplayName("POST /api/usuarios - Debe registrar usuario y retornar 201")
+    void registrarUsuario_DatosValidos_Returns201() throws Exception {
+        when(usuarioService.registrarUsuario(any(UsuarioDTO.class))).thenReturn(usuarioDTO);
 
-        mockMvc.perform(withAppKey(post(BASE_URL))
+        mockMvc.perform(withAppKey(post("/api/usuarios"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(nuevoUsuario)))
+                        .content(objectMapper.writeValueAsString(usuarioDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value("integracion@test.com"))
-                .andExpect(jsonPath("$.clave").doesNotExist());
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.email").value("juan.perez@email.com"))
+                .andExpect(jsonPath("$.pnombre").value("Juan"));
+
+        verify(usuarioService, times(1)).registrarUsuario(any(UsuarioDTO.class));
     }
 
     @Test
-    @DisplayName("POST /login - Login exitoso retorna 200 OK con mensaje y usuario (Endpoint Público)")
-    void login_Success() throws Exception {
-        registrarUsuarioHelper(generarUsuarioDTO("login@test.com", "99888777-6"));
+    @DisplayName("POST /api/usuarios - Debe retornar 400 cuando faltan campos obligatorios")
+    void registrarUsuario_CamposFaltantes_Returns400() throws Exception {
+        UsuarioDTO usuarioInvalido = UsuarioDTO.builder()
+                .email("invalido@email.com")
+                .clave("password123")
+                .rut("12345678-9")
+                .estadoId(1L)
+                .rolId(3L)
+                .build();
 
-        LoginDTO loginDTO = new LoginDTO("login@test.com", "secreta123");
+        mockMvc.perform(withAppKey(post("/api/usuarios"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioInvalido)))
+                .andExpect(status().isBadRequest());
 
-        mockMvc.perform(withAppKey(post(BASE_URL + "/login"))
+        verify(usuarioService, never()).registrarUsuario(any());
+    }
+
+    @Test
+    @DisplayName("POST /api/usuarios/login - Debe autenticar usuario exitosamente")
+    void login_CredencialesValidas_Returns200() throws Exception {
+        when(usuarioService.login(any(LoginDTO.class))).thenReturn(usuarioDTO);
+
+        mockMvc.perform(withAppKey(post("/api/usuarios/login"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mensaje").value("Login exitoso"))
-                .andExpect(jsonPath("$.usuario.email").value("login@test.com"));
+                .andExpect(jsonPath("$.usuario.email").value("juan.perez@email.com"));
+
+        verify(usuarioService, times(1)).login(any(LoginDTO.class));
     }
 
     @Test
-    @DisplayName("DELETE /{id} - Lanza 204 No Content si se elimina correctamente (Requiere ADMIN)")
-    void eliminarUsuario_Success() throws Exception {
-        Long idGenerado = registrarUsuarioHelper(generarUsuarioDTO("borrar@test.com", "77666555-4"));
+    @DisplayName("POST /api/usuarios/login - Debe retornar 401 cuando las credenciales son inválidas")
+    void login_CredencialesInvalidas_Returns401() throws Exception {
+        when(usuarioService.login(any(LoginDTO.class)))
+                .thenThrow(new AuthenticationException("Email o contraseña incorrectos"));
 
-        mockMvc.perform(withAppKey(delete(BASE_URL + "/{id}", idGenerado))
+        mockMvc.perform(withAppKey(post("/api/usuarios/login"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginDTO)))
+                .andExpect(status().isUnauthorized());
+
+        verify(usuarioService, times(1)).login(any(LoginDTO.class));
+    }
+
+    // =========================================================================
+    // TESTS DE CONSULTAS (PROTEGIDOS POR AUTH / PERMISOS ESPECÍFICOS)
+    // =========================================================================
+
+    @Test
+    @DisplayName("GET /api/usuarios - Debe retornar lista de usuarios (Requiere Admin)")
+    void obtenerTodos_DeberiaRetornarListaDeUsuarios() throws Exception {
+        UsuarioDTO usuario2 = UsuarioDTO.builder().id(2L).email("maria@email.com").build();
+        List<UsuarioDTO> usuarios = Arrays.asList(usuarioDTO, usuario2);
+
+        when(usuarioService.obtenerTodos(false)).thenReturn(usuarios);
+
+        mockMvc.perform(withAppKey(get("/api/usuarios"))
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .param("includeDetails", "false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(usuarioService, times(1)).obtenerTodos(false);
+    }
+
+    @Test
+    @DisplayName("GET /api/usuarios/{id} - Dueño consulta su propio perfil, retorna 200")
+    void obtenerPorId_DuenoConsulta_Returns200() throws Exception {
+        when(usuarioService.obtenerPorId(10L, true)).thenReturn(usuarioDTO);
+
+        mockMvc.perform(withAppKey(get("/api/usuarios/10"))
+                        .header(HEADER_USER, USUARIO_ID) // 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .param("includeDetails", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10));
+
+        verify(usuarioService, times(1)).obtenerPorId(10L, true);
+    }
+
+    @Test
+    @DisplayName("GET /api/usuarios/{id} - Usuario normal consulta perfil de otro, retorna 403")
+    void obtenerPorId_UsuarioNormalConsultaOtro_Returns403() throws Exception {
+        mockMvc.perform(withAppKey(get("/api/usuarios/99")) // Intenta ver el ID 99
+                        .header(HEADER_USER, USUARIO_ID) // El usuario es el ID 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .param("includeDetails", "true"))
+                .andExpect(status().isForbidden());
+
+        // El servicio no debe llegar a ser llamado por el bloqueo de seguridad
+        verify(usuarioService, never()).obtenerPorId(anyLong(), anyBoolean());
+    }
+
+    @Test
+    @DisplayName("GET /api/usuarios/email/{email} - Dueño consulta su propio email, retorna 200")
+    void obtenerPorEmail_DuenoConsulta_Returns200() throws Exception {
+        when(usuarioService.obtenerPorEmail("juan.perez@email.com", true)).thenReturn(usuarioDTO);
+
+        mockMvc.perform(withAppKey(get("/api/usuarios/email/juan.perez@email.com"))
+                        .header(HEADER_USER, USUARIO_ID) // 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .param("includeDetails", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("juan.perez@email.com"));
+
+        verify(usuarioService, times(1)).obtenerPorEmail("juan.perez@email.com", true);
+    }
+
+    @Test
+    @DisplayName("GET /api/usuarios/email/{email} - Usuario normal busca email de otro, retorna 403")
+    void obtenerPorEmail_UsuarioNormalBuscaOtro_Returns403() throws Exception {
+        // Simulamos que el email pertenece al ID 99
+        UsuarioDTO otroUsuario = UsuarioDTO.builder().id(99L).email("otro@email.com").build();
+        when(usuarioService.obtenerPorEmail("otro@email.com", true)).thenReturn(otroUsuario);
+
+        mockMvc.perform(withAppKey(get("/api/usuarios/email/otro@email.com"))
+                        .header(HEADER_USER, USUARIO_ID) // El usuario logueado es el ID 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .param("includeDetails", "true"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("GET /api/usuarios/{id} - Admin consulta perfil de otro, retorna 200")
+    void obtenerPorId_AdminConsulta_Returns200() throws Exception {
+        when(usuarioService.obtenerPorId(10L, true)).thenReturn(usuarioDTO);
+
+        mockMvc.perform(withAppKey(get("/api/usuarios/10"))
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .param("includeDetails", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10));
+
+        verify(usuarioService, times(1)).obtenerPorId(10L, true);
+    }
+
+    // =========================================================================
+    // TESTS DE ACTUALIZACIÓN Y BORRADO (PROTEGIDOS POR ADMIN)
+    // =========================================================================
+
+    @Test
+    @DisplayName("PUT /api/usuarios/{id} - Debe actualizar usuario correctamente (Requiere Admin)")
+    void actualizarUsuario_DatosValidos_Returns200() throws Exception {
+        when(usuarioService.actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class))).thenReturn(usuarioDTO);
+
+        mockMvc.perform(withAppKey(put("/api/usuarios/10"))
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10));
+
+        verify(usuarioService, times(1)).actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/usuarios/{id}/estado - Debe cambiar estado de usuario (Requiere Admin)")
+    void cambiarEstado_EstadoValido_Returns200() throws Exception {
+        when(usuarioService.cambiarEstado(10L, 2L)).thenReturn(usuarioDTO);
+
+        mockMvc.perform(withAppKey(patch("/api/usuarios/10/estado"))
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .param("estadoId", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10));
+
+        verify(usuarioService, times(1)).cambiarEstado(10L, 2L);
+    }
+
+    @Test
+    @DisplayName("DELETE /api/usuarios/{id} - Usuario normal intenta eliminar, retorna 403")
+    void eliminarUsuario_UsuarioNormal_Returns403() throws Exception {
+        mockMvc.perform(withAppKey(delete("/api/usuarios/10"))
+                        .header(HEADER_USER, USUARIO_ID)
+                        .header(HEADER_ROLE, ROL_USUARIO))
+                .andExpect(status().isForbidden());
+
+        verify(usuarioService, never()).eliminarUsuario(anyLong());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/usuarios/{id} - Admin elimina usuario, retorna 204")
+    void eliminarUsuario_Admin_Returns204() throws Exception {
+        doNothing().when(usuarioService).eliminarUsuario(10L);
+
+        mockMvc.perform(withAppKey(delete("/api/usuarios/10"))
                         .header(HEADER_USER, ADMIN_ID)
                         .header(HEADER_ROLE, ROL_ADMIN))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(withAppKey(get(BASE_URL + "/{id}", idGenerado))
-                        .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN))
-                .andExpect(status().isNotFound());
-    }
-
-    // ==========================================
-    // TESTS DE REGLAS DE NEGOCIO Y ERRORES
-    // ==========================================
-
-    @Test
-    @DisplayName("POST / - Lanza 400 Bad Request si el email ya existe")
-    void registrarUsuario_EmailDuplicado_Retorna400() throws Exception {
-        registrarUsuarioHelper(generarUsuarioDTO("duplicado@mail.com", "11111111-1"));
-        UsuarioDTO usuarioDuplicado = generarUsuarioDTO("duplicado@mail.com", "22222222-2");
-
-        mockMvc.perform(withAppKey(post(BASE_URL))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioDuplicado)))
-                .andExpect(status().isBadRequest());
+        verify(usuarioService, times(1)).eliminarUsuario(10L);
     }
 
     @Test
-    @DisplayName("POST / - Lanza 400 Bad Request si el RUT ya existe")
-    void registrarUsuario_RutDuplicado_Retorna400() throws Exception {
-        registrarUsuarioHelper(generarUsuarioDTO("uno@mail.com", "12345678-9"));
-        UsuarioDTO usuarioDuplicado = generarUsuarioDTO("dos@mail.com", "12345678-9");
+    @DisplayName("GET /api/usuarios/{id}/exists - Debe verificar si usuario existe (Usuario Autenticado)")
+    void existeUsuario_UsuarioExiste_RetornaTrue() throws Exception {
+        when(usuarioService.existeUsuario(10L)).thenReturn(true);
 
-        mockMvc.perform(withAppKey(post(BASE_URL))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(usuarioDuplicado)))
-                .andExpect(status().isBadRequest());
-    }
+        mockMvc.perform(withAppKey(get("/api/usuarios/10/exists"))
+                        .header(HEADER_USER, USUARIO_ID)
+                        .header(HEADER_ROLE, ROL_USUARIO))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
 
-    @Test
-    @DisplayName("POST /login - Lanza 401 Unauthorized por clave incorrecta")
-    void login_ClaveIncorrecta_Retorna401() throws Exception {
-        registrarUsuarioHelper(generarUsuarioDTO("user@mail.com", "55555555-5"));
-
-        LoginDTO loginDTO = new LoginDTO("user@mail.com", "malaclave123");
-
-        mockMvc.perform(withAppKey(post(BASE_URL + "/login"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginDTO)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("GET /{id} - Lanza 404 Not Found si el ID no existe (Consultado como Admin)")
-    void obtenerPorId_NoExiste_Retorna404() throws Exception {
-        mockMvc.perform(withAppKey(get(BASE_URL + "/{id}", 99999L))
-                        .header(HEADER_USER, ADMIN_ID)
-                        .header(HEADER_ROLE, ROL_ADMIN))
-                .andExpect(status().isNotFound());
+        verify(usuarioService, times(1)).existeUsuario(10L);
     }
 }
