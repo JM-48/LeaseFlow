@@ -137,14 +137,31 @@ class UsuarioControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /api/usuarios/{id} - Retorna 403 si un usuario normal intenta actualizar")
+    @DisplayName("PUT /api/usuarios/{id} - Retorna 403 si un usuario normal intenta actualizar el perfil de OTRO usuario")
     void actualizarUsuario_UsuarioNormal_Returns403() throws Exception {
-        mockMvc.perform(withAppKey(put("/api/usuarios/10"))
-                        .header(HEADER_USER, USUARIO_ID)
-                        .header(HEADER_ROLE, ROL_USUARIO) // Rol insuficiente
+        // Usuario 10 intenta editar el perfil del usuario 99 (ajeno) -> 403
+        mockMvc.perform(withAppKey(put("/api/usuarios/99"))
+                        .header(HEADER_USER, USUARIO_ID) // Usuario 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(usuarioDTO)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("PUT /api/usuarios/{id} - El dueño puede actualizar su propio perfil (200 OK)")
+    void actualizarUsuario_Dueno_Returns200() throws Exception {
+        when(usuarioService.actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class))).thenReturn(usuarioDTO);
+
+        // Usuario 10 edita su propio perfil (id 10 == X-Usuario-Id 10) -> 200
+        mockMvc.perform(withAppKey(put("/api/usuarios/10"))
+                        .header(HEADER_USER, USUARIO_ID) // 10 == id del path -> dueño
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(usuarioDTO)))
+                .andExpect(status().isOk());
+
+        verify(usuarioService, times(1)).actualizarUsuarioAdmin(eq(10L), any(UsuarioUpdateDTO.class));
     }
 
     // =========================================================================
