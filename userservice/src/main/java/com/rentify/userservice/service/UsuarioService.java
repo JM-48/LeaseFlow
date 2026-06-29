@@ -316,6 +316,26 @@ public class UsuarioService {
         return usuarioRepository.existsById(id);
     }
 
+    @Transactional
+    public void cambiarClave(Long id, String claveActual, String claveNueva) {
+        log.info("Cambiando clave del usuario {}", id);
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format(Mensajes.USUARIO_NO_ENCONTRADO, id)
+                ));
+
+        if (!passwordEncoder.matches(claveActual, usuario.getClave())) {
+            throw new AuthenticationException("La contraseña actual es incorrecta");
+        }
+
+        usuario.setClave(passwordEncoder.encode(claveNueva));
+        usuario.setFactualizacion(LocalDate.now());
+        usuarioRepository.save(usuario);
+
+        log.info("Clave actualizada exitosamente para usuario {}", id);
+    }
+
     // ==================== METODOS PRIVADOS ====================
 
     private UsuarioDTO convertToDTO(Usuario usuario, boolean includeDetails) {

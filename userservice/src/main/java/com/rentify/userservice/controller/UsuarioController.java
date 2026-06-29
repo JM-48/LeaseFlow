@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -252,6 +253,35 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acceso denegado: Solo administradores.");
         }
         usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/clave")
+    @Operation(summary = "Cambiar contraseña", description = "Requiere autenticación")
+    public ResponseEntity<Void> cambiarClave(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body,
+            @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioId,
+            @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
+
+        if (usuarioId == null || rolId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Solo el propio usuario o un admin puede cambiar la clave
+        boolean esAdmin = Long.valueOf(1L).equals(rolId);
+        if (!esAdmin && !usuarioId.equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        String claveActual = body.get("claveActual");
+        String claveNueva = body.get("claveNueva");
+
+        if (claveActual == null || claveNueva == null || claveNueva.length() < 6) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        usuarioService.cambiarClave(id, claveActual, claveNueva);
         return ResponseEntity.noContent().build();
     }
 }

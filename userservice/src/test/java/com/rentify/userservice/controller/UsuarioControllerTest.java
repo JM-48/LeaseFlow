@@ -19,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.Map;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -398,5 +399,67 @@ class UsuarioControllerTest {
                 .andExpect(content().string("true"));
 
         verify(usuarioService, times(1)).existeUsuario(10L);
+    }
+
+    @Test
+    @DisplayName("PATCH /api/usuarios/{id}/clave - Dueño cambia su propia clave, retorna 204")
+    void cambiarClave_Dueno_Returns204() throws Exception {
+        doNothing().when(usuarioService).cambiarClave(eq(10L), anyString(), anyString());
+
+        Map<String, String> body = Map.of("claveActual", "actual123", "claveNueva", "nueva12345");
+
+        mockMvc.perform(withAppKey(patch("/api/usuarios/10/clave"))
+                        .header(HEADER_USER, USUARIO_ID)   // 10 == id del path -> dueño
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isNoContent());
+
+        verify(usuarioService, times(1)).cambiarClave(eq(10L), eq("actual123"), eq("nueva12345"));
+    }
+
+    @Test
+    @DisplayName("PATCH /api/usuarios/{id}/clave - Usuario normal intenta cambiar clave de otro, retorna 403")
+    void cambiarClave_UsuarioNormalCambiaOtro_Returns403() throws Exception {
+        Map<String, String> body = Map.of("claveActual", "actual123", "claveNueva", "nueva12345");
+
+        mockMvc.perform(withAppKey(patch("/api/usuarios/99/clave"))  // intenta cambiar ID 99
+                        .header(HEADER_USER, USUARIO_ID)              // logueado como ID 10
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isForbidden());
+
+        verify(usuarioService, never()).cambiarClave(anyLong(), anyString(), anyString());
+    }
+
+    @Test
+    @DisplayName("PATCH /api/usuarios/{id}/clave - Admin cambia clave de otro usuario, retorna 204")
+    void cambiarClave_Admin_Returns204() throws Exception {
+        doNothing().when(usuarioService).cambiarClave(eq(10L), anyString(), anyString());
+
+        Map<String, String> body = Map.of("claveActual", "actual123", "claveNueva", "nueva12345");
+
+        mockMvc.perform(withAppKey(patch("/api/usuarios/10/clave"))
+                        .header(HEADER_USER, ADMIN_ID)
+                        .header(HEADER_ROLE, ROL_ADMIN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("PATCH /api/usuarios/{id}/clave - Clave nueva menor a 6 caracteres, retorna 400")
+    void cambiarClave_ClaveMuyCorta_Returns400() throws Exception {
+        Map<String, String> body = Map.of("claveActual", "actual123", "claveNueva", "abc");
+
+        mockMvc.perform(withAppKey(patch("/api/usuarios/10/clave"))
+                        .header(HEADER_USER, USUARIO_ID)
+                        .header(HEADER_ROLE, ROL_USUARIO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest());
+
+        verify(usuarioService, never()).cambiarClave(anyLong(), anyString(), anyString());
     }
 }
