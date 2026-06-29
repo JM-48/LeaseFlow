@@ -23,6 +23,7 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -239,7 +240,7 @@ class SolicitudControllerTest {
         mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1")))
                 .andExpect(status().isUnauthorized());
 
-        verify(service, never()).obtenerPorUsuario(any());
+        verify(service, never()).obtenerPorUsuario(any(), anyBoolean());
     }
 
     @Test
@@ -250,13 +251,13 @@ class SolicitudControllerTest {
                         .header("X-Rol-Id", 3L))
                 .andExpect(status().isForbidden());
 
-        verify(service, never()).obtenerPorUsuario(any());
+        verify(service, never()).obtenerPorUsuario(any(), anyBoolean());
     }
 
     @Test
     @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Debe retornar solicitudes del usuario")
     void obtenerPorUsuario_Returns200() throws Exception {
-        when(service.obtenerPorUsuario(1L)).thenReturn(Arrays.asList(solicitudDTO));
+        when(service.obtenerPorUsuario(1L, false)).thenReturn(Arrays.asList(solicitudDTO));
 
         mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1"))
                         .header("X-Usuario-Id", 1L)
@@ -264,13 +265,28 @@ class SolicitudControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
-        verify(service, times(1)).obtenerPorUsuario(1L);
+        verify(service, times(1)).obtenerPorUsuario(1L, false);
+    }
+
+    @Test
+    @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Debe incluir detalles cuando includeDetails=true")
+    void obtenerPorUsuario_ConIncludeDetails_Returns200ConDetalles() throws Exception {
+        when(service.obtenerPorUsuario(1L, true)).thenReturn(Arrays.asList(solicitudDTO));
+
+        mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1"))
+                        .param("includeDetails", "true")
+                        .header("X-Usuario-Id", 1L)
+                        .header("X-Rol-Id", 3L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+
+        verify(service, times(1)).obtenerPorUsuario(1L, true);
     }
 
     @Test
     @DisplayName("GET /api/solicitudes/usuario/{usuarioId} - Un ADMIN puede consultar a cualquier usuario")
     void obtenerPorUsuario_Admin_Returns200() throws Exception {
-        when(service.obtenerPorUsuario(1L)).thenReturn(Arrays.asList(solicitudDTO));
+        when(service.obtenerPorUsuario(1L, false)).thenReturn(Arrays.asList(solicitudDTO));
 
         mockMvc.perform(withAppKey(get("/api/solicitudes/usuario/1"))
                         .header("X-Usuario-Id", 99L)
@@ -278,7 +294,7 @@ class SolicitudControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
-        verify(service, times(1)).obtenerPorUsuario(1L);
+        verify(service, times(1)).obtenerPorUsuario(1L, false);
     }
 
     // ==============================================================================

@@ -158,10 +158,10 @@ public class SolicitudArriendoService {
      * Obtiene todas las solicitudes de un usuario
      */
     @Transactional(readOnly = true)
-    public List<SolicitudArriendoDTO> obtenerPorUsuario(Long usuarioId) {
-        log.debug("Obteniendo solicitudes del usuario: {}", usuarioId);
+    public List<SolicitudArriendoDTO> obtenerPorUsuario(Long usuarioId, boolean includeDetails) {
+        log.debug("Obteniendo solicitudes del usuario: {} (includeDetails: {})", usuarioId, includeDetails);
         return repository.findByUsuarioId(usuarioId).stream()
-                .map(s -> convertToDTO(s, false))
+                .map(s -> convertToDTO(s, includeDetails))
                 .collect(Collectors.toList());
     }
 

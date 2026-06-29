@@ -69,6 +69,8 @@ public class SolicitudController {
             description = "Requiere headers de identificación. Un usuario normal solo puede consultar sus propias solicitudes")
     public ResponseEntity<List<SolicitudArriendoDTO>> obtenerPorUsuario(
             @PathVariable Long usuarioId,
+            @Parameter(description = "Incluir detalles de usuario y propiedad")
+            @RequestParam(defaultValue = "false") boolean includeDetails,
             @RequestHeader(value = "X-Usuario-Id", required = false) Long usuarioIdHeader,
             @RequestHeader(value = "X-Rol-Id", required = false) Long rolId) {
 
@@ -81,7 +83,7 @@ public class SolicitudController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        return ResponseEntity.ok(service.obtenerPorUsuario(usuarioId));
+        return ResponseEntity.ok(service.obtenerPorUsuario(usuarioId, includeDetails));
     }
 
     @GetMapping("/propiedad/{propiedadId}")
