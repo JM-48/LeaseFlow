@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.rentify.propertyservice.PropertyserviceApplicationTests" time="23.484" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.rentify.propertyservice.PropertyserviceApplicationTests" time="32.187" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -17,7 +17,7 @@
     <property name="user.country" value="CL"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Users\AM-FX4100\.jdks\ms-17.0.19\bin"/>
-    <property name="sun.java.command" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire2587095264895516482\surefirebooter-20260624033323832_3.jar C:\Users\AM-FX4100\AppData\Local\Temp\surefire2587095264895516482 2026-06-24T03-33-23_589-jvmRun1 surefire-20260624033323832_1tmp surefire_0-20260624033323832_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire13588891811363279275\surefirebooter-20260630185713211_3.jar C:\Users\AM-FX4100\AppData\Local\Temp\surefire13588891811363279275 2026-06-30T18-57-12_890-jvmRun1 surefire-20260630185713211_1tmp surefire_0-20260630185713211_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice\target\test-classes;C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice\target\classes;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-security\3.5.6\spring-boot-starter-security-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter\3.5.6\spring-boot-starter-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.5.6\spring-boot-starter-logging-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\ch\qos\logback\logback-classic\1.5.18\logback-classic-1.5.18.jar;C:\Users\AM-FX4100\.m2\repository\ch\qos\logback\logback-core\1.5.18\logback-core-1.5.18.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.24.3\log4j-to-slf4j-2.24.3.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\logging\log4j\log4j-api\2.24.3\log4j-api-2.24.3.jar;C:\Users\AM-FX4100\.m2\repository\org\slf4j\jul-to-slf4j\2.0.17\jul-to-slf4j-2.0.17.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\AM-FX4100\.m2\repository\org\yaml\snakeyaml\2.4\snakeyaml-2.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-aop\6.2.11\spring-aop-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-beans\6.2.11\spring-beans-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-config\6.5.5\spring-security-config-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-core\6.5.5\spring-security-core-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-crypto\6.5.5\spring-security-crypto-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-context\6.2.11\spring-context-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-web\6.5.5\spring-security-web-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-expression\6.2.11\spring-expression-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.5.6\spring-boot-starter-data-jpa-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.5.6\spring-boot-starter-jdbc-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\zaxxer\HikariCP\6.3.3\HikariCP-6.3.3.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-jdbc\6.2.11\spring-jdbc-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\orm\hibernate-core\6.6.29.Final\hibernate-core-6.6.29.Final.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\AM-FX4100\.m2\repository\org\jboss\logging\jboss-logging\3.6.1.Final\jboss-logging-3.6.1.Final.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\common\hibernate-commons-annotations\7.0.3.Final\hibernate-commons-annotations-7.0.3.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\smallrye\jandex\3.2.0\jandex-3.2.0.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\AM-FX4100\.m2\repository\net\bytebuddy\byte-buddy\1.17.7\byte-buddy-1.17.7.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.5\jaxb-runtime-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.5\jaxb-core-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\org\eclipse\angus\angus-activation\2.0.2\angus-activation-2.0.2.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\txw2\4.0.5\txw2-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\AM-FX4100\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\data\spring-data-jpa\3.5.4\spring-data-jpa-3.5.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\data\spring-data-commons\3.5.4\spring-data-commons-3.5.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-orm\6.2.11\spring-orm-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-tx\6.2.11\spring-tx-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-aspects\6.2.11\spring-aspects-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\aspectj\aspectjweaver\1.9.24\aspectjweaver-1.9.24.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.5.6\spring-boot-starter-validation-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.46\tomcat-embed-el-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.3.Final\hibernate-validator-8.0.3.Final.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.5.6\spring-boot-starter-web-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.5.6\spring-boot-starter-json-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.19.2\jackson-databind-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.19.2\jackson-annotations-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.19.2\jackson-core-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.19.2\jackson-datatype-jdk8-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.19.2\jackson-datatype-jsr310-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.19.2\jackson-module-parameter-names-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.5.6\spring-boot-starter-tomcat-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.46\tomcat-embed-core-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.46\tomcat-embed-websocket-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-web\6.2.11\spring-web-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-webmvc\6.2.11\spring-webmvc-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-webflux\3.5.6\spring-boot-starter-webflux-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-reactor-netty\3.5.6\spring-boot-starter-reactor-netty-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\netty\reactor-netty-http\1.2.10\reactor-netty-http-1.2.10.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-http\4.1.127.Final\netty-codec-http-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-common\4.1.127.Final\netty-common-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-buffer\4.1.127.Final\netty-buffer-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport\4.1.127.Final\netty-transport-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec\4.1.127.Final\netty-codec-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-handler\4.1.127.Final\netty-handler-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-http2\4.1.127.Final\netty-codec-http2-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns\4.1.127.Final\netty-resolver-dns-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver\4.1.127.Final\netty-resolver-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-dns\4.1.127.Final\netty-codec-dns-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns-native-macos\4.1.127.Final\netty-resolver-dns-native-macos-4.1.127.Final-osx-x86_64.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns-classes-macos\4.1.127.Final\netty-resolver-dns-classes-macos-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-native-epoll\4.1.127.Final\netty-transport-native-epoll-4.1.127.Final-linux-x86_64.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.127.Final\netty-transport-native-unix-common-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-classes-epoll\4.1.127.Final\netty-transport-classes-epoll-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\netty\reactor-netty-core\1.2.10\reactor-netty-core-1.2.10.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-handler-proxy\4.1.127.Final\netty-handler-proxy-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-socks\4.1.127.Final\netty-codec-socks-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-webflux\6.2.11\spring-webflux-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.7.0\springdoc-openapi-starter-webmvc-ui-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-api\2.7.0\springdoc-openapi-starter-webmvc-api-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-common\2.7.0\springdoc-openapi-starter-common-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-core-jakarta\2.2.25\swagger-core-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\commons\commons-lang3\3.17.0\commons-lang3-3.17.0.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-annotations-jakarta\2.2.25\swagger-annotations-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-models-jakarta\2.2.25\swagger-models-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.19.2\jackson-dataformat-yaml-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\org\webjars\swagger-ui\5.18.2\swagger-ui-5.18.2.jar;C:\Users\AM-FX4100\.m2\repository\org\webjars\webjars-locator-lite\1.1.0\webjars-locator-lite-1.1.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jspecify\jspecify\1.0.0\jspecify-1.0.0.jar;C:\Users\AM-FX4100\.m2\repository\org\modelmapper\modelmapper\3.2.0\modelmapper-3.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-devtools\3.5.6\spring-boot-devtools-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot\3.5.6\spring-boot-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.5.6\spring-boot-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\mysql\mysql-connector-j\9.4.0\mysql-connector-j-9.4.0.jar;C:\Users\AM-FX4100\.m2\repository\org\projectlombok\lombok\1.18.40\lombok-1.18.40.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.5.6\spring-boot-starter-test-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-test\3.5.6\spring-boot-test-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.5.6\spring-boot-test-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\AM-FX4100\.m2\repository\net\minidev\json-smart\2.5.2\json-smart-2.5.2.jar;C:\Users\AM-FX4100\.m2\repository\net\minidev\accessors-smart\2.5.2\accessors-smart-2.5.2.jar;C:\Users\AM-FX4100\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\AM-FX4100\.m2\repository\org\assertj\assertj-core\3.27.4\assertj-core-3.27.4.jar;C:\Users\AM-FX4100\.m2\repository\org\awaitility\awaitility\4.2.2\awaitility-4.2.2.jar;C:\Users\AM-FX4100\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter\5.12.2\junit-jupiter-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.12.2\junit-jupiter-api-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\platform\junit-platform-commons\1.12.2\junit-platform-commons-1.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.12.2\junit-jupiter-params-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.12.2\junit-jupiter-engine-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\platform\junit-platform-engine\1.12.2\junit-platform-engine-1.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\mockito\mockito-core\5.17.0\mockito-core-5.17.0.jar;C:\Users\AM-FX4100\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.7\byte-buddy-agent-1.17.7.jar;C:\Users\AM-FX4100\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\AM-FX4100\.m2\repository\org\mockito\mockito-junit-jupiter\5.17.0\mockito-junit-jupiter-5.17.0.jar;C:\Users\AM-FX4100\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\AM-FX4100\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-core\6.2.11\spring-core-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-jcl\6.2.11\spring-jcl-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-test\6.2.11\spring-test-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\xmlunit\xmlunit-core\2.10.4\xmlunit-core-2.10.4.jar;C:\Users\AM-FX4100\.m2\repository\com\h2database\h2\2.3.232\h2-2.3.232.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\reactor-test\3.7.11\reactor-test-3.7.11.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\reactor-core\3.7.11\reactor-core-3.7.11.jar;C:\Users\AM-FX4100\.m2\repository\org\reactivestreams\reactive-streams\1.0.4\reactive-streams-1.0.4.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okhttp3\mockwebserver\4.12.0\mockwebserver-4.12.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okhttp3\okhttp\4.12.0\okhttp-4.12.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okio\okio\3.6.0\okio-3.6.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okio\okio-jvm\3.6.0\okio-jvm-3.6.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-common\1.9.10\kotlin-stdlib-common-1.9.10.jar;C:\Users\AM-FX4100\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\AM-FX4100\.m2\repository\org\hamcrest\hamcrest-core\3.0\hamcrest-core-3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk8\2.2.0\kotlin-stdlib-jdk8-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib\2.2.0\kotlin-stdlib-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\annotations\13.0\annotations-13.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk7\2.2.0\kotlin-stdlib-jdk7-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.5.6\spring-boot-starter-actuator-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.5.6\spring-boot-actuator-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-actuator\3.5.6\spring-boot-actuator-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-observation\1.15.4\micrometer-observation-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-commons\1.15.4\micrometer-commons-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-jakarta9\1.15.4\micrometer-jakarta9-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-core\1.15.4\micrometer-core-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\AM-FX4100\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -35,7 +35,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="FILE_LOG_CHARSET" value="windows-1252"/>
     <property name="java.awt.headless" value="true"/>
-    <property name="surefire.real.class.path" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire2587095264895516482\surefirebooter-20260624033323832_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire13588891811363279275\surefirebooter-20260630185713211_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.19+10-LTS"/>
@@ -57,7 +57,7 @@
     <property name="os.arch" value="amd64"/>
     <property name="jansi.passthrough" value="true"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="PID" value="8348"/>
+    <property name="PID" value="5784"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="CONSOLE_LOG_CHARSET" value="windows-1252"/>
     <property name="native.encoding" value="Cp1252"/>
@@ -71,10 +71,10 @@
     <property name="java.class.version" value="61.0"/>
     <property name="LOGGED_APPLICATION_NAME" value="[property-service] "/>
   </properties>
-  <testcase name="contextLoads" classname="com.rentify.propertyservice.PropertyserviceApplicationTests" time="0.027">
-    <system-out><![CDATA[2026-06-24T03:33:46.403-04:00  INFO 8348 --- [property-service] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.rentify.propertyservice.PropertyserviceApplicationTests]: PropertyserviceApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-06-24T03:33:46.445-04:00  INFO 8348 --- [property-service] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.rentify.propertyservice.PropertyserviceApplication for test class com.rentify.propertyservice.PropertyserviceApplicationTests
-2026-06-24T03:33:46.458-04:00  INFO 8348 --- [property-service] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+  <testcase name="contextLoads" classname="com.rentify.propertyservice.PropertyserviceApplicationTests" time="0.031">
+    <system-out><![CDATA[2026-06-30T18:57:38.071-04:00  INFO 5784 --- [property-service] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.rentify.propertyservice.PropertyserviceApplicationTests]: PropertyserviceApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-06-30T18:57:38.113-04:00  INFO 5784 --- [property-service] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.rentify.propertyservice.PropertyserviceApplication for test class com.rentify.propertyservice.PropertyserviceApplicationTests
+2026-06-30T18:57:38.121-04:00  INFO 5784 --- [property-service] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -85,21 +85,21 @@
 
  :: Spring Boot ::                (v3.5.6)
 
-2026-06-24T03:33:46.527-04:00  INFO 8348 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : Starting PropertyserviceApplicationTests using Java 17.0.19 with PID 8348 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice)
-2026-06-24T03:33:46.527-04:00 DEBUG 8348 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : Running with Spring Boot v3.5.6, Spring v6.2.11
-2026-06-24T03:33:46.527-04:00  INFO 8348 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : The following 1 profile is active: "dev"
-2026-06-24T03:33:46.530-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@5fa70745
-2026-06-24T03:33:47.317-04:00  INFO 8348 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-06-24T03:33:47.345-04:00  INFO 8348 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 25 ms. Found 6 JPA repository interfaces.
-2026-06-24T03:33:47.515-04:00  INFO 8348 --- [property-service] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-06-24T03:33:47.522-04:00  INFO 8348 --- [property-service] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-06-24T03:33:47.542-04:00  INFO 8348 --- [property-service] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-06-24T03:33:47.544-04:00  INFO 8348 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
-2026-06-24T03:33:50.655-04:00  INFO 8348 --- [property-service] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4431e54b
-2026-06-24T03:33:50.656-04:00  INFO 8348 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
-2026-06-24T03:33:50.898-04:00  WARN 8348 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-06-24T03:33:50.898-04:00  WARN 8348 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
-2026-06-24T03:33:50.902-04:00  INFO 8348 --- [property-service] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-06-30T18:57:38.164-04:00  INFO 5784 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : Starting PropertyserviceApplicationTests using Java 17.0.19 with PID 5784 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice)
+2026-06-30T18:57:38.164-04:00 DEBUG 5784 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : Running with Spring Boot v3.5.6, Spring v6.2.11
+2026-06-30T18:57:38.164-04:00  INFO 5784 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : The following 1 profile is active: "dev"
+2026-06-30T18:57:38.167-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@7c52d599
+2026-06-30T18:57:39.605-04:00  INFO 5784 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-30T18:57:39.631-04:00  INFO 5784 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 23 ms. Found 6 JPA repository interfaces.
+2026-06-30T18:57:39.803-04:00  INFO 5784 --- [property-service] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-30T18:57:39.810-04:00  INFO 5784 --- [property-service] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-30T18:57:39.834-04:00  INFO 5784 --- [property-service] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-30T18:57:39.836-04:00  INFO 5784 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-06-30T18:57:51.193-04:00  INFO 5784 --- [property-service] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2adb2ef4
+2026-06-30T18:57:51.194-04:00  INFO 5784 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-06-30T18:57:51.452-04:00  WARN 5784 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-30T18:57:51.453-04:00  WARN 5784 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-06-30T18:57:51.457-04:00  INFO 5784 --- [property-service] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
 	Database driver: undefined/unknown
 	Database version: 8.0
@@ -107,23 +107,23 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-06-24T03:33:51.034-04:00  INFO 8348 --- [property-service] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-06-24T03:33:54.507-04:00  INFO 8348 --- [property-service] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-06-24T03:33:55.319-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 41 mappings in 'requestMappingHandlerMapping'
-2026-06-24T03:33:55.341-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
-2026-06-24T03:33:55.512-04:00  INFO 8348 --- [property-service] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoints beneath base path '/actuator'
-2026-06-24T03:33:55.537-04:00  WARN 8348 --- [property-service] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-30T18:57:51.585-04:00  INFO 5784 --- [property-service] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-30T18:57:54.845-04:00  INFO 5784 --- [property-service] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-30T18:57:55.644-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 41 mappings in 'requestMappingHandlerMapping'
+2026-06-30T18:57:55.665-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-06-30T18:57:55.850-04:00  INFO 5784 --- [property-service] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoints beneath base path '/actuator'
+2026-06-30T18:57:55.876-04:00  WARN 5784 --- [property-service] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 18ab68fe-8178-4826-94c8-84d4566f0cb9
+Using generated security password: 7c03aa68-1b10-451e-891e-d3bd844b73cc
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-24T03:33:55.538-04:00  INFO 8348 --- [property-service] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-24T03:33:56.138-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-06-24T03:33:56.149-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-06-24T03:33:56.312-04:00  INFO 8348 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : Started PropertyserviceApplicationTests in 9.855 seconds (process running for 32.264)
-2026-06-24T03:33:56.316-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando regiones...
-2026-06-24T03:33:56.647-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:55.878-04:00  INFO 5784 --- [property-service] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-30T18:57:56.463-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-06-30T18:57:56.473-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-06-30T18:57:56.624-04:00  INFO 5784 --- [property-service] [           main] c.r.p.PropertyserviceApplicationTests    : Started PropertyserviceApplicationTests in 18.504 seconds (process running for 43.208)
+2026-06-30T18:57:56.626-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando regiones...
+2026-06-30T18:57:56.959-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -133,7 +133,7 @@ Hibernate:
         count(*) 
     from
         region r1_0
-2026-06-24T03:33:57.729-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:58.031-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -143,9 +143,9 @@ Hibernate:
         count(*) 
     from
         region r1_0
-2026-06-24T03:33:58.363-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? Regiones ya existen en la base de datos. Total: 13
-2026-06-24T03:33:58.363-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando comunas...
-2026-06-24T03:33:58.736-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:58.666-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? Regiones ya existen en la base de datos. Total: 13
+2026-06-30T18:57:58.667-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando comunas...
+2026-06-30T18:57:58.989-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -155,7 +155,7 @@ Hibernate:
         count(*) 
     from
         comuna c1_0
-2026-06-24T03:33:59.685-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:59.938-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -165,9 +165,9 @@ Hibernate:
         count(*) 
     from
         comuna c1_0
-2026-06-24T03:34:00.320-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? Comunas ya existen en la base de datos. Total: 58
-2026-06-24T03:34:00.321-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando tipos de propiedad...
-2026-06-24T03:34:00.639-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:00.574-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? Comunas ya existen en la base de datos. Total: 58
+2026-06-30T18:58:00.574-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando tipos de propiedad...
+2026-06-30T18:58:00.893-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -177,7 +177,7 @@ Hibernate:
         count(*) 
     from
         tipo t1_0
-2026-06-24T03:34:01.591-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:01.848-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -187,9 +187,9 @@ Hibernate:
         count(*) 
     from
         tipo t1_0
-2026-06-24T03:34:02.227-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? Tipos de propiedad ya existen en la base de datos. Total: 8
-2026-06-24T03:34:02.228-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando categorÃ­as...
-2026-06-24T03:34:02.547-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:02.528-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? Tipos de propiedad ya existen en la base de datos. Total: 8
+2026-06-30T18:58:02.528-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando categorÃ­as...
+2026-06-30T18:58:02.873-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -199,7 +199,7 @@ Hibernate:
         count(*) 
     from
         categoria c1_0
-2026-06-24T03:34:03.502-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:03.853-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -209,12 +209,12 @@ Hibernate:
         count(*) 
     from
         categoria c1_0
-2026-06-24T03:34:04.143-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? CategorÃ­as ya existen en la base de datos. Total: 15
-2026-06-24T03:34:04.143-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:34:04.143-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? INICIALIZACIÃ?N DE PROPERTY SERVICE COMPLETADA
-2026-06-24T03:34:04.143-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:34:04.144-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? RESUMEN DE DATOS MAESTROS:
-2026-06-24T03:34:04.458-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:04.489-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? CategorÃ­as ya existen en la base de datos. Total: 15
+2026-06-30T18:58:04.490-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:58:04.490-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? INICIALIZACIÃ?N DE PROPERTY SERVICE COMPLETADA
+2026-06-30T18:58:04.490-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:58:04.490-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? RESUMEN DE DATOS MAESTROS:
+2026-06-30T18:58:04.808-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -224,8 +224,8 @@ Hibernate:
         count(*) 
     from
         region r1_0
-2026-06-24T03:34:05.094-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Regiones:    13 registros
-2026-06-24T03:34:05.410-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:05.445-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Regiones:    13 registros
+2026-06-30T18:58:05.762-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -235,8 +235,8 @@ Hibernate:
         count(*) 
     from
         comuna c1_0
-2026-06-24T03:34:06.045-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Comunas:     58 registros
-2026-06-24T03:34:06.361-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:06.402-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Comunas:     58 registros
+2026-06-30T18:58:06.719-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -246,8 +246,8 @@ Hibernate:
         count(*) 
     from
         tipo t1_0
-2026-06-24T03:34:06.996-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Tipos:       8 registros
-2026-06-24T03:34:07.313-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:07.355-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Tipos:       8 registros
+2026-06-30T18:58:07.671-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -257,13 +257,13 @@ Hibernate:
         count(*) 
     from
         categoria c1_0
-2026-06-24T03:34:07.948-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? CategorÃ­as:  15 registros
-2026-06-24T03:34:07.948-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:34:07.949-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Property Service listo para recibir propiedades
-2026-06-24T03:34:07.949-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Swagger UI: http://localhost:8082/swagger-ui/index.html
-2026-06-24T03:34:07.949-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:34:07.949-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.TestDataInitializer         : ð??? Verificando propiedades de prueba...
-2026-06-24T03:34:08.268-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:08.311-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? CategorÃ­as:  15 registros
+2026-06-30T18:58:08.311-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:58:08.312-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Property Service listo para recibir propiedades
+2026-06-30T18:58:08.312-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Swagger UI: http://localhost:8082/swagger-ui/index.html
+2026-06-30T18:58:08.312-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:58:08.312-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.TestDataInitializer         : ð??? Verificando propiedades de prueba...
+2026-06-30T18:58:08.632-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -273,7 +273,7 @@ Hibernate:
         count(*) 
     from
         propiedad p1_0
-2026-06-24T03:34:09.217-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:58:09.581-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
@@ -283,7 +283,7 @@ Hibernate:
         count(*) 
     from
         propiedad p1_0
-2026-06-24T03:34:09.852-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.TestDataInitializer         : â?? Propiedades ya existen en la base de datos. Total: 16
+2026-06-30T18:58:10.217-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.TestDataInitializer         : â?? Propiedades ya existen en la base de datos. Total: 17
 ]]></system-out>
   </testcase>
 </testsuite>

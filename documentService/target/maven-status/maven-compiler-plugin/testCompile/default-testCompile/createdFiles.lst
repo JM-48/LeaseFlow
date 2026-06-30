@@ -6,3 +6,5 @@ com\rentify\documentService\controller\DocumentoControllerTest.class
 com\rentify\documentService\repository\TipoDocumentoRepositoryTest.class
 com\rentify\documentService\client\UserServiceClientTest.class
 com\rentify\documentService\controller\DocumentoServiceIntegrationTest.class
+com\rentify\documentService\config\ApiKeyInterceptorTest.class
+com\rentify\documentService\config\ApiKeyInterceptorTest$DummyController.class

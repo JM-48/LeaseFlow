@@ -1,6 +1,8 @@
 com\rentify\contactService\client\UserServiceClientTest.class
 com\rentify\contactService\service\MensajeContactoServiceTest.class
+com\rentify\contactService\config\ApiKeyInterceptorTest.class
 com\rentify\contactService\controller\MensajeContactoControllerTest.class
+com\rentify\contactService\config\ApiKeyInterceptorTest$DummyController.class
 com\rentify\contactService\controller\MensajeContactoControllerIntegrationTest.class
 com\rentify\contactService\ContactServiceApplicationTests.class
 com\rentify\contactService\repository\MensajeContactoRepositoryTest.class

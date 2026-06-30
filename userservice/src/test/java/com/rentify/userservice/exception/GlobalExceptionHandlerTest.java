@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,11 +24,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * NOTA IMPORTANTE: @AutoConfigureMockMvc(addFilters = false) SOLO desactiva
+ * Filters de Servlet (ej. Spring Security FilterChain). ApiKeyInterceptor es
+ * un HandlerInterceptor registrado vía WebMvcConfigurer (WebMvcConfig), y
+ * @WebMvcTest SI carga los beans WebMvcConfigurer, por lo que el interceptor
+ * sigue activo. Por eso cada request necesita el header X-App-Client.
+ */
 @WebMvcTest(controllers = {UsuarioController.class, GlobalExceptionHandler.class})
 @ActiveProfiles("test") // <-- Evita cargar propiedades de BDD o seguridad de produccion
-@AutoConfigureMockMvc(addFilters = false) // <-- Desactiva la seguridad para probar solo el Controller y el Handler
+@AutoConfigureMockMvc(addFilters = false) // <-- Desactiva Filters (Spring Security), NO interceptors
+@TestPropertySource(properties = "app.security.client-key=test-key-123")
 @DisplayName("Tests de GlobalExceptionHandler")
 class GlobalExceptionHandlerTest {
+
+    private static final String APP_CLIENT_HEADER = "X-App-Client";
+    private static final String APP_CLIENT_KEY = "test-key-123";
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,8 +56,9 @@ class GlobalExceptionHandlerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/usuarios/999")
-                        .header("X-Usuario-Id", "1") // 🟢 AGREGADA CABECERA DE SEGURIDAD
-                        .header("X-Rol-Id", "1"))    // 🟢 AGREGADA CABECERA DE SEGURIDAD
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
+                        .header("X-Usuario-Id", "1")
+                        .header("X-Rol-Id", "1"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"))
@@ -77,8 +90,9 @@ class GlobalExceptionHandlerTest {
                 .factualizacion(LocalDate.now().toString())
                 .build();
 
-        // Act & Assert (Endpoint público, no requiere cabeceras)
+        // Act & Assert
         mockMvc.perform(post("/api/usuarios")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pnombre\":\"Juan\",\"snombre\":\"Carlos\",\"papellido\":\"Pérez\",\"fnacimiento\":\"1995-05-15\",\"email\":\"juan.perez@email.com\",\"rut\":\"12345678-9\",\"ntelefono\":\"987654321\",\"clave\":\"password123\",\"estadoId\":1,\"rolId\":3}"))
                 .andExpect(status().isBadRequest())
@@ -94,8 +108,9 @@ class GlobalExceptionHandlerTest {
         when(usuarioService.login(any()))
                 .thenThrow(new AuthenticationException("Email o contraseña incorrectos"));
 
-        // Act & Assert (Endpoint público, no requiere cabeceras)
+        // Act & Assert
         mockMvc.perform(post("/api/usuarios/login")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"test@email.com\",\"clave\":\"wrongpass\"}"))
                 .andExpect(status().isUnauthorized())
@@ -109,8 +124,9 @@ class GlobalExceptionHandlerTest {
     void handleMethodArgumentNotValidException_Returns400WithDetails() throws Exception {
         // Arrange - Enviar usuario sin campos requeridos
 
-        // Act & Assert (Endpoint público, no requiere cabeceras)
+        // Act & Assert
         mockMvc.perform(post("/api/usuarios")
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"invalido\"}"))
                 .andExpect(status().isBadRequest())
@@ -129,8 +145,9 @@ class GlobalExceptionHandlerTest {
 
         // Act & Assert
         mockMvc.perform(get("/api/usuarios/1")
-                        .header("X-Usuario-Id", "1") // 🟢 AGREGADA CABECERA DE SEGURIDAD
-                        .header("X-Rol-Id", "1"))    // 🟢 AGREGADA CABECERA DE SEGURIDAD
+                        .header(APP_CLIENT_HEADER, APP_CLIENT_KEY)
+                        .header("X-Usuario-Id", "1")
+                        .header("X-Rol-Id", "1"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.status").value(500))
                 .andExpect(jsonPath("$.error").value("Internal Server Error"))

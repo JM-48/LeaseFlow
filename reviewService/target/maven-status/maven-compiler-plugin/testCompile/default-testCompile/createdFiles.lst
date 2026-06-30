@@ -2,5 +2,7 @@ com\rentify\reviewService\controller\ReviewControllerIntegrationTest.class
 com\rentify\reviewService\service\ReviewServiceImplTest.class
 com\rentify\reviewService\repository\ReviewRepositoryTest.class
 com\rentify\reviewService\client\UserServiceClientTest.class
+com\rentify\reviewService\config\ApiKeyInterceptorTest$DummyController.class
 com\rentify\reviewService\controller\ReviewControllerTest.class
+com\rentify\reviewService\config\ApiKeyInterceptorTest.class
 com\rentify\reviewService\ReviewServiceApplicationTests.class

@@ -1,5 +1,7 @@
+com\rentify\applicationService\config\WebMvcConfig.class
 com\rentify\applicationService\exception\ErrorResponse$ErrorResponseBuilder.class
 com\rentify\applicationService\constants\ApplicationConstants$Mensajes.class
+com\rentify\applicationService\config\ApiKeyInterceptor.class
 com\rentify\applicationService\model\RegistroArriendo$RegistroArriendoBuilder.class
 com\rentify\applicationService\dto\SolicitudArriendoDTO.class
 com\rentify\applicationService\service\SolicitudArriendoService.class

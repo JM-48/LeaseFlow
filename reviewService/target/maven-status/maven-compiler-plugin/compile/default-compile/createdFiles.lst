@@ -1,5 +1,6 @@
 com\rentify\reviewService\exception\MicroserviceException.class
 com\rentify\reviewService\dto\ReviewDTO.class
+com\rentify\reviewService\dto\external\UsuarioDTO$EstadoInfo.class
 com\rentify\reviewService\exception\BusinessValidationException.class
 com\rentify\reviewService\exception\ErrorResponse$ErrorResponseBuilder.class
 com\rentify\reviewService\config\AppConfig.class
@@ -13,6 +14,7 @@ com\rentify\reviewService\exception\ResourceNotFoundException.class
 com\rentify\reviewService\client\UserServiceClient.class
 com\rentify\reviewService\client\PropertyServiceClient.class
 com\rentify\reviewService\model\Review.class
+com\rentify\reviewService\config\ApiKeyInterceptor.class
 com\rentify\reviewService\constants\ReviewConstants$Estados.class
 com\rentify\reviewService\config\CorsConfig.class
 com\rentify\reviewService\dto\external\UsuarioDTO$UsuarioDTOBuilder.class
@@ -27,10 +29,12 @@ com\rentify\reviewService\controller\ReviewController.class
 com\rentify\reviewService\dto\external\PropiedadDTO.class
 com\rentify\reviewService\repository\TipoResenaRepository.class
 com\rentify\reviewService\constants\ReviewConstants.class
+com\rentify\reviewService\dto\external\UsuarioDTO$RolInfo.class
 com\rentify\reviewService\model\TipoResena$TipoResenaBuilder.class
 com\rentify\reviewService\ReviewServiceApplication.class
 com\rentify\reviewService\service\ReviewService.class
 com\rentify\reviewService\service\ReviewServiceImpl.class
 com\rentify\reviewService\controller\TipoResenaController.class
+com\rentify\reviewService\config\WebMvcConfig.class
 com\rentify\reviewService\dto\external\PropiedadDTO$PropiedadDTOBuilder.class
 com\rentify\reviewService\dto\TipoResenaDTO.class

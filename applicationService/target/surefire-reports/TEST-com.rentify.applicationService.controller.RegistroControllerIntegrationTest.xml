@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.rentify.applicationService.controller.RegistroControllerIntegrationTest" time="8.71" tests="5" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.rentify.applicationService.controller.RegistroControllerIntegrationTest" time="6.94" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -17,7 +17,7 @@
     <property name="user.country" value="CL"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Users\AM-FX4100\.jdks\ms-17.0.19\bin"/>
-    <property name="sun.java.command" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire1344896167570086657\surefirebooter-20260624032154983_3.jar C:\Users\AM-FX4100\AppData\Local\Temp\surefire1344896167570086657 2026-06-24T03-21-54_583-jvmRun1 surefire-20260624032154983_1tmp surefire_0-20260624032154983_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire10090677965936376972\surefirebooter-20260630185213593_3.jar C:\Users\AM-FX4100\AppData\Local\Temp\surefire10090677965936376972 2026-06-30T18-52-13_003-jvmRun1 surefire-20260630185213593_1tmp surefire_0-20260630185213593_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\target\test-classes;C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\target\classes;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-security\3.5.6\spring-boot-starter-security-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter\3.5.6\spring-boot-starter-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.5.6\spring-boot-starter-logging-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\ch\qos\logback\logback-classic\1.5.18\logback-classic-1.5.18.jar;C:\Users\AM-FX4100\.m2\repository\ch\qos\logback\logback-core\1.5.18\logback-core-1.5.18.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.24.3\log4j-to-slf4j-2.24.3.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\logging\log4j\log4j-api\2.24.3\log4j-api-2.24.3.jar;C:\Users\AM-FX4100\.m2\repository\org\slf4j\jul-to-slf4j\2.0.17\jul-to-slf4j-2.0.17.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\AM-FX4100\.m2\repository\org\yaml\snakeyaml\2.4\snakeyaml-2.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-aop\6.2.11\spring-aop-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-beans\6.2.11\spring-beans-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-config\6.5.5\spring-security-config-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-core\6.5.5\spring-security-core-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-crypto\6.5.5\spring-security-crypto-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-context\6.2.11\spring-context-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-web\6.5.5\spring-security-web-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-expression\6.2.11\spring-expression-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.5.6\spring-boot-starter-data-jpa-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.5.6\spring-boot-starter-jdbc-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\zaxxer\HikariCP\6.3.3\HikariCP-6.3.3.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-jdbc\6.2.11\spring-jdbc-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\orm\hibernate-core\6.6.29.Final\hibernate-core-6.6.29.Final.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\AM-FX4100\.m2\repository\org\jboss\logging\jboss-logging\3.6.1.Final\jboss-logging-3.6.1.Final.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\common\hibernate-commons-annotations\7.0.3.Final\hibernate-commons-annotations-7.0.3.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\smallrye\jandex\3.2.0\jandex-3.2.0.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.5\jaxb-runtime-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.5\jaxb-core-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\org\eclipse\angus\angus-activation\2.0.2\angus-activation-2.0.2.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\txw2\4.0.5\txw2-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\AM-FX4100\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\data\spring-data-jpa\3.5.4\spring-data-jpa-3.5.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\data\spring-data-commons\3.5.4\spring-data-commons-3.5.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-orm\6.2.11\spring-orm-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-tx\6.2.11\spring-tx-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-aspects\6.2.11\spring-aspects-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\aspectj\aspectjweaver\1.9.24\aspectjweaver-1.9.24.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.5.6\spring-boot-starter-validation-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.46\tomcat-embed-el-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.3.Final\hibernate-validator-8.0.3.Final.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.5.6\spring-boot-starter-web-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.5.6\spring-boot-starter-json-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.19.2\jackson-databind-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.19.2\jackson-annotations-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.19.2\jackson-core-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.19.2\jackson-datatype-jdk8-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.19.2\jackson-datatype-jsr310-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.19.2\jackson-module-parameter-names-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.5.6\spring-boot-starter-tomcat-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.46\tomcat-embed-core-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.46\tomcat-embed-websocket-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-web\6.2.11\spring-web-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-webmvc\6.2.11\spring-webmvc-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-webflux\3.5.6\spring-boot-starter-webflux-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-reactor-netty\3.5.6\spring-boot-starter-reactor-netty-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\netty\reactor-netty-http\1.2.10\reactor-netty-http-1.2.10.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-http\4.1.127.Final\netty-codec-http-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-common\4.1.127.Final\netty-common-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-buffer\4.1.127.Final\netty-buffer-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport\4.1.127.Final\netty-transport-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec\4.1.127.Final\netty-codec-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-handler\4.1.127.Final\netty-handler-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-http2\4.1.127.Final\netty-codec-http2-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns\4.1.127.Final\netty-resolver-dns-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver\4.1.127.Final\netty-resolver-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-dns\4.1.127.Final\netty-codec-dns-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns-native-macos\4.1.127.Final\netty-resolver-dns-native-macos-4.1.127.Final-osx-x86_64.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns-classes-macos\4.1.127.Final\netty-resolver-dns-classes-macos-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-native-epoll\4.1.127.Final\netty-transport-native-epoll-4.1.127.Final-linux-x86_64.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.127.Final\netty-transport-native-unix-common-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-classes-epoll\4.1.127.Final\netty-transport-classes-epoll-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\netty\reactor-netty-core\1.2.10\reactor-netty-core-1.2.10.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-handler-proxy\4.1.127.Final\netty-handler-proxy-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-socks\4.1.127.Final\netty-codec-socks-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-webflux\6.2.11\spring-webflux-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.7.0\springdoc-openapi-starter-webmvc-ui-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-api\2.7.0\springdoc-openapi-starter-webmvc-api-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-common\2.7.0\springdoc-openapi-starter-common-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-core-jakarta\2.2.25\swagger-core-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\commons\commons-lang3\3.17.0\commons-lang3-3.17.0.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-annotations-jakarta\2.2.25\swagger-annotations-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-models-jakarta\2.2.25\swagger-models-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.19.2\jackson-dataformat-yaml-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\org\webjars\swagger-ui\5.18.2\swagger-ui-5.18.2.jar;C:\Users\AM-FX4100\.m2\repository\org\webjars\webjars-locator-lite\1.1.0\webjars-locator-lite-1.1.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jspecify\jspecify\1.0.0\jspecify-1.0.0.jar;C:\Users\AM-FX4100\.m2\repository\org\modelmapper\modelmapper\3.2.0\modelmapper-3.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-devtools\3.5.6\spring-boot-devtools-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot\3.5.6\spring-boot-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.5.6\spring-boot-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\mysql\mysql-connector-j\9.4.0\mysql-connector-j-9.4.0.jar;C:\Users\AM-FX4100\.m2\repository\org\projectlombok\lombok\1.18.40\lombok-1.18.40.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.5.6\spring-boot-starter-test-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-test\3.5.6\spring-boot-test-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.5.6\spring-boot-test-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\AM-FX4100\.m2\repository\net\minidev\json-smart\2.5.2\json-smart-2.5.2.jar;C:\Users\AM-FX4100\.m2\repository\net\minidev\accessors-smart\2.5.2\accessors-smart-2.5.2.jar;C:\Users\AM-FX4100\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\AM-FX4100\.m2\repository\org\awaitility\awaitility\4.2.2\awaitility-4.2.2.jar;C:\Users\AM-FX4100\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter\5.12.2\junit-jupiter-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.12.2\junit-jupiter-api-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\platform\junit-platform-commons\1.12.2\junit-platform-commons-1.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.12.2\junit-jupiter-params-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.12.2\junit-jupiter-engine-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\platform\junit-platform-engine\1.12.2\junit-platform-engine-1.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\mockito\mockito-junit-jupiter\5.17.0\mockito-junit-jupiter-5.17.0.jar;C:\Users\AM-FX4100\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\AM-FX4100\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-core\6.2.11\spring-core-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-jcl\6.2.11\spring-jcl-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-test\6.2.11\spring-test-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\xmlunit\xmlunit-core\2.10.4\xmlunit-core-2.10.4.jar;C:\Users\AM-FX4100\.m2\repository\com\h2database\h2\2.3.232\h2-2.3.232.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-testcontainers\3.5.6\spring-boot-testcontainers-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\testcontainers\testcontainers\1.21.3\testcontainers-1.21.3.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;C:\Users\AM-FX4100\.m2\repository\org\rnorth\duct-tape\duct-tape\1.0.8\duct-tape-1.0.8.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\annotations\17.0.0\annotations-17.0.0.jar;C:\Users\AM-FX4100\.m2\repository\com\github\docker-java\docker-java-api\3.4.2\docker-java-api-3.4.2.jar;C:\Users\AM-FX4100\.m2\repository\com\github\docker-java\docker-java-transport-zerodep\3.4.2\docker-java-transport-zerodep-3.4.2.jar;C:\Users\AM-FX4100\.m2\repository\com\github\docker-java\docker-java-transport\3.4.2\docker-java-transport-3.4.2.jar;C:\Users\AM-FX4100\.m2\repository\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;C:\Users\AM-FX4100\.m2\repository\org\mockito\mockito-core\5.17.0\mockito-core-5.17.0.jar;C:\Users\AM-FX4100\.m2\repository\net\bytebuddy\byte-buddy\1.17.7\byte-buddy-1.17.7.jar;C:\Users\AM-FX4100\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.7\byte-buddy-agent-1.17.7.jar;C:\Users\AM-FX4100\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\AM-FX4100\.m2\repository\org\assertj\assertj-core\3.27.4\assertj-core-3.27.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.5.6\spring-boot-starter-actuator-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.5.6\spring-boot-actuator-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-actuator\3.5.6\spring-boot-actuator-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-observation\1.15.4\micrometer-observation-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-commons\1.15.4\micrometer-commons-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-jakarta9\1.15.4\micrometer-jakarta9-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-core\1.15.4\micrometer-core-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\AM-FX4100\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\reactor-test\3.7.11\reactor-test-3.7.11.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\reactor-core\3.7.11\reactor-core-3.7.11.jar;C:\Users\AM-FX4100\.m2\repository\org\reactivestreams\reactive-streams\1.0.4\reactive-streams-1.0.4.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okhttp3\mockwebserver\4.12.0\mockwebserver-4.12.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okhttp3\okhttp\4.12.0\okhttp-4.12.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okio\okio\3.6.0\okio-3.6.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okio\okio-jvm\3.6.0\okio-jvm-3.6.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-common\1.9.10\kotlin-stdlib-common-1.9.10.jar;C:\Users\AM-FX4100\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\AM-FX4100\.m2\repository\org\hamcrest\hamcrest-core\3.0\hamcrest-core-3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk8\2.2.0\kotlin-stdlib-jdk8-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib\2.2.0\kotlin-stdlib-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk7\2.2.0\kotlin-stdlib-jdk7-2.2.0.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -35,7 +35,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="FILE_LOG_CHARSET" value="windows-1252"/>
     <property name="java.awt.headless" value="true"/>
-    <property name="surefire.real.class.path" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire1344896167570086657\surefirebooter-20260624032154983_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire10090677965936376972\surefirebooter-20260630185213593_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.19+10-LTS"/>
@@ -57,7 +57,7 @@
     <property name="os.arch" value="amd64"/>
     <property name="jansi.passthrough" value="true"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="PID" value="9856"/>
+    <property name="PID" value="1292"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="CONSOLE_LOG_CHARSET" value="windows-1252"/>
     <property name="native.encoding" value="Cp1252"/>
@@ -72,10 +72,10 @@
     <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} - %msg%n"/>
     <property name="LOGGED_APPLICATION_NAME" value="[applicationService] "/>
   </properties>
-  <testcase name="crearRegistro_MontoNegativo_Retorna400" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.769">
-    <system-out><![CDATA[2026-06-24 03:22:47 - Could not detect default configuration classes for test class [com.rentify.applicationService.controller.RegistroControllerIntegrationTest]: RegistroControllerIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-06-24 03:22:47 - Found @SpringBootConfiguration com.rentify.applicationService.ApplicationServiceApplication for test class com.rentify.applicationService.controller.RegistroControllerIntegrationTest
-2026-06-24 03:22:47 - Restart disabled due to context in which it is running
+  <testcase name="crearRegistro_MontoNegativo_Retorna400" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.669">
+    <system-out><![CDATA[2026-06-30 18:53:02 - Could not detect default configuration classes for test class [com.rentify.applicationService.controller.RegistroControllerIntegrationTest]: RegistroControllerIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-06-30 18:53:02 - Found @SpringBootConfiguration com.rentify.applicationService.ApplicationServiceApplication for test class com.rentify.applicationService.controller.RegistroControllerIntegrationTest
+2026-06-30 18:53:02 - Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -86,19 +86,19 @@
 
  :: Spring Boot ::                (v3.5.6)
 
-2026-06-24 03:22:47 - Starting RegistroControllerIntegrationTest using Java 17.0.19 with PID 9856 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService)
-2026-06-24 03:22:47 - Running with Spring Boot v3.5.6, Spring v6.2.11
-2026-06-24 03:22:47 - The following 1 profile is active: "test"
-2026-06-24 03:22:48 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-06-24 03:22:48 - Finished Spring Data repository scanning in 27 ms. Found 2 JPA repository interfaces.
-2026-06-24 03:22:50 - HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-06-24 03:22:50 - HHH000026: Second-level cache disabled
-2026-06-24 03:22:50 - No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-06-24 03:22:50 - HikariPool-2 - Starting...
-2026-06-24 03:22:50 - HikariPool-2 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
-2026-06-24 03:22:50 - HikariPool-2 - Start completed.
-2026-06-24 03:22:50 - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-06-24 03:22:51 - HHH10001005: Database info:
+2026-06-30 18:53:02 - Starting RegistroControllerIntegrationTest using Java 17.0.19 with PID 1292 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService)
+2026-06-30 18:53:02 - Running with Spring Boot v3.5.6, Spring v6.2.11
+2026-06-30 18:53:02 - The following 1 profile is active: "test"
+2026-06-30 18:53:03 - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-30 18:53:03 - Finished Spring Data repository scanning in 21 ms. Found 2 JPA repository interfaces.
+2026-06-30 18:53:04 - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-30 18:53:04 - HHH000026: Second-level cache disabled
+2026-06-30 18:53:04 - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-30 18:53:04 - HikariPool-2 - Starting...
+2026-06-30 18:53:05 - HikariPool-2 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-06-30 18:53:05 - HikariPool-2 - Start completed.
+2026-06-30 18:53:05 - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-30 18:53:05 - HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
 	Database driver: undefined/unknown
 	Database version: 2.3.232
@@ -106,73 +106,77 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-06-24 03:22:51 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-06-24 03:22:51 - drop table if exists registros_arriendo cascade 
-2026-06-24 03:22:51 - drop table if exists solicitudes cascade 
-2026-06-24 03:22:51 - create table registros_arriendo (activo boolean not null, fecha_fin date, fecha_inicio date not null, monto_mensual float(53) not null, id bigint generated by default as identity, solicitud_id bigint not null, primary key (id))
-2026-06-24 03:22:51 - create table solicitudes (fecha_solicitud timestamp(6) not null, id bigint generated by default as identity, propiedad_id bigint not null, usuario_id bigint not null, estado varchar(20) not null, primary key (id))
-2026-06-24 03:22:51 - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-30 18:53:06 - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-30 18:53:06 - drop table if exists registros_arriendo cascade 
+2026-06-30 18:53:06 - drop table if exists solicitudes cascade 
+2026-06-30 18:53:06 - create table registros_arriendo (activo boolean not null, fecha_fin date, fecha_inicio date not null, monto_mensual float(53) not null, id bigint generated by default as identity, solicitud_id bigint not null, primary key (id))
+2026-06-30 18:53:06 - create table solicitudes (fecha_solicitud timestamp(6) not null, id bigint generated by default as identity, propiedad_id bigint not null, usuario_id bigint not null, estado varchar(20) not null, primary key (id))
+2026-06-30 18:53:06 - Initialized JPA EntityManagerFactory for persistence unit 'default'
 ========================================
 ð¥ SWAGGER CONFIGURADO
 ð URL: http://localhost:8084/swagger-ui/index.html
 ========================================
-2026-06-24 03:22:52 - Exposing 0 endpoints beneath base path '/actuator'
-2026-06-24 03:22:53 - 
+2026-06-30 18:53:06 - Exposing 0 endpoints beneath base path '/actuator'
+2026-06-30 18:53:06 - 
 
-Using generated security password: 897737f3-e36b-4475-9130-6fc8935d104d
+Using generated security password: 54d2e022-3988-4b16-aab8-128899fad9d1
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-24 03:22:53 - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-24 03:22:53 - Initializing Spring TestDispatcherServlet ''
-2026-06-24 03:22:53 - Initializing Servlet ''
-2026-06-24 03:22:53 - Completed initialization in 2 ms
-2026-06-24 03:22:53 - Started RegistroControllerIntegrationTest in 6.465 seconds (process running for 58.609)
+2026-06-30 18:53:06 - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-30 18:53:07 - Initializing Spring TestDispatcherServlet ''
+2026-06-30 18:53:07 - Initializing Servlet ''
+2026-06-30 18:53:07 - Completed initialization in 3 ms
+2026-06-30 18:53:07 - Started RegistroControllerIntegrationTest in 4.917 seconds (process running for 52.771)
 ]]></system-out>
   </testcase>
-  <testcase name="crearRegistro_SolicitudPendiente_Retorna400" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.697">
-    <system-out><![CDATA[2026-06-24 03:22:54 - Creando nueva solicitud para usuario 1 y propiedad 5
-2026-06-24 03:22:55 - select count(sa1_0.id) from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.estado=?
-2026-06-24 03:22:55 - select sa1_0.id from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.propiedad_id=? and sa1_0.estado=? fetch first ? rows only
-2026-06-24 03:22:55 - insert into solicitudes (estado,fecha_solicitud,propiedad_id,usuario_id,id) values (?,?,?,?,default)
-2026-06-24 03:22:55 - Solicitud creada exitosamente con ID: 1
-2026-06-24 03:22:55 - Creando nuevo registro para solicitud 1
-2026-06-24 03:22:55 - Intento de crear registro para solicitud 1 con estado PENDIENTE
-2026-06-24 03:22:55 - Error de validaciÃ³n de negocio: Solo se pueden crear registros para solicitudes aceptadas. Estado actual: PENDIENTE
+  <testcase name="crearRegistro_SinApiKey_Retorna403" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.028">
+    <system-out><![CDATA[2026-06-30 18:53:08 - Petición rechazada por falta/mismatch de X-App-Client. Path: /api/registros, Metodo: POST, IP: 127.0.0.1
 ]]></system-out>
   </testcase>
-  <testcase name="crearRegistro_SolicitudInexistente_Retorna404" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.151">
-    <system-out><![CDATA[2026-06-24 03:22:55 - Creando nuevo registro para solicitud 99999
-2026-06-24 03:22:55 - select sa1_0.id,sa1_0.estado,sa1_0.fecha_solicitud,sa1_0.propiedad_id,sa1_0.usuario_id from solicitudes sa1_0 where sa1_0.id=?
-2026-06-24 03:22:55 - Recurso no encontrado: Solicitud no encontrada con ID: 99999
+  <testcase name="crearRegistro_SolicitudPendiente_Retorna400" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.896">
+    <system-out><![CDATA[2026-06-30 18:53:08 - Creando nueva solicitud para usuario 1 y propiedad 5
+2026-06-30 18:53:08 - select count(sa1_0.id) from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.estado=?
+2026-06-30 18:53:08 - select sa1_0.id from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.propiedad_id=? and sa1_0.estado=? fetch first ? rows only
+2026-06-30 18:53:09 - insert into solicitudes (estado,fecha_solicitud,propiedad_id,usuario_id,id) values (?,?,?,?,default)
+2026-06-30 18:53:09 - Solicitud creada exitosamente con ID: 1
+2026-06-30 18:53:09 - Creando nuevo registro para solicitud 1
+2026-06-30 18:53:09 - Intento de crear registro para solicitud 1 con estado PENDIENTE
+2026-06-30 18:53:09 - Error de validaciÃ³n de negocio: Solo se pueden crear registros para solicitudes aceptadas. Estado actual: PENDIENTE
 ]]></system-out>
   </testcase>
-  <testcase name="crearRegistro_SolicitudRechazada_Retorna400" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.308">
-    <system-out><![CDATA[2026-06-24 03:22:55 - Creando nueva solicitud para usuario 1 y propiedad 5
-2026-06-24 03:22:55 - select count(sa1_0.id) from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.estado=?
-2026-06-24 03:22:55 - select sa1_0.id from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.propiedad_id=? and sa1_0.estado=? fetch first ? rows only
-2026-06-24 03:22:55 - insert into solicitudes (estado,fecha_solicitud,propiedad_id,usuario_id,id) values (?,?,?,?,default)
-2026-06-24 03:22:55 - Solicitud creada exitosamente con ID: 2
-2026-06-24 03:22:55 - Actualizando estado de solicitud 2 a RECHAZADA
-2026-06-24 03:22:55 - Estado de solicitud 2 actualizado exitosamente a: RECHAZADA
-2026-06-24 03:22:55 - Creando nuevo registro para solicitud 2
-2026-06-24 03:22:55 - Intento de crear registro para solicitud 2 con estado RECHAZADA
-2026-06-24 03:22:55 - Error de validaciÃ³n de negocio: Solo se pueden crear registros para solicitudes aceptadas. Estado actual: RECHAZADA
+  <testcase name="crearRegistro_SolicitudInexistente_Retorna404" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.065">
+    <system-out><![CDATA[2026-06-30 18:53:09 - Creando nuevo registro para solicitud 99999
+2026-06-30 18:53:09 - select sa1_0.id,sa1_0.estado,sa1_0.fecha_solicitud,sa1_0.propiedad_id,sa1_0.usuario_id from solicitudes sa1_0 where sa1_0.id=?
+2026-06-30 18:53:09 - Recurso no encontrado: Solicitud no encontrada con ID: 99999
 ]]></system-out>
   </testcase>
-  <testcase name="crearRegistro_Success" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.146">
-    <system-out><![CDATA[2026-06-24 03:22:55 - Creando nueva solicitud para usuario 1 y propiedad 5
-2026-06-24 03:22:55 - select count(sa1_0.id) from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.estado=?
-2026-06-24 03:22:55 - select sa1_0.id from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.propiedad_id=? and sa1_0.estado=? fetch first ? rows only
-2026-06-24 03:22:55 - insert into solicitudes (estado,fecha_solicitud,propiedad_id,usuario_id,id) values (?,?,?,?,default)
-2026-06-24 03:22:55 - Solicitud creada exitosamente con ID: 3
-2026-06-24 03:22:56 - Actualizando estado de solicitud 3 a ACEPTADA
-2026-06-24 03:22:56 - Estado de solicitud 3 actualizado exitosamente a: ACEPTADA
-2026-06-24 03:22:56 - Creando nuevo registro para solicitud 3
-2026-06-24 03:22:56 - select ra1_0.id,ra1_0.activo,ra1_0.fecha_fin,ra1_0.fecha_inicio,ra1_0.monto_mensual,ra1_0.solicitud_id from registros_arriendo ra1_0 where ra1_0.solicitud_id=?
-2026-06-24 03:22:56 - insert into registros_arriendo (activo,fecha_fin,fecha_inicio,monto_mensual,solicitud_id,id) values (?,?,?,?,?,default)
-2026-06-24 03:22:56 - Registro creado exitosamente con ID: 1
-2026-06-24 03:22:56 - Obteniendo solicitud con ID: 3
+  <testcase name="crearRegistro_SolicitudRechazada_Retorna400" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.069">
+    <system-out><![CDATA[2026-06-30 18:53:09 - Creando nueva solicitud para usuario 1 y propiedad 5
+2026-06-30 18:53:09 - select count(sa1_0.id) from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.estado=?
+2026-06-30 18:53:09 - select sa1_0.id from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.propiedad_id=? and sa1_0.estado=? fetch first ? rows only
+2026-06-30 18:53:09 - insert into solicitudes (estado,fecha_solicitud,propiedad_id,usuario_id,id) values (?,?,?,?,default)
+2026-06-30 18:53:09 - Solicitud creada exitosamente con ID: 2
+2026-06-30 18:53:09 - Actualizando estado de solicitud 2 a RECHAZADA
+2026-06-30 18:53:09 - Estado de solicitud 2 actualizado exitosamente a: RECHAZADA
+2026-06-30 18:53:09 - Creando nuevo registro para solicitud 2
+2026-06-30 18:53:09 - Intento de crear registro para solicitud 2 con estado RECHAZADA
+2026-06-30 18:53:09 - Error de validaciÃ³n de negocio: Solo se pueden crear registros para solicitudes aceptadas. Estado actual: RECHAZADA
+]]></system-out>
+  </testcase>
+  <testcase name="crearRegistro_Success" classname="Tests de IntegraciÃ³n - RegistroController (Robustos)" time="0.154">
+    <system-out><![CDATA[2026-06-30 18:53:09 - Creando nueva solicitud para usuario 1 y propiedad 5
+2026-06-30 18:53:09 - select count(sa1_0.id) from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.estado=?
+2026-06-30 18:53:09 - select sa1_0.id from solicitudes sa1_0 where sa1_0.usuario_id=? and sa1_0.propiedad_id=? and sa1_0.estado=? fetch first ? rows only
+2026-06-30 18:53:09 - insert into solicitudes (estado,fecha_solicitud,propiedad_id,usuario_id,id) values (?,?,?,?,default)
+2026-06-30 18:53:09 - Solicitud creada exitosamente con ID: 3
+2026-06-30 18:53:09 - Actualizando estado de solicitud 3 a ACEPTADA
+2026-06-30 18:53:09 - Estado de solicitud 3 actualizado exitosamente a: ACEPTADA
+2026-06-30 18:53:09 - Creando nuevo registro para solicitud 3
+2026-06-30 18:53:09 - select ra1_0.id,ra1_0.activo,ra1_0.fecha_fin,ra1_0.fecha_inicio,ra1_0.monto_mensual,ra1_0.solicitud_id from registros_arriendo ra1_0 where ra1_0.solicitud_id=?
+2026-06-30 18:53:09 - insert into registros_arriendo (activo,fecha_fin,fecha_inicio,monto_mensual,solicitud_id,id) values (?,?,?,?,?,default)
+2026-06-30 18:53:09 - Registro creado exitosamente con ID: 1
+2026-06-30 18:53:09 - Obteniendo solicitud con ID: 3
 ]]></system-out>
   </testcase>
 </testsuite>

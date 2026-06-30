@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.rentify.propertyservice.controller.PropertyControllerTest
 -------------------------------------------------------------------------------
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.617 s -- in com.rentify.propertyservice.controller.PropertyControllerTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.745 s -- in com.rentify.propertyservice.controller.PropertyControllerTest

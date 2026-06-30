@@ -9,6 +9,7 @@ com\rentify\userservice\dto\EstadoDTO.class
 com\rentify\userservice\dto\LoginDTO$LoginDTOBuilder.class
 com\rentify\userservice\dto\LoginResponseDTO.class
 com\rentify\userservice\constants\UserConstants.class
+com\rentify\userservice\config\ApiKeyInterceptor.class
 com\rentify\userservice\controller\RolController.class
 com\rentify\userservice\constants\UserConstants$Roles.class
 com\rentify\userservice\dto\RolDTO$RolDTOBuilder.class
@@ -19,6 +20,7 @@ com\rentify\userservice\config\CorsConfig.class
 com\rentify\userservice\constants\UserConstants$Estados.class
 com\rentify\userservice\exception\AuthenticationException.class
 com\rentify\userservice\config\DataInitializerConfig.class
+com\rentify\userservice\config\WebMvcConfig.class
 com\rentify\userservice\dto\LoginDTO.class
 com\rentify\userservice\repository\UsuarioRepository.class
 com\rentify\userservice\config\AppConfig.class

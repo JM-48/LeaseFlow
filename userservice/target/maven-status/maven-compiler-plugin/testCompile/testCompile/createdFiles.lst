@@ -5,9 +5,11 @@ com\rentify\userservice\repository\EstadoRepositoryTest.class
 com\rentify\userservice\repository\UsuarioRepositoryTest.class
 com\rentify\userservice\UserserviceApplicationIntegrationTests.class
 com\rentify\userservice\controller\UsuarioControllerTest.class
+com\rentify\userservice\config\ApiKeyInterceptorTest.class
 com\rentify\userservice\service\RolServiceTest.class
 com\rentify\userservice\service\EstadoServiceTest.class
 com\rentify\userservice\controller\RolControllerTest.class
+com\rentify\userservice\config\ApiKeyInterceptorTest$DummyController.class
 com\rentify\userservice\UserserviceApplicationTests.class
 com\rentify\userservice\repository\RolRepositoryTest.class
 com\rentify\userservice\controller\EstadoControllerTest.class

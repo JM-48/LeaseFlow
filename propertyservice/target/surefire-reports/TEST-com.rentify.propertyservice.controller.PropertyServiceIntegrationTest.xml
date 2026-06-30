@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.rentify.propertyservice.controller.PropertyServiceIntegrationTest" time="11.551" tests="4" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.rentify.propertyservice.controller.PropertyServiceIntegrationTest" time="11.993" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -17,7 +17,7 @@
     <property name="user.country" value="CL"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Users\AM-FX4100\.jdks\ms-17.0.19\bin"/>
-    <property name="sun.java.command" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire2587095264895516482\surefirebooter-20260624033323832_3.jar C:\Users\AM-FX4100\AppData\Local\Temp\surefire2587095264895516482 2026-06-24T03-33-23_589-jvmRun1 surefire-20260624033323832_1tmp surefire_0-20260624033323832_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire13588891811363279275\surefirebooter-20260630185713211_3.jar C:\Users\AM-FX4100\AppData\Local\Temp\surefire13588891811363279275 2026-06-30T18-57-12_890-jvmRun1 surefire-20260630185713211_1tmp surefire_0-20260630185713211_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice\target\test-classes;C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice\target\classes;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-security\3.5.6\spring-boot-starter-security-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter\3.5.6\spring-boot-starter-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.5.6\spring-boot-starter-logging-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\ch\qos\logback\logback-classic\1.5.18\logback-classic-1.5.18.jar;C:\Users\AM-FX4100\.m2\repository\ch\qos\logback\logback-core\1.5.18\logback-core-1.5.18.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.24.3\log4j-to-slf4j-2.24.3.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\logging\log4j\log4j-api\2.24.3\log4j-api-2.24.3.jar;C:\Users\AM-FX4100\.m2\repository\org\slf4j\jul-to-slf4j\2.0.17\jul-to-slf4j-2.0.17.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\AM-FX4100\.m2\repository\org\yaml\snakeyaml\2.4\snakeyaml-2.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-aop\6.2.11\spring-aop-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-beans\6.2.11\spring-beans-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-config\6.5.5\spring-security-config-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-core\6.5.5\spring-security-core-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-crypto\6.5.5\spring-security-crypto-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-context\6.2.11\spring-context-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\security\spring-security-web\6.5.5\spring-security-web-6.5.5.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-expression\6.2.11\spring-expression-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.5.6\spring-boot-starter-data-jpa-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.5.6\spring-boot-starter-jdbc-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\zaxxer\HikariCP\6.3.3\HikariCP-6.3.3.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-jdbc\6.2.11\spring-jdbc-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\orm\hibernate-core\6.6.29.Final\hibernate-core-6.6.29.Final.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\AM-FX4100\.m2\repository\org\jboss\logging\jboss-logging\3.6.1.Final\jboss-logging-3.6.1.Final.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\common\hibernate-commons-annotations\7.0.3.Final\hibernate-commons-annotations-7.0.3.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\smallrye\jandex\3.2.0\jandex-3.2.0.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\AM-FX4100\.m2\repository\net\bytebuddy\byte-buddy\1.17.7\byte-buddy-1.17.7.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.5\jaxb-runtime-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.5\jaxb-core-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\org\eclipse\angus\angus-activation\2.0.2\angus-activation-2.0.2.jar;C:\Users\AM-FX4100\.m2\repository\org\glassfish\jaxb\txw2\4.0.5\txw2-4.0.5.jar;C:\Users\AM-FX4100\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\AM-FX4100\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\data\spring-data-jpa\3.5.4\spring-data-jpa-3.5.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\data\spring-data-commons\3.5.4\spring-data-commons-3.5.4.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-orm\6.2.11\spring-orm-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-tx\6.2.11\spring-tx-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-aspects\6.2.11\spring-aspects-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\aspectj\aspectjweaver\1.9.24\aspectjweaver-1.9.24.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.5.6\spring-boot-starter-validation-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.46\tomcat-embed-el-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.3.Final\hibernate-validator-8.0.3.Final.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.5.6\spring-boot-starter-web-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.5.6\spring-boot-starter-json-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.19.2\jackson-databind-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.19.2\jackson-annotations-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.19.2\jackson-core-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.19.2\jackson-datatype-jdk8-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.19.2\jackson-datatype-jsr310-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.19.2\jackson-module-parameter-names-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.5.6\spring-boot-starter-tomcat-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.46\tomcat-embed-core-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.46\tomcat-embed-websocket-10.1.46.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-web\6.2.11\spring-web-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-webmvc\6.2.11\spring-webmvc-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-webflux\3.5.6\spring-boot-starter-webflux-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-reactor-netty\3.5.6\spring-boot-starter-reactor-netty-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\netty\reactor-netty-http\1.2.10\reactor-netty-http-1.2.10.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-http\4.1.127.Final\netty-codec-http-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-common\4.1.127.Final\netty-common-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-buffer\4.1.127.Final\netty-buffer-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport\4.1.127.Final\netty-transport-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec\4.1.127.Final\netty-codec-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-handler\4.1.127.Final\netty-handler-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-http2\4.1.127.Final\netty-codec-http2-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns\4.1.127.Final\netty-resolver-dns-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver\4.1.127.Final\netty-resolver-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-dns\4.1.127.Final\netty-codec-dns-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns-native-macos\4.1.127.Final\netty-resolver-dns-native-macos-4.1.127.Final-osx-x86_64.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-resolver-dns-classes-macos\4.1.127.Final\netty-resolver-dns-classes-macos-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-native-epoll\4.1.127.Final\netty-transport-native-epoll-4.1.127.Final-linux-x86_64.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-native-unix-common\4.1.127.Final\netty-transport-native-unix-common-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-transport-classes-epoll\4.1.127.Final\netty-transport-classes-epoll-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\netty\reactor-netty-core\1.2.10\reactor-netty-core-1.2.10.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-handler-proxy\4.1.127.Final\netty-handler-proxy-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\io\netty\netty-codec-socks\4.1.127.Final\netty-codec-socks-4.1.127.Final.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-webflux\6.2.11\spring-webflux-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-ui\2.7.0\springdoc-openapi-starter-webmvc-ui-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-webmvc-api\2.7.0\springdoc-openapi-starter-webmvc-api-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springdoc\springdoc-openapi-starter-common\2.7.0\springdoc-openapi-starter-common-2.7.0.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-core-jakarta\2.2.25\swagger-core-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\org\apache\commons\commons-lang3\3.17.0\commons-lang3-3.17.0.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-annotations-jakarta\2.2.25\swagger-annotations-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\io\swagger\core\v3\swagger-models-jakarta\2.2.25\swagger-models-jakarta-2.2.25.jar;C:\Users\AM-FX4100\.m2\repository\com\fasterxml\jackson\dataformat\jackson-dataformat-yaml\2.19.2\jackson-dataformat-yaml-2.19.2.jar;C:\Users\AM-FX4100\.m2\repository\org\webjars\swagger-ui\5.18.2\swagger-ui-5.18.2.jar;C:\Users\AM-FX4100\.m2\repository\org\webjars\webjars-locator-lite\1.1.0\webjars-locator-lite-1.1.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jspecify\jspecify\1.0.0\jspecify-1.0.0.jar;C:\Users\AM-FX4100\.m2\repository\org\modelmapper\modelmapper\3.2.0\modelmapper-3.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-devtools\3.5.6\spring-boot-devtools-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot\3.5.6\spring-boot-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.5.6\spring-boot-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\mysql\mysql-connector-j\9.4.0\mysql-connector-j-9.4.0.jar;C:\Users\AM-FX4100\.m2\repository\org\projectlombok\lombok\1.18.40\lombok-1.18.40.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.5.6\spring-boot-starter-test-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-test\3.5.6\spring-boot-test-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.5.6\spring-boot-test-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\AM-FX4100\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\AM-FX4100\.m2\repository\net\minidev\json-smart\2.5.2\json-smart-2.5.2.jar;C:\Users\AM-FX4100\.m2\repository\net\minidev\accessors-smart\2.5.2\accessors-smart-2.5.2.jar;C:\Users\AM-FX4100\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\AM-FX4100\.m2\repository\org\assertj\assertj-core\3.27.4\assertj-core-3.27.4.jar;C:\Users\AM-FX4100\.m2\repository\org\awaitility\awaitility\4.2.2\awaitility-4.2.2.jar;C:\Users\AM-FX4100\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter\5.12.2\junit-jupiter-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.12.2\junit-jupiter-api-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\platform\junit-platform-commons\1.12.2\junit-platform-commons-1.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.12.2\junit-jupiter-params-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.12.2\junit-jupiter-engine-5.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\junit\platform\junit-platform-engine\1.12.2\junit-platform-engine-1.12.2.jar;C:\Users\AM-FX4100\.m2\repository\org\mockito\mockito-core\5.17.0\mockito-core-5.17.0.jar;C:\Users\AM-FX4100\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.7\byte-buddy-agent-1.17.7.jar;C:\Users\AM-FX4100\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\AM-FX4100\.m2\repository\org\mockito\mockito-junit-jupiter\5.17.0\mockito-junit-jupiter-5.17.0.jar;C:\Users\AM-FX4100\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\AM-FX4100\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-core\6.2.11\spring-core-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-jcl\6.2.11\spring-jcl-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\spring-test\6.2.11\spring-test-6.2.11.jar;C:\Users\AM-FX4100\.m2\repository\org\xmlunit\xmlunit-core\2.10.4\xmlunit-core-2.10.4.jar;C:\Users\AM-FX4100\.m2\repository\com\h2database\h2\2.3.232\h2-2.3.232.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\reactor-test\3.7.11\reactor-test-3.7.11.jar;C:\Users\AM-FX4100\.m2\repository\io\projectreactor\reactor-core\3.7.11\reactor-core-3.7.11.jar;C:\Users\AM-FX4100\.m2\repository\org\reactivestreams\reactive-streams\1.0.4\reactive-streams-1.0.4.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okhttp3\mockwebserver\4.12.0\mockwebserver-4.12.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okhttp3\okhttp\4.12.0\okhttp-4.12.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okio\okio\3.6.0\okio-3.6.0.jar;C:\Users\AM-FX4100\.m2\repository\com\squareup\okio\okio-jvm\3.6.0\okio-jvm-3.6.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-common\1.9.10\kotlin-stdlib-common-1.9.10.jar;C:\Users\AM-FX4100\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\AM-FX4100\.m2\repository\org\hamcrest\hamcrest-core\3.0\hamcrest-core-3.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk8\2.2.0\kotlin-stdlib-jdk8-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib\2.2.0\kotlin-stdlib-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\annotations\13.0\annotations-13.0.jar;C:\Users\AM-FX4100\.m2\repository\org\jetbrains\kotlin\kotlin-stdlib-jdk7\2.2.0\kotlin-stdlib-jdk7-2.2.0.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.5.6\spring-boot-starter-actuator-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.5.6\spring-boot-actuator-autoconfigure-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\org\springframework\boot\spring-boot-actuator\3.5.6\spring-boot-actuator-3.5.6.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-observation\1.15.4\micrometer-observation-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-commons\1.15.4\micrometer-commons-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-jakarta9\1.15.4\micrometer-jakarta9-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\io\micrometer\micrometer-core\1.15.4\micrometer-core-1.15.4.jar;C:\Users\AM-FX4100\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\AM-FX4100\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -35,7 +35,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="FILE_LOG_CHARSET" value="windows-1252"/>
     <property name="java.awt.headless" value="true"/>
-    <property name="surefire.real.class.path" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire2587095264895516482\surefirebooter-20260624033323832_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\AM-FX4100\AppData\Local\Temp\surefire13588891811363279275\surefirebooter-20260630185713211_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.19+10-LTS"/>
@@ -57,7 +57,7 @@
     <property name="os.arch" value="amd64"/>
     <property name="jansi.passthrough" value="true"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="PID" value="8348"/>
+    <property name="PID" value="5784"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="CONSOLE_LOG_CHARSET" value="windows-1252"/>
     <property name="native.encoding" value="Cp1252"/>
@@ -71,10 +71,10 @@
     <property name="java.class.version" value="61.0"/>
     <property name="LOGGED_APPLICATION_NAME" value="[property-service] "/>
   </properties>
-  <testcase name="crearPropiedad_ComunaInexistente_RetornaError" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.245">
-    <system-out><![CDATA[2026-06-24T03:33:34.849-04:00  INFO 8348 --- [property-service] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.rentify.propertyservice.controller.PropertyServiceIntegrationTest]: PropertyServiceIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-06-24T03:33:34.859-04:00  INFO 8348 --- [property-service] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.rentify.propertyservice.PropertyserviceApplication for test class com.rentify.propertyservice.controller.PropertyServiceIntegrationTest
-2026-06-24T03:33:34.870-04:00  INFO 8348 --- [property-service] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+  <testcase name="crearPropiedad_ComunaInexistente_RetornaError" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.213">
+    <system-out><![CDATA[2026-06-30T18:57:26.075-04:00  INFO 5784 --- [property-service] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.rentify.propertyservice.controller.PropertyServiceIntegrationTest]: PropertyServiceIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-06-30T18:57:26.082-04:00  INFO 5784 --- [property-service] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.rentify.propertyservice.PropertyserviceApplication for test class com.rentify.propertyservice.controller.PropertyServiceIntegrationTest
+2026-06-30T18:57:26.183-04:00  INFO 5784 --- [property-service] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -85,22 +85,22 @@
 
  :: Spring Boot ::                (v3.5.6)
 
-2026-06-24T03:33:34.947-04:00  INFO 8348 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : Starting PropertyServiceIntegrationTest using Java 17.0.19 with PID 8348 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice)
-2026-06-24T03:33:34.947-04:00 DEBUG 8348 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : Running with Spring Boot v3.5.6, Spring v6.2.11
-2026-06-24T03:33:34.947-04:00  INFO 8348 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : The following 1 profile is active: "test"
-2026-06-24T03:33:34.951-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@9863ed5
-2026-06-24T03:33:36.309-04:00  INFO 8348 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-06-24T03:33:36.419-04:00  INFO 8348 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 90 ms. Found 6 JPA repository interfaces.
-2026-06-24T03:33:37.138-04:00  INFO 8348 --- [property-service] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-06-24T03:33:37.248-04:00  INFO 8348 --- [property-service] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
-2026-06-24T03:33:37.312-04:00  INFO 8348 --- [property-service] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-06-24T03:33:37.607-04:00  INFO 8348 --- [property-service] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-06-24T03:33:37.704-04:00  INFO 8348 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-06-24T03:33:38.020-04:00  INFO 8348 --- [property-service] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
-2026-06-24T03:33:38.023-04:00  INFO 8348 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-06-24T03:33:38.059-04:00  WARN 8348 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-06-24T03:33:38.061-04:00  WARN 8348 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
-2026-06-24T03:33:38.096-04:00  INFO 8348 --- [property-service] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-06-30T18:57:26.292-04:00  INFO 5784 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : Starting PropertyServiceIntegrationTest using Java 17.0.19 with PID 5784 (started by AM-FX4100 in C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\propertyservice)
+2026-06-30T18:57:26.293-04:00 DEBUG 5784 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : Running with Spring Boot v3.5.6, Spring v6.2.11
+2026-06-30T18:57:26.294-04:00  INFO 5784 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : The following 1 profile is active: "test"
+2026-06-30T18:57:26.297-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@66487713
+2026-06-30T18:57:28.146-04:00  INFO 5784 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-30T18:57:28.290-04:00  INFO 5784 --- [property-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 118 ms. Found 6 JPA repository interfaces.
+2026-06-30T18:57:28.901-04:00  INFO 5784 --- [property-service] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-30T18:57:28.997-04:00  INFO 5784 --- [property-service] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2026-06-30T18:57:29.062-04:00  INFO 5784 --- [property-service] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-30T18:57:29.438-04:00  INFO 5784 --- [property-service] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-30T18:57:29.497-04:00  INFO 5784 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-30T18:57:29.833-04:00  INFO 5784 --- [property-service] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2026-06-30T18:57:29.836-04:00  INFO 5784 --- [property-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-30T18:57:29.876-04:00  WARN 5784 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-30T18:57:29.878-04:00  WARN 5784 --- [property-service] [           main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2026-06-30T18:57:29.922-04:00  INFO 5784 --- [property-service] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 8.0
@@ -108,12 +108,12 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-06-24T03:33:39.674-04:00  INFO 8348 --- [property-service] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-06-24T03:33:39.701-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.480-04:00  INFO 5784 --- [property-service] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-30T18:57:31.503-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table comuna 
        drop 
        foreign key FKtop2papyj2urkhnpghehayki4
-2026-06-24T03:33:39.708-04:00  WARN 8348 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+2026-06-30T18:57:31.519-04:00  WARN 5784 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
     alter table comuna 
        drop 
        foreign key FKtop2papyj2urkhnpghehayki4" via JDBC [Tabla "comuna" no encontrada
@@ -270,11 +270,11 @@ Table "comuna" not found; SQL statement:
 	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
 	... 124 common frames omitted
 
-2026-06-24T03:33:39.768-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.549-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table fotos 
        drop 
        foreign key FKknfqub7wnehr50q15510if53s
-2026-06-24T03:33:39.769-04:00  WARN 8348 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+2026-06-30T18:57:31.550-04:00  WARN 5784 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
     alter table fotos 
        drop 
        foreign key FKknfqub7wnehr50q15510if53s" via JDBC [Tabla "fotos" no encontrada
@@ -431,11 +431,11 @@ Table "fotos" not found; SQL statement:
 	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
 	... 124 common frames omitted
 
-2026-06-24T03:33:39.777-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.553-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table mas_atributos 
        drop 
        foreign key FK5r4jqk54msqfdahhyv9l31pty
-2026-06-24T03:33:39.777-04:00  WARN 8348 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+2026-06-30T18:57:31.554-04:00  WARN 5784 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
     alter table mas_atributos 
        drop 
        foreign key FK5r4jqk54msqfdahhyv9l31pty" via JDBC [Tabla "mas_atributos" no encontrada
@@ -592,11 +592,11 @@ Table "mas_atributos" not found; SQL statement:
 	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
 	... 124 common frames omitted
 
-2026-06-24T03:33:39.780-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.558-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table mas_atributos 
        drop 
        foreign key FKgfcc9ch1l3amyhsb4bgpcmd1d
-2026-06-24T03:33:39.781-04:00  WARN 8348 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+2026-06-30T18:57:31.559-04:00  WARN 5784 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
     alter table mas_atributos 
        drop 
        foreign key FKgfcc9ch1l3amyhsb4bgpcmd1d" via JDBC [Tabla "mas_atributos" no encontrada
@@ -753,11 +753,11 @@ Table "mas_atributos" not found; SQL statement:
 	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
 	... 124 common frames omitted
 
-2026-06-24T03:33:39.783-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.563-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table propiedad 
        drop 
        foreign key FKirxw4rj1bjwwpc1nk2q41shga
-2026-06-24T03:33:39.792-04:00  WARN 8348 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+2026-06-30T18:57:31.571-04:00  WARN 5784 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
     alter table propiedad 
        drop 
        foreign key FKirxw4rj1bjwwpc1nk2q41shga" via JDBC [Tabla "propiedad" no encontrada
@@ -914,11 +914,11 @@ Table "propiedad" not found; SQL statement:
 	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
 	... 124 common frames omitted
 
-2026-06-24T03:33:39.803-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.588-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table propiedad 
        drop 
        foreign key FKk85lepu3cojd8ei0ho6a3pub9
-2026-06-24T03:33:39.804-04:00  WARN 8348 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+2026-06-30T18:57:31.592-04:00  WARN 5784 --- [property-service] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
     alter table propiedad 
        drop 
        foreign key FKk85lepu3cojd8ei0ho6a3pub9" via JDBC [Tabla "propiedad" no encontrada
@@ -1075,34 +1075,34 @@ Table "propiedad" not found; SQL statement:
 	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
 	... 124 common frames omitted
 
-2026-06-24T03:33:39.811-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.601-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists categoria
-2026-06-24T03:33:39.812-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.604-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists comuna
-2026-06-24T03:33:39.812-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.605-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists fotos
-2026-06-24T03:33:39.813-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.606-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists mas_atributos
-2026-06-24T03:33:39.813-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.606-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists propiedad
-2026-06-24T03:33:39.813-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.606-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists region
-2026-06-24T03:33:39.813-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.607-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     drop table if exists tipo
-2026-06-24T03:33:39.824-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.615-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table categoria (
         id bigint not null auto_increment,
         nombre varchar(60) not null,
         primary key (id)
     ) engine=InnoDB
-2026-06-24T03:33:39.842-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.626-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table comuna (
         id bigint not null auto_increment,
         region_id bigint not null,
         nombre varchar(60) not null,
         primary key (id)
     ) engine=InnoDB
-2026-06-24T03:33:39.843-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.628-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table fotos (
         sort_order integer,
         id bigint not null auto_increment,
@@ -1111,12 +1111,12 @@ Table "propiedad" not found; SQL statement:
         url TEXT not null,
         primary key (id)
     ) engine=InnoDB
-2026-06-24T03:33:39.845-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.629-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table mas_atributos (
         categoria_id bigint not null,
         propiedad_id bigint not null
     ) engine=InnoDB
-2026-06-24T03:33:39.855-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.640-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table propiedad (
         fcreacion date,
         m2 decimal(12,2) not null,
@@ -1134,176 +1134,176 @@ Table "propiedad" not found; SQL statement:
         direccion varchar(200) not null,
         primary key (id)
     ) engine=InnoDB
-2026-06-24T03:33:39.866-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.656-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table region (
         id bigint not null auto_increment,
         nombre varchar(60) not null,
         primary key (id)
     ) engine=InnoDB
-2026-06-24T03:33:39.869-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.663-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     create table tipo (
         id bigint not null auto_increment,
         nombre varchar(60) not null,
         primary key (id)
     ) engine=InnoDB
-2026-06-24T03:33:39.872-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.668-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table propiedad 
        add constraint UKdo4ifshqs67ke7nksd9lhsil2 unique (codigo)
-2026-06-24T03:33:39.876-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.676-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table comuna 
        add constraint FKtop2papyj2urkhnpghehayki4 
        foreign key (region_id) 
        references region (id)
-2026-06-24T03:33:39.897-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.708-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table fotos 
        add constraint FKknfqub7wnehr50q15510if53s 
        foreign key (propiedad_id) 
        references propiedad (id)
-2026-06-24T03:33:39.899-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.711-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table mas_atributos 
        add constraint FK5r4jqk54msqfdahhyv9l31pty 
        foreign key (categoria_id) 
        references categoria (id)
-2026-06-24T03:33:39.901-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.713-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table mas_atributos 
        add constraint FKgfcc9ch1l3amyhsb4bgpcmd1d 
        foreign key (propiedad_id) 
        references propiedad (id)
-2026-06-24T03:33:39.902-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.714-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table propiedad 
        add constraint FKirxw4rj1bjwwpc1nk2q41shga 
        foreign key (comuna_id) 
        references comuna (id)
-2026-06-24T03:33:39.904-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:31.716-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     alter table propiedad 
        add constraint FKk85lepu3cojd8ei0ho6a3pub9 
        foreign key (tipo_id) 
        references tipo (id)
-2026-06-24T03:33:39.912-04:00  INFO 8348 --- [property-service] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-06-24T03:33:40.900-04:00  INFO 8348 --- [property-service] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-06-24T03:33:43.881-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 41 mappings in 'requestMappingHandlerMapping'
-2026-06-24T03:33:43.916-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
-2026-06-24T03:33:44.005-04:00  INFO 8348 --- [property-service] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 0 endpoints beneath base path '/actuator'
-2026-06-24T03:33:44.049-04:00  WARN 8348 --- [property-service] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-30T18:57:31.723-04:00  INFO 5784 --- [property-service] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-30T18:57:32.760-04:00  INFO 5784 --- [property-service] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-30T18:57:35.375-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 41 mappings in 'requestMappingHandlerMapping'
+2026-06-30T18:57:35.409-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /swagger-ui*/*swagger-initializer.js, /swagger-ui*/**] in 'resourceHandlerMapping'
+2026-06-30T18:57:35.487-04:00  INFO 5784 --- [property-service] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 0 endpoints beneath base path '/actuator'
+2026-06-30T18:57:35.522-04:00  WARN 5784 --- [property-service] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 26d68175-43a3-4ed0-884c-7c88bdb85b41
+Using generated security password: e732e79e-73c2-4864-a6fa-7e7fee0c7b8f
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-24T03:33:44.051-04:00  INFO 8348 --- [property-service] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-24T03:33:44.314-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
-2026-06-24T03:33:44.332-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-06-24T03:33:44.756-04:00  INFO 8348 --- [property-service] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-24T03:33:44.756-04:00  INFO 8348 --- [property-service] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-24T03:33:44.758-04:00  INFO 8348 --- [property-service] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
-2026-06-24T03:33:44.955-04:00  INFO 8348 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : Started PropertyServiceIntegrationTest in 10.084 seconds (process running for 20.907)
-2026-06-24T03:33:45.060-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando regiones...
-2026-06-24T03:33:45.264-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:35.524-04:00  INFO 5784 --- [property-service] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-30T18:57:35.743-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-06-30T18:57:35.759-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 2 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-06-30T18:57:36.131-04:00  INFO 5784 --- [property-service] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-30T18:57:36.131-04:00  INFO 5784 --- [property-service] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-30T18:57:36.133-04:00  INFO 5784 --- [property-service] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-06-30T18:57:36.401-04:00  INFO 5784 --- [property-service] [           main] c.r.p.c.PropertyServiceIntegrationTest   : Started PropertyServiceIntegrationTest in 10.218 seconds (process running for 22.983)
+2026-06-30T18:57:36.519-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando regiones...
+2026-06-30T18:57:36.692-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         region r1_0
-2026-06-24T03:33:45.322-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando regiones de Chile...
-2026-06-24T03:33:45.359-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.763-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando regiones de Chile...
+2026-06-30T18:57:36.805-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.381-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.829-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.383-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.831-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.384-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.832-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.385-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.833-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.386-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.834-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.387-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.835-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.388-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.836-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.389-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.837-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.390-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.838-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.391-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.839-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.392-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.840-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.393-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.841-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.406-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 13 regiones creadas exitosamente
-2026-06-24T03:33:45.406-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando comunas...
-2026-06-24T03:33:45.409-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.859-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 13 regiones creadas exitosamente
+2026-06-30T18:57:36.859-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando comunas...
+2026-06-30T18:57:36.862-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         comuna c1_0
-2026-06-24T03:33:45.410-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando comunas...
-2026-06-24T03:33:45.554-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:36.898-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando comunas...
+2026-06-30T18:57:37.061-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         r1_0.id,
         r1_0.nombre 
@@ -1311,7 +1311,7 @@ This generated password is for development use only. Your security configuration
         region r1_0 
     where
         r1_0.nombre=?
-2026-06-24T03:33:45.589-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.087-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         r1_0.id,
         r1_0.nombre 
@@ -1319,7 +1319,7 @@ This generated password is for development use only. Your security configuration
         region r1_0 
     where
         r1_0.nombre=?
-2026-06-24T03:33:45.598-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.096-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         r1_0.id,
         r1_0.nombre 
@@ -1327,642 +1327,642 @@ This generated password is for development use only. Your security configuration
         region r1_0 
     where
         r1_0.nombre=?
-2026-06-24T03:33:45.609-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.103-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.614-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.108-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.618-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.112-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.623-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.118-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.626-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.123-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.632-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.130-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.635-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.132-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.637-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.136-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.638-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.140-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.639-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.176-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.641-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.182-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.644-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.184-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.645-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.185-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.647-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.186-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.648-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.187-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.650-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.189-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.660-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.189-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.667-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.191-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.668-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.192-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.669-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.193-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.670-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.194-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.671-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.196-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.672-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.197-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.674-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.198-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.675-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.199-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.676-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.200-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.678-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.201-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.679-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.203-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.680-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.204-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.682-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.206-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.683-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.207-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.684-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.208-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.685-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.209-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.687-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.211-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.688-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.212-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.689-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.214-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.690-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.215-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.691-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.216-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.693-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.217-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.695-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.218-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.696-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.220-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.707-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.231-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.709-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.232-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.711-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.233-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.712-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.234-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.713-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.235-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.714-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.236-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.715-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.237-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.716-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.238-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.717-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.240-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.720-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.243-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.721-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.244-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.723-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.245-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.724-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.246-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.725-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.247-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.726-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.248-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.727-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.249-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.728-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.250-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:45.730-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 58 comunas creadas exitosamente
-2026-06-24T03:33:45.731-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    - RegiÃ³n Metropolitana: 41 comunas
-2026-06-24T03:33:45.731-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    - RegiÃ³n de ValparaÃ­so: 9 comunas
-2026-06-24T03:33:45.731-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    - RegiÃ³n del BiobÃ­o: 8 comunas
-2026-06-24T03:33:45.731-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando tipos de propiedad...
-2026-06-24T03:33:45.734-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.253-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 58 comunas creadas exitosamente
+2026-06-30T18:57:37.253-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    - RegiÃ³n Metropolitana: 41 comunas
+2026-06-30T18:57:37.253-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    - RegiÃ³n de ValparaÃ­so: 9 comunas
+2026-06-30T18:57:37.253-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    - RegiÃ³n del BiobÃ­o: 8 comunas
+2026-06-30T18:57:37.253-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando tipos de propiedad...
+2026-06-30T18:57:37.255-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         tipo t1_0
-2026-06-24T03:33:45.736-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando tipos de propiedad...
-2026-06-24T03:33:45.738-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.256-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando tipos de propiedad...
+2026-06-30T18:57:37.258-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.739-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.259-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.740-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.322-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.741-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.337-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.742-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.343-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.743-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.352-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.744-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.362-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.745-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.392-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.748-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 8 tipos de propiedad creados exitosamente
-2026-06-24T03:33:45.748-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando categorÃ­as...
-2026-06-24T03:33:45.751-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.397-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 8 tipos de propiedad creados exitosamente
+2026-06-30T18:57:37.397-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Verificando categorÃ­as...
+2026-06-30T18:57:37.404-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         categoria c1_0
-2026-06-24T03:33:45.753-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando categorÃ­as...
-2026-06-24T03:33:45.754-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.406-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Creando categorÃ­as...
+2026-06-30T18:57:37.409-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.756-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.419-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.757-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.421-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.758-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.423-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.759-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.423-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.759-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.424-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.760-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.426-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.761-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.427-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.762-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.428-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.763-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.430-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.764-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.431-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.764-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.432-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.765-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.433-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.805-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.434-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.809-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.435-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         categoria
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.813-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 15 categorÃ­as creadas exitosamente
-2026-06-24T03:33:45.814-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:33:45.814-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? INICIALIZACIÃ?N DE PROPERTY SERVICE COMPLETADA
-2026-06-24T03:33:45.814-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:33:45.814-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? RESUMEN DE DATOS MAESTROS:
-2026-06-24T03:33:45.817-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.438-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â?? 15 categorÃ­as creadas exitosamente
+2026-06-30T18:57:37.438-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:57:37.438-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? INICIALIZACIÃ?N DE PROPERTY SERVICE COMPLETADA
+2026-06-30T18:57:37.438-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:57:37.438-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? RESUMEN DE DATOS MAESTROS:
+2026-06-30T18:57:37.440-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         region r1_0
-2026-06-24T03:33:45.818-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Regiones:    13 registros
-2026-06-24T03:33:45.819-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.441-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Regiones:    13 registros
+2026-06-30T18:57:37.442-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         comuna c1_0
-2026-06-24T03:33:45.820-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Comunas:     58 registros
-2026-06-24T03:33:45.821-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.443-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Comunas:     58 registros
+2026-06-30T18:57:37.444-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         tipo t1_0
-2026-06-24T03:33:45.822-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Tipos:       8 registros
-2026-06-24T03:33:45.822-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.445-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? Tipos:       8 registros
+2026-06-30T18:57:37.446-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         count(*) 
     from
         categoria c1_0
-2026-06-24T03:33:45.823-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? CategorÃ­as:  15 registros
-2026-06-24T03:33:45.823-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:33:45.824-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Property Service listo para recibir propiedades
-2026-06-24T03:33:45.824-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Swagger UI: http://localhost:8082/swagger-ui/index.html
-2026-06-24T03:33:45.824-04:00  INFO 8348 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
-2026-06-24T03:33:45.859-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.TipoController#crear(Long, Long, TipoDTO)
-2026-06-24T03:33:45.877-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.TipoDTO@2bf09541]
-2026-06-24T03:33:45.906-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.TipoController          : Creando nuevo tipo: Casa
-2026-06-24T03:33:45.961-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.447-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       :    â?? CategorÃ­as:  15 registros
+2026-06-30T18:57:37.447-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:57:37.448-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Property Service listo para recibir propiedades
+2026-06-30T18:57:37.448-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : ð??? Swagger UI: http://localhost:8082/swagger-ui/index.html
+2026-06-30T18:57:37.448-04:00  INFO 5784 --- [property-service] [           main] c.r.p.config.DataInitializerConfig       : â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??
+2026-06-30T18:57:37.495-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.TipoController#crear(Long, Long, TipoDTO)
+2026-06-30T18:57:37.499-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.TipoDTO@48a537f5]
+2026-06-30T18:57:37.503-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.TipoController          : Creando nuevo tipo: Casa
+2026-06-30T18:57:37.536-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:45.971-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:45.971-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.TipoDTO@47376146]
-2026-06-24T03:33:45.986-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
-2026-06-24T03:33:45.996-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@11368ba6]
-2026-06-24T03:33:46.023-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint POST /api/propiedades - Crear propiedad con cÃ³digo: CS001
-2026-06-24T03:33:46.024-04:00  INFO 8348 --- [property-service] [           main] c.r.p.service.PropertyService            : Creando nueva propiedad con cÃ³digo: CS001
-2026-06-24T03:33:46.028-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.540-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.540-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.TipoDTO@41588114]
+2026-06-30T18:57:37.548-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
+2026-06-30T18:57:37.555-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@76a9337c]
+2026-06-30T18:57:37.577-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint POST /api/propiedades - Crear propiedad con cÃ³digo: CS001
+2026-06-30T18:57:37.578-04:00  INFO 5784 --- [property-service] [           main] c.r.p.service.PropertyService            : Creando nueva propiedad con cÃ³digo: CS001
+2026-06-30T18:57:37.581-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         p1_0.id 
     from
@@ -1971,7 +1971,7 @@ This generated password is for development use only. Your security configuration
         p1_0.codigo=? 
     limit
         ?
-2026-06-24T03:33:46.044-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.594-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         c1_0.id,
         c1_0.nombre,
@@ -1980,43 +1980,43 @@ This generated password is for development use only. Your security configuration
         comuna c1_0 
     where
         c1_0.id=?
-2026-06-24T03:33:46.055-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.rentify.propertyservice.exception.GlobalExceptionHandler#handleBusinessValidation(BusinessValidationException)
-2026-06-24T03:33:46.056-04:00 ERROR 8348 --- [property-service] [           main] c.r.p.exception.GlobalExceptionHandler   : Error de validaciÃ³n de negocio: La comuna con ID 99999 no existe
-2026-06-24T03:33:46.062-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.062-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.exception.ErrorResponse@36e8861f]
-2026-06-24T03:33:46.064-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [com.rentify.propertyservice.exception.BusinessValidationException: La comuna con ID 99999 no existe]
+2026-06-30T18:57:37.610-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.rentify.propertyservice.exception.GlobalExceptionHandler#handleBusinessValidation(BusinessValidationException)
+2026-06-30T18:57:37.610-04:00 ERROR 5784 --- [property-service] [           main] c.r.p.exception.GlobalExceptionHandler   : Error de validaciÃ³n de negocio: La comuna con ID 99999 no existe
+2026-06-30T18:57:37.642-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.643-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.exception.ErrorResponse@6b629e54]
+2026-06-30T18:57:37.651-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [com.rentify.propertyservice.exception.BusinessValidationException: La comuna con ID 99999 no existe]
 ]]></system-out>
   </testcase>
-  <testcase name="crearPropiedad_TipoInexistente_RetornaError" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.09">
-    <system-out><![CDATA[2026-06-24T03:33:46.086-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.RegionController#crear(Long, Long, RegionDTO)
-2026-06-24T03:33:46.087-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.RegionDTO@383633ea]
-2026-06-24T03:33:46.090-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.RegionController        : Creando nueva regiÃ³n: ValparaÃ­so
-2026-06-24T03:33:46.093-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+  <testcase name="crearPropiedad_TipoInexistente_RetornaError" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.08">
+    <system-out><![CDATA[2026-06-30T18:57:37.679-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.RegionController#crear(Long, Long, RegionDTO)
+2026-06-30T18:57:37.681-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.RegionDTO@332f2b1b]
+2026-06-30T18:57:37.688-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.RegionController        : Creando nueva regiÃ³n: ValparaÃ­so
+2026-06-30T18:57:37.690-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:46.096-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.097-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.RegionDTO@1046987b]
-2026-06-24T03:33:46.099-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.ComunaController#crear(Long, Long, ComunaDTO)
-2026-06-24T03:33:46.101-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.ComunaDTO@1b4f57d6]
-2026-06-24T03:33:46.107-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.ComunaController        : Creando nueva comuna: ViÃ±a del Mar
-2026-06-24T03:33:46.111-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.696-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.697-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.RegionDTO@f559f83]
+2026-06-30T18:57:37.701-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.ComunaController#crear(Long, Long, ComunaDTO)
+2026-06-30T18:57:37.703-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.ComunaDTO@542c171]
+2026-06-30T18:57:37.710-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.ComunaController        : Creando nueva comuna: ViÃ±a del Mar
+2026-06-30T18:57:37.714-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:46.128-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.129-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.ComunaDTO@3767b38b]
-2026-06-24T03:33:46.133-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
-2026-06-24T03:33:46.136-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@2818f190]
-2026-06-24T03:33:46.139-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint POST /api/propiedades - Crear propiedad con cÃ³digo: XX001
-2026-06-24T03:33:46.139-04:00  INFO 8348 --- [property-service] [           main] c.r.p.service.PropertyService            : Creando nueva propiedad con cÃ³digo: XX001
-2026-06-24T03:33:46.143-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.724-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.724-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.ComunaDTO@2332f57d]
+2026-06-30T18:57:37.727-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
+2026-06-30T18:57:37.728-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@2a02802f]
+2026-06-30T18:57:37.732-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint POST /api/propiedades - Crear propiedad con cÃ³digo: XX001
+2026-06-30T18:57:37.732-04:00  INFO 5784 --- [property-service] [           main] c.r.p.service.PropertyService            : Creando nueva propiedad con cÃ³digo: XX001
+2026-06-30T18:57:37.735-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         p1_0.id 
     from
@@ -2025,7 +2025,7 @@ This generated password is for development use only. Your security configuration
         p1_0.codigo=? 
     limit
         ?
-2026-06-24T03:33:46.146-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.736-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         t1_0.id,
         t1_0.nombre 
@@ -2033,65 +2033,75 @@ This generated password is for development use only. Your security configuration
         tipo t1_0 
     where
         t1_0.id=?
-2026-06-24T03:33:46.150-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.rentify.propertyservice.exception.GlobalExceptionHandler#handleBusinessValidation(BusinessValidationException)
-2026-06-24T03:33:46.150-04:00 ERROR 8348 --- [property-service] [           main] c.r.p.exception.GlobalExceptionHandler   : Error de validaciÃ³n de negocio: El tipo con ID 99999 no existe
-2026-06-24T03:33:46.151-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.151-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.exception.ErrorResponse@446a5090]
-2026-06-24T03:33:46.153-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [com.rentify.propertyservice.exception.BusinessValidationException: El tipo con ID 99999 no existe]
+2026-06-30T18:57:37.738-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.rentify.propertyservice.exception.GlobalExceptionHandler#handleBusinessValidation(BusinessValidationException)
+2026-06-30T18:57:37.738-04:00 ERROR 5784 --- [property-service] [           main] c.r.p.exception.GlobalExceptionHandler   : Error de validaciÃ³n de negocio: El tipo con ID 99999 no existe
+2026-06-30T18:57:37.739-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.739-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.exception.ErrorResponse@2b11ba6f]
+2026-06-30T18:57:37.739-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [com.rentify.propertyservice.exception.BusinessValidationException: El tipo con ID 99999 no existe]
 ]]></system-out>
   </testcase>
-  <testcase name="crearPropiedad_ValidacionesFallan_Retorna400" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.05">
-    <system-out><![CDATA[2026-06-24T03:33:46.223-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
-2026-06-24T03:33:46.231-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@32aed633]
-2026-06-24T03:33:46.247-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.rentify.propertyservice.exception.GlobalExceptionHandler#handleValidationErrors(MethodArgumentNotValidException)
-2026-06-24T03:33:46.248-04:00 ERROR 8348 --- [property-service] [           main] c.r.p.exception.GlobalExceptionHandler   : Errores de validaciÃ³n: {tipoId=El tipo de propiedad es obligatorio, nBanos=El nÃºmero de baÃ±os no puede exceder 20, codigo=El cÃ³digo no puede exceder 10 caracteres, divisa=La divisa debe ser CLP, USD o EUR, m2=Los mÂ² deben ser al menos 1, direccion=La direcciÃ³n es obligatoria, precioMensual=El precio debe ser mayor a 0, comunaId=La comuna es obligatoria, nHabit=El nÃºmero de habitaciones no puede ser negativo}
-2026-06-24T03:33:46.248-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.248-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.exception.ErrorResponse@1ce02c39]
-2026-06-24T03:33:46.252-04:00 DEBUG 8348 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [2] in public org.springframework.http.ResponseEntity<?> com.rentify.propertyservice.controller.PropertyController.crear(java.lang.Long,java.lang.Long,com.rentify.propertyservice.dto.PropertyDTO) with 9 errors: [Field error in object 'propertyDTO' on field 'divisa': rejected value [ARS]; codes [Pattern.propertyDTO.divisa,Pattern.divisa,Pattern.java.lang.String,Pattern]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.divisa,divisa]; arguments []; default message [divisa],[Ljakarta.validation.constraints.Pattern$Flag;@17e8e8d6,CLP|USD|EUR]; default message [La divisa debe ser CLP, USD o EUR]] [Field error in object 'propertyDTO' on field 'direccion': rejected value [null]; codes [NotBlank.propertyDTO.direccion,NotBlank.direccion,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.direccion,direccion]; arguments []; default message [direccion]]; default message [La direcciÃ³n es obligatoria]] [Field error in object 'propertyDTO' on field 'precioMensual': rejected value [-100]; codes [DecimalMin.propertyDTO.precioMensual,DecimalMin.precioMensual,DecimalMin.java.math.BigDecimal,DecimalMin]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.precioMensual,precioMensual]; arguments []; default message [precioMensual],true,0.01]; default message [El precio debe ser mayor a 0]] [Field error in object 'propertyDTO' on field 'm2': rejected value [0.5]; codes [DecimalMin.propertyDTO.m2,DecimalMin.m2,DecimalMin.java.math.BigDecimal,DecimalMin]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.m2,m2]; arguments []; default message [m2],true,1.0]; default message [Los mÂ² deben ser al menos 1]] [Field error in object 'propertyDTO' on field 'tipoId': rejected value [null]; codes [NotNull.propertyDTO.tipoId,NotNull.tipoId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.tipoId,tipoId]; arguments []; default message [tipoId]]; default message [El tipo de propiedad es obligatorio]] [Field error in object 'propertyDTO' on field 'comunaId': rejected value [null]; codes [NotNull.propertyDTO.comunaId,NotNull.comunaId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.comunaId,comunaId]; arguments []; default message [comunaId]]; default message [La comuna es obligatoria]] [Field error in object 'propertyDTO' on field 'nHabit': rejected value [-1]; codes [Min.propertyDTO.nHabit,Min.nHabit,Min.int,Min]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.nHabit,nHabit]; arguments []; default message [nHabit],0]; default message [El nÃºmero de habitaciones no puede ser negativo]] [Field error in object 'propertyDTO' on field 'nBanos': rejected value [30]; codes [Max.propertyDTO.nBanos,Max.nBanos,Max.int,Max]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.nBanos,nBanos]; arguments []; default message [nBanos],20]; default message [El nÃºmero de baÃ±os no puede exceder 20]] [Field error in object 'propertyDTO' on field 'codigo': rejected value [CODIGO_DEMASIADO_LARGO_PARA_LA_VALIDACION]; codes [Size.propertyDTO.codigo,Size.codigo,Size.java.lang.String,Size]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.codigo,codigo]; arguments []; default message [codigo],10,0]; default message [El cÃ³digo no puede exceder 10 caracteres]] ]
+  <testcase name="buscar_SinApiKey_Retorna403" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.017">
+    <system-out><![CDATA[2026-06-30T18:57:37.758-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#buscarConFiltros(Long, Long, BigDecimal, BigDecimal, Integer, Integer, Boolean, boolean)
+2026-06-30T18:57:37.758-04:00  WARN 5784 --- [property-service] [           main] c.r.p.config.ApiKeyInterceptor           : Petición rechazada por falta/mismatch de X-App-Client. Path: /api/propiedades/buscar, Metodo: GET, IP: 127.0.0.1
 ]]></system-out>
   </testcase>
-  <testcase name="flujoCompleto_CrearPropiedadYBuscar" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.126">
-    <system-out><![CDATA[2026-06-24T03:33:46.271-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.RegionController#crear(Long, Long, RegionDTO)
-2026-06-24T03:33:46.272-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.RegionDTO@12f4f654]
-2026-06-24T03:33:46.272-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.RegionController        : Creando nueva regiÃ³n: RegiÃ³n Metropolitana
-2026-06-24T03:33:46.273-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+  <testcase name="crearPropiedad_SinApiKey_Retorna403" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.015">
+    <system-out><![CDATA[2026-06-30T18:57:37.773-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
+2026-06-30T18:57:37.773-04:00  WARN 5784 --- [property-service] [           main] c.r.p.config.ApiKeyInterceptor           : Petición rechazada por falta/mismatch de X-App-Client. Path: /api/propiedades, Metodo: POST, IP: 127.0.0.1
+]]></system-out>
+  </testcase>
+  <testcase name="crearPropiedad_ValidacionesFallan_Retorna400" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.038">
+    <system-out><![CDATA[2026-06-30T18:57:37.789-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
+2026-06-30T18:57:37.791-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@7217b6b9]
+2026-06-30T18:57:37.805-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Using @ExceptionHandler com.rentify.propertyservice.exception.GlobalExceptionHandler#handleValidationErrors(MethodArgumentNotValidException)
+2026-06-30T18:57:37.806-04:00 ERROR 5784 --- [property-service] [           main] c.r.p.exception.GlobalExceptionHandler   : Errores de validaciÃ³n: {nBanos=El nÃºmero de baÃ±os no puede exceder 20, tipoId=El tipo de propiedad es obligatorio, codigo=El cÃ³digo no puede exceder 10 caracteres, m2=Los mÂ² deben ser al menos 1, divisa=La divisa debe ser CLP, USD o EUR, direccion=La direcciÃ³n es obligatoria, precioMensual=El precio debe ser mayor a 0, comunaId=La comuna es obligatoria, nHabit=El nÃºmero de habitaciones no puede ser negativo}
+2026-06-30T18:57:37.806-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.807-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.exception.ErrorResponse@514c4915]
+2026-06-30T18:57:37.812-04:00 DEBUG 5784 --- [property-service] [           main] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [2] in public org.springframework.http.ResponseEntity<?> com.rentify.propertyservice.controller.PropertyController.crear(java.lang.Long,java.lang.Long,com.rentify.propertyservice.dto.PropertyDTO) with 9 errors: [Field error in object 'propertyDTO' on field 'nBanos': rejected value [30]; codes [Max.propertyDTO.nBanos,Max.nBanos,Max.int,Max]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.nBanos,nBanos]; arguments []; default message [nBanos],20]; default message [El nÃºmero de baÃ±os no puede exceder 20]] [Field error in object 'propertyDTO' on field 'codigo': rejected value [CODIGO_DEMASIADO_LARGO_PARA_LA_VALIDACION]; codes [Size.propertyDTO.codigo,Size.codigo,Size.java.lang.String,Size]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.codigo,codigo]; arguments []; default message [codigo],10,0]; default message [El cÃ³digo no puede exceder 10 caracteres]] [Field error in object 'propertyDTO' on field 'm2': rejected value [0.5]; codes [DecimalMin.propertyDTO.m2,DecimalMin.m2,DecimalMin.java.math.BigDecimal,DecimalMin]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.m2,m2]; arguments []; default message [m2],true,1.0]; default message [Los mÂ² deben ser al menos 1]] [Field error in object 'propertyDTO' on field 'divisa': rejected value [ARS]; codes [Pattern.propertyDTO.divisa,Pattern.divisa,Pattern.java.lang.String,Pattern]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.divisa,divisa]; arguments []; default message [divisa],[Ljakarta.validation.constraints.Pattern$Flag;@6425422c,CLP|USD|EUR]; default message [La divisa debe ser CLP, USD o EUR]] [Field error in object 'propertyDTO' on field 'direccion': rejected value [null]; codes [NotBlank.propertyDTO.direccion,NotBlank.direccion,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.direccion,direccion]; arguments []; default message [direccion]]; default message [La direcciÃ³n es obligatoria]] [Field error in object 'propertyDTO' on field 'nHabit': rejected value [-1]; codes [Min.propertyDTO.nHabit,Min.nHabit,Min.int,Min]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.nHabit,nHabit]; arguments []; default message [nHabit],0]; default message [El nÃºmero de habitaciones no puede ser negativo]] [Field error in object 'propertyDTO' on field 'tipoId': rejected value [null]; codes [NotNull.propertyDTO.tipoId,NotNull.tipoId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.tipoId,tipoId]; arguments []; default message [tipoId]]; default message [El tipo de propiedad es obligatorio]] [Field error in object 'propertyDTO' on field 'comunaId': rejected value [null]; codes [NotNull.propertyDTO.comunaId,NotNull.comunaId,NotNull.java.lang.Long,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.comunaId,comunaId]; arguments []; default message [comunaId]]; default message [La comuna es obligatoria]] [Field error in object 'propertyDTO' on field 'precioMensual': rejected value [-100]; codes [DecimalMin.propertyDTO.precioMensual,DecimalMin.precioMensual,DecimalMin.java.math.BigDecimal,DecimalMin]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [propertyDTO.precioMensual,precioMensual]; arguments []; default message [precioMensual],true,0.01]; default message [El precio debe ser mayor a 0]] ]
+]]></system-out>
+  </testcase>
+  <testcase name="flujoCompleto_CrearPropiedadYBuscar" classname="Tests de IntegraciÃ³n - PropertyService (Robustos)" time="0.241">
+    <system-out><![CDATA[2026-06-30T18:57:37.829-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.RegionController#crear(Long, Long, RegionDTO)
+2026-06-30T18:57:37.831-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.RegionDTO@e95b49]
+2026-06-30T18:57:37.831-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.RegionController        : Creando nueva regiÃ³n: RegiÃ³n Metropolitana
+2026-06-30T18:57:37.832-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         region
         (nombre) 
     values
         (?)
-2026-06-24T03:33:46.275-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.276-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.RegionDTO@a9d3bd0]
-2026-06-24T03:33:46.277-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.ComunaController#crear(Long, Long, ComunaDTO)
-2026-06-24T03:33:46.278-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.ComunaDTO@2d2da013]
-2026-06-24T03:33:46.279-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.ComunaController        : Creando nueva comuna: Providencia
-2026-06-24T03:33:46.280-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.834-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.834-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.RegionDTO@7c5f2945]
+2026-06-30T18:57:37.836-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.ComunaController#crear(Long, Long, ComunaDTO)
+2026-06-30T18:57:37.837-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.ComunaDTO@157b0f6]
+2026-06-30T18:57:37.837-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.ComunaController        : Creando nueva comuna: Providencia
+2026-06-30T18:57:37.838-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         comuna
         (nombre, region_id) 
     values
         (?, ?)
-2026-06-24T03:33:46.281-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.282-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.ComunaDTO@13879c47]
-2026-06-24T03:33:46.284-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.TipoController#crear(Long, Long, TipoDTO)
-2026-06-24T03:33:46.284-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.TipoDTO@178a0b1]
-2026-06-24T03:33:46.285-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.TipoController          : Creando nuevo tipo: Departamento
-2026-06-24T03:33:46.285-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.841-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.841-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.ComunaDTO@7e375806]
+2026-06-30T18:57:37.843-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.TipoController#crear(Long, Long, TipoDTO)
+2026-06-30T18:57:37.844-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.TipoDTO@f80d1af]
+2026-06-30T18:57:37.844-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.TipoController          : Creando nuevo tipo: Departamento
+2026-06-30T18:57:37.845-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         tipo
         (nombre) 
     values
         (?)
-2026-06-24T03:33:46.287-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.287-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.TipoDTO@6e3a8d16]
-2026-06-24T03:33:46.289-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
-2026-06-24T03:33:46.290-04:00 DEBUG 8348 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@4ebe717f]
-2026-06-24T03:33:46.291-04:00  INFO 8348 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint POST /api/propiedades - Crear propiedad con cÃ³digo: DP001
-2026-06-24T03:33:46.292-04:00  INFO 8348 --- [property-service] [           main] c.r.p.service.PropertyService            : Creando nueva propiedad con cÃ³digo: DP001
-2026-06-24T03:33:46.293-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.846-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.846-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.TipoDTO@3236f72a]
+2026-06-30T18:57:37.847-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#crear(Long, Long, PropertyDTO)
+2026-06-30T18:57:37.849-04:00 DEBUG 5784 --- [property-service] [           main] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json" to [com.rentify.propertyservice.dto.PropertyDTO@10f277c8]
+2026-06-30T18:57:37.851-04:00  INFO 5784 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint POST /api/propiedades - Crear propiedad con cÃ³digo: DP001
+2026-06-30T18:57:37.852-04:00  INFO 5784 --- [property-service] [           main] c.r.p.service.PropertyService            : Creando nueva propiedad con cÃ³digo: DP001
+2026-06-30T18:57:37.853-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         p1_0.id 
     from
@@ -2100,20 +2110,20 @@ This generated password is for development use only. Your security configuration
         p1_0.codigo=? 
     limit
         ?
-2026-06-24T03:33:46.313-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.927-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     insert 
     into
         propiedad
         (codigo, comuna_id, direccion, divisa, fcreacion, m2, n_banos, n_habit, pet_friendly, precio_mensual, propietario_id, tipo_id, titulo) 
     values
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-2026-06-24T03:33:46.320-04:00  INFO 8348 --- [property-service] [           main] c.r.p.service.PropertyService            : Propiedad creada exitosamente con ID: 1
-2026-06-24T03:33:46.329-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.329-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.PropertyDTO@2a534291]
-2026-06-24T03:33:46.333-04:00 DEBUG 8348 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#buscarConFiltros(Long, Long, Long, Long, BigDecimal, BigDecimal, Integer, Integer, Boolean, boolean)
-2026-06-24T03:33:46.335-04:00 DEBUG 8348 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint GET /api/propiedades/buscar - BÃºsqueda con filtros
-2026-06-24T03:33:46.335-04:00 DEBUG 8348 --- [property-service] [           main] c.r.p.service.PropertyService            : Buscando propiedades con filtros - tipo: null, comuna: 60, minPrecio: 600000, maxPrecio: 700000
-2026-06-24T03:33:46.368-04:00 DEBUG 8348 --- [property-service] [           main] org.hibernate.SQL                        : 
+2026-06-30T18:57:37.935-04:00  INFO 5784 --- [property-service] [           main] c.r.p.service.PropertyService            : Propiedad creada exitosamente con ID: 1
+2026-06-30T18:57:37.967-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:37.967-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.rentify.propertyservice.dto.PropertyDTO@4ac08f7c]
+2026-06-30T18:57:37.981-04:00 DEBUG 5784 --- [property-service] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.rentify.propertyservice.controller.PropertyController#buscarConFiltros(Long, Long, BigDecimal, BigDecimal, Integer, Integer, Boolean, boolean)
+2026-06-30T18:57:37.983-04:00 DEBUG 5784 --- [property-service] [           main] c.r.p.controller.PropertyController      : Endpoint GET /api/propiedades/buscar - BÃºsqueda con filtros
+2026-06-30T18:57:37.984-04:00 DEBUG 5784 --- [property-service] [           main] c.r.p.service.PropertyService            : Buscando propiedades con filtros - tipo: null, comuna: 60, minPrecio: 600000, maxPrecio: 700000
+2026-06-30T18:57:38.044-04:00 DEBUG 5784 --- [property-service] [           main] org.hibernate.SQL                        : 
     select
         p1_0.id,
         p1_0.codigo,
@@ -2160,8 +2170,8 @@ This generated password is for development use only. Your security configuration
             ? is null 
             or p1_0.pet_friendly=?
         )
-2026-06-24T03:33:46.380-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
-2026-06-24T03:33:46.381-04:00 DEBUG 8348 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[com.rentify.propertyservice.dto.PropertyDTO@7b1ddbcf]]
+2026-06-30T18:57:38.054-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json, application/yaml]
+2026-06-30T18:57:38.055-04:00 DEBUG 5784 --- [property-service] [           main] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[com.rentify.propertyservice.dto.PropertyDTO@6f4d9baf]]
 ]]></system-out>
   </testcase>
 </testsuite>

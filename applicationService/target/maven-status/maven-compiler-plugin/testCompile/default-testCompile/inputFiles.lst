@@ -1,6 +1,7 @@
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\ApplicationServiceApplicationTests.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\client\DocumentServiceClientTest.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\client\PropertyServiceClientTest.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\config\ApiKeyInterceptorTest.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\RegistroControllerIntegrationTest.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\RegistroControllerTest.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\test\java\com\rentify\applicationService\controller\SolicitudControllerIntegrationTest.java

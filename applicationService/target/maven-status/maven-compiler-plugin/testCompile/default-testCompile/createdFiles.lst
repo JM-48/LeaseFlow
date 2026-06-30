@@ -5,7 +5,9 @@ com\rentify\applicationService\client\PropertyServiceClientTest.class
 com\rentify\applicationService\repository\RegistroArriendoRepositoryTest.class
 com\rentify\applicationService\service\SolicitudArriendoServiceTest.class
 com\rentify\applicationService\controller\RegistroControllerTest.class
+com\rentify\applicationService\config\ApiKeyInterceptorTest$DummyController.class
 com\rentify\applicationService\client\DocumentServiceClientTest.class
+com\rentify\applicationService\config\ApiKeyInterceptorTest.class
 com\rentify\applicationService\controller\SolicitudControllerIntegrationTest.class
 com\rentify\applicationService\ApplicationServiceApplicationTests.class
 com\rentify\applicationService\exception\GlobalExceptionHandlerTest.class

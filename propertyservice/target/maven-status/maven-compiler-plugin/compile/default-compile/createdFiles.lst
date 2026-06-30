@@ -3,7 +3,9 @@ com\rentify\propertyservice\model\Categoria.class
 com\rentify\propertyservice\config\TestDataInitializer.class
 com\rentify\propertyservice\dto\CategoriaDTO$CategoriaDTOBuilder.class
 com\rentify\propertyservice\model\Property.class
+com\rentify\propertyservice\config\WebMvcConfig.class
 com\rentify\propertyservice\dto\ComunaDTO.class
+com\rentify\propertyservice\config\ApiKeyInterceptor.class
 com\rentify\propertyservice\dto\ComunaDTO$ComunaDTOBuilder.class
 com\rentify\propertyservice\exception\FileStorageException.class
 com\rentify\propertyservice\repository\PropertyRepository.class

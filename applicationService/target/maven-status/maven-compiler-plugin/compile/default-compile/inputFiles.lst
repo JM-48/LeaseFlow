@@ -2,9 +2,11 @@ C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\c
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\client\DocumentServiceClient.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\client\PropertyServiceClient.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\client\UserServiceClient.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\config\ApiKeyInterceptor.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\config\AppConfig.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\config\CorsConfig.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\config\SecurityConfig.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\config\WebMvcConfig.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\constants\ApplicationConstants.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\controller\RegistroController.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\applicationService\src\main\java\com\rentify\applicationService\controller\SolicitudController.java

@@ -1,8 +1,10 @@
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\client\PropertyServiceClient.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\client\UserServiceClient.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\config\ApiKeyInterceptor.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\config\AppConfig.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\config\CorsConfig.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\config\SecurityConfig.java
+C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\config\WebMvcConfig.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\constants\ReviewConstants.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\controller\ReviewController.java
 C:\Users\AM-FX4100\Documents\GitHub\LeaseFlow\reviewService\src\main\java\com\rentify\reviewService\controller\TipoResenaController.java

@@ -1,6 +1,8 @@
 com\rentify\propertyservice\service\FotoServiceTest.class
 com\rentify\propertyservice\controller\PropertyControllerTest.class
 com\rentify\propertyservice\controller\FotoControllerTest.class
+com\rentify\propertyservice\config\ApiKeyInterceptorTest$DummyController.class
+com\rentify\propertyservice\config\ApiKeyInterceptorTest.class
 com\rentify\propertyservice\repository\PropertyRepositoryTest.class
 com\rentify\propertyservice\PropertyserviceApplicationTests.class
 com\rentify\propertyservice\controller\PropertyServiceIntegrationTest.class

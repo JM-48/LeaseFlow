@@ -8,6 +8,7 @@ com\rentify\contactService\service\MensajeContactoService.class
 com\rentify\contactService\constants\ContactConstants$Roles.class
 com\rentify\contactService\dto\external\UsuarioDTO.class
 com\rentify\contactService\exception\ResourceNotFoundException.class
+com\rentify\contactService\config\WebMvcConfig.class
 com\rentify\contactService\config\CorsConfig.class
 com\rentify\contactService\config\AppConfig.class
 com\rentify\contactService\model\MensajeContacto.class
@@ -17,6 +18,7 @@ com\rentify\contactService\constants\ContactConstants$Mensajes.class
 com\rentify\contactService\dto\external\UsuarioDTO$EstadoDTO.class
 com\rentify\contactService\dto\external\UsuarioDTO$RolDTO.class
 com\rentify\contactService\dto\MensajeContactoDTO.class
+com\rentify\contactService\config\ApiKeyInterceptor.class
 com\rentify\contactService\config\DataInitializerConfig.class
 com\rentify\contactService\config\SecurityConfig.class
 com\rentify\contactService\constants\ContactConstants$Limites.class
